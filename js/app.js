@@ -20,6 +20,7 @@ import { renderWriting, setWritingGo } from "./writing.js";
 import { renderConvo, setConvoGo } from "./convo.js";
 import { renderAsk, setAskGo } from "./ask.js";
 import { renderGames, setGamesGo } from "./games.js";
+import { renderMywork, setMyworkGo } from "./mywork.js";
 import { badgeList } from "./gamify.js";
 import { LEVEL_OPTS, GOAL_OPTS } from "./auth.js";
 
@@ -48,6 +49,7 @@ export function go(dest, arg) {
     case "convo": renderConvo(); showScreen("screen-convo", "convo"); break;
     case "ask": renderAsk(); showScreen("screen-ask", "ask"); break;
     case "games": renderGames(); showScreen("screen-games", "games"); break;
+    case "mywork": renderMywork(); break;
     case "teacher": renderTeacher(); break;
     case "class": openClass(arg); break;
     case "admin": renderAdmin(); break;
@@ -155,7 +157,7 @@ function enterApp() {
 async function boot() {
   // wire go() into modules
   [setDashGo, setLearnGo, setReadGo, setVocabGo,
-   setTeacherGo, setAdminGo, setGrammarGo, setWritingGo, setConvoGo, setAskGo, setGamesGo]
+   setTeacherGo, setAdminGo, setGrammarGo, setWritingGo, setConvoGo, setAskGo, setGamesGo, setMyworkGo]
     .forEach(function (fn) { fn(go); });
   setAuthDone(function () { enterApp(); });
   setOnboardingDone(function () { go("home"); });

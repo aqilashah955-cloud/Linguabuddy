@@ -159,3 +159,38 @@ export async function saveReadingProgress(uid, readingId, prog) {
   const { fsMod } = FB.fns;
   await safe(fsMod.setDoc(fsMod.doc(FB.db, "readingProgress", uid, readingId), prog));
 }
+
+// ---- "My Work" photo uploads (js/mywork.js) ----
+// The Firestore doc holds ONLY the Storage download URL — never photo
+// bytes. teacherIds mirrors saveSubmission so each class teacher reads
+// only their own students' work.
+export async function saveWorkUpload(uid, docId, meta) {
+  if (!FB.ready || !uid) return;
+  const { fsMod } = FB.fns;
+  const payload = Object.assign({ studentId: uid }, meta);
+  try {
+    const cq = fsMod.query(fsMod.collection(FB.db, "classes"),
+      fsMod.where("studentIds", "array-contains", uid));
+    const snap = await fsMod.getDocs(cq);
+    const tids = [];
+    snap.docs.forEach(function (d) {
+      const t = d.data().teacherId;
+      if (t && tids.indexOf(t) < 0) tids.push(t);
+    });
+    payload.teacherIds = tids;
+  } catch (e) { payload.teacherIds = []; }
+  await safe(fsMod.setDoc(fsMod.doc(FB.db, "writingUploads", docId), payload));
+}
+
+// Upload a handwritten-work photo to Firebase Storage.
+// Lazily imports firebase/storage so local/offline mode never pays for it.
+export async function uploadWorkPhoto(uid, docId, blob) {
+  if (!FB.ready || !uid || !blob) return null;
+  try {
+    const stMod = await import("firebase/storage");
+    const storage = stMod.getStorage();
+    const ref = stMod.ref(storage, "writing/" + uid + "/" + docId + ".jpg");
+    await stMod.uploadBytes(ref, blob, { contentType: "image/jpeg" });
+    return await stMod.getDownloadURL(ref);
+  } catch (e) { return null; }
+}

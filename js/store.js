@@ -27,6 +27,7 @@ function blankState() {
     vocab: [],      // {word, definition, pos, synonyms[], antonyms[], example, urdu, correct, total, addedAt}
     reading: {},    // storyId -> {done, quizPct, date}
     writing: [],    // {id, promptId, title, words, issues, date}
+    mywork: [],     // {id, title, type, photoDataUrl, thumbDataUrl, photoUrl, text, feedback[], createdAt}
     teacher: { classes: [], assignments: [] }, // offline-mode classes/assignments
     placement: null // {pct, level, date}
   };
