@@ -642,3 +642,11 @@ mark { border-radius: 4px; padding: 0 2px; }
   animation: mwslide 1.2s ease-in-out infinite alternate;
 }
 @keyframes mwslide { from { margin-left: 0; } to { margin-left: 60%; } }
+
+/* ============ Lingoo mascot greeting (home) ============ */
+.lingoo-hello { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.lingoo-hello svg { width: 64px; height: 64px; flex: 0 0 auto; }
+.lingoo-bubble { background: var(--card); border: 2px solid var(--border); border-radius: 14px;
+  padding: 8px 14px; font-weight: 600; color: var(--ink-deep); position: relative; }
+.lingoo-bubble:before { content: ""; position: absolute; left: -8px; top: 50%; margin-top: -7px;
+  border: 7px solid transparent; border-right-color: var(--border); border-left: 0; }

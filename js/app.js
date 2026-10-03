@@ -21,6 +21,11 @@ import { renderConvo, setConvoGo } from "./convo.js";
 import { renderAsk, setAskGo } from "./ask.js";
 import { renderGames, setGamesGo } from "./games.js";
 import { renderMywork, setMyworkGo } from "./mywork.js";
+import { showKidsHome, setKidsGo } from "./kids.js";
+import { showWorksheets, setWorksheetsGo } from "./worksheets.js";
+import { renderDaily, renderSayIt, renderParents } from "./engage.js";
+import { showCerts, setCertsGo } from "./certs.js";
+import { warmVoices } from "./tts.js";
 import { badgeList } from "./gamify.js";
 import { LEVEL_OPTS, GOAL_OPTS } from "./auth.js";
 
@@ -50,6 +55,12 @@ export function go(dest, arg) {
     case "ask": renderAsk(); showScreen("screen-ask", "ask"); break;
     case "games": renderGames(); showScreen("screen-games", "games"); break;
     case "mywork": renderMywork(); break;
+    case "kids": showKidsHome(); break;
+    case "worksheets": showWorksheets(); break;
+    case "daily": renderDaily(); showScreen("screen-daily", "daily"); break;
+    case "sayit": renderSayIt(); showScreen("screen-sayit", "sayit"); break;
+    case "parents": renderParents(); showScreen("screen-parents", "parents"); break;
+    case "certs": showCerts(); break;
     case "teacher": renderTeacher(); break;
     case "class": openClass(arg); break;
     case "admin": renderAdmin(); break;
@@ -100,6 +111,21 @@ function renderProfile() {
   $("pfLevel").innerHTML = LEVEL_OPTS.map(function (l) {
     return '<option value="' + l + '"' + (p.level === l ? " selected" : "") + ">" + l + "</option>";
   }).join("");
+  var ageOpts = [
+    ["kids", "🧒 Kids (5–8)"],
+    ["juniors", "🧑 Juniors (9–12)"],
+    ["teens", "🎓 Teens & Adults (13+)"]
+  ];
+  $("pfAge").innerHTML = ageOpts.map(function (a) {
+    return '<button type="button" class="chipbtn' + (p.ageGroup === a[0] ? " on" : "") +
+      '" data-age="' + a[0] + '">' + a[1] + "</button>";
+  }).join("");
+  $("pfAge").querySelectorAll("[data-age]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      $("pfAge").querySelectorAll("[data-age]").forEach(function (x) { x.classList.remove("on"); });
+      b.classList.add("on");
+    });
+  });
   $("pfGoals").innerHTML = GOAL_OPTS.map(function (g) {
     const on = (p.goals || []).indexOf(g) >= 0 ? " on" : "";
     return '<button type="button" class="chipbtn' + on + '" data-goal="' + g + '">' + g + "</button>";
@@ -134,6 +160,8 @@ function initProfile() {
     const g = [];
     $("pfGoals").querySelectorAll(".chipbtn.on").forEach(function (b) { g.push(b.getAttribute("data-goal")); });
     S.profile.goals = g;
+    const ab = $("pfAge").querySelector(".chipbtn.on");
+    if (ab) S.profile.ageGroup = ab.getAttribute("data-age");
     save();
     $("pfSaved").textContent = "Saved ✓";
     setTimeout(function () { $("pfSaved").textContent = ""; }, 2000);
@@ -157,8 +185,10 @@ function enterApp() {
 async function boot() {
   // wire go() into modules
   [setDashGo, setLearnGo, setReadGo, setVocabGo,
-   setTeacherGo, setAdminGo, setGrammarGo, setWritingGo, setConvoGo, setAskGo, setGamesGo, setMyworkGo]
+   setTeacherGo, setAdminGo, setGrammarGo, setWritingGo, setConvoGo, setAskGo, setGamesGo, setMyworkGo,
+   setKidsGo, setWorksheetsGo, setCertsGo]
     .forEach(function (fn) { fn(go); });
+  warmVoices();
   setAuthDone(function () { enterApp(); });
   setOnboardingDone(function () { go("home"); });
 

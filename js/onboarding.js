@@ -21,6 +21,7 @@ export function startOnboarding() {
   $("obName").value = S.profile.name || "";
   renderGoalChips();
   renderLevelOpts();
+  renderAgeOpts();
   show("screen-ob-name");
 }
 
@@ -58,6 +59,29 @@ function chosenLevel() {
   return b ? b.getAttribute("data-level") : "";
 }
 
+export const AGE_OPTS = [
+  ["kids", "🧒 Kids (5–8)"],
+  ["juniors", "🧑 Juniors (9–12)"],
+  ["teens", "🎓 Teens & Adults (13+)"]
+];
+
+function renderAgeOpts() {
+  $("obAges").innerHTML = AGE_OPTS.map(function (a) {
+    const on = S.profile.ageGroup === a[0] ? " on" : "";
+    return '<button type="button" class="chipbtn big' + on + '" data-age="' + a[0] + '">' + a[1] + "</button>";
+  }).join("");
+  $("obAges").querySelectorAll("[data-age]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      $("obAges").querySelectorAll("[data-age]").forEach(function (x) { x.classList.remove("on"); });
+      b.classList.add("on");
+    });
+  });
+}
+function chosenAge() {
+  const b = $("obAges").querySelector(".chipbtn.on");
+  return b ? b.getAttribute("data-age") : "";
+}
+
 export function initOnboarding() {
   $("obNameNext").addEventListener("click", function () {
     const v = $("obName").value.trim();
@@ -75,7 +99,15 @@ export function initOnboarding() {
     const lv = chosenLevel();
     if (!lv) { $("obLevelErr").textContent = "Pick the closest level — or choose “I don't know”."; return; }
     if (lv === "I don't know") { startPlacement(); return; }
-    S.profile.level = lv; S.profile.onboarded = true; save();
+    S.profile.level = lv; save();
+    show("screen-ob-age");
+  });
+  $("obAgeBack").addEventListener("click", function () { show("screen-ob-level"); });
+  $("obAgeNext").addEventListener("click", function () {
+    const ag = chosenAge();
+    if (!ag) { $("obAgeErr").textContent = "Pick the age group that fits best."; return; }
+    S.profile.ageGroup = ag;
+    S.profile.onboarded = true; save();
     touchStreak();
     finishOnboarding();
   });
@@ -104,9 +136,8 @@ function startPlacement() {
     onDone: function (out) {
       const level = placementLevel(out.pct);
       S.profile.level = level;
-      S.profile.onboarded = true;
       S.placement = { pct: out.pct, level: level, date: Date.now() };
-      save(); touchStreak();
+      save();
       showResult({
         title: "Your Placement Estimate",
         scoreLine: level,
@@ -115,7 +146,7 @@ function startPlacement() {
         results: out.results,
         perSlo: out.perSlo,
         actions: [
-          { label: "See My Learning Path", primary: true, fn: function () { finishOnboarding(); } }
+          { label: "Continue", primary: true, fn: function () { show("screen-ob-age"); } }
         ]
       });
     }

@@ -5,6 +5,7 @@
 
 import { S, save } from "./store.js";
 import { calculateSLOMastery } from "./engine.js";
+import { checkCertificates } from "./certs.js";
 import { esc } from "./utils.js";
 
 function $(id) { return (typeof document !== "undefined") ? document.getElementById(id) : null; }
@@ -102,6 +103,10 @@ export function checkBadges() {
     return calculateSLOMastery(sloId, ev[sloId]).status === "mastered";
   });
   if (mastered) awardBadge("slo-master");
+  // Certificates ride along with badges — idempotent, safe to call often.
+  checkCertificates().forEach(function (c) {
+    toast("🏆 Certificate earned: <strong>" + esc(c.title) + "</strong>");
+  });
 }
 
 export function badgeList() {

@@ -12,8 +12,14 @@ const NAVMAP = {
   "screen-profile": "profile",
   "screen-games": "games",
   "screen-mywork": "mywork",
+  "screen-kids": "kids",
+  "screen-worksheets": "worksheets",
+  "screen-daily": "daily",
+  "screen-sayit": "sayit",
+  "screen-parents": "parents",
+  "screen-certs": "certs",
   "screen-auth": null, "screen-forgot": null,
-  "screen-ob-name": null, "screen-ob-goals": null, "screen-ob-level": null, "screen-ob-ready": null
+  "screen-ob-name": null, "screen-ob-goals": null, "screen-ob-level": null, "screen-ob-age": null, "screen-ob-ready": null
 };
 
 export function showScreen(id, nav) {

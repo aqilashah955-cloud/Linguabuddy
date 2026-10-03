@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LinguaBuddy — Your AI companion for better English</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="css-snippets/kids.css" />
+  <link rel="stylesheet" href="css-snippets/engage.css" />
+  <link rel="stylesheet" href="css-snippets/certs.css" />
+  <link rel="stylesheet" href="print.css" />
   <script type="importmap">
   {
     "imports": {
@@ -114,6 +118,18 @@
         </div>
       </div>
     </section>
+    <section id="screen-ob-age" class="screen hidden">
+      <div class="ob-wrap">
+        <h2>How old is the learner?</h2>
+        <p class="fine">We shape the activities for the right age group.</p>
+        <div id="obAges" class="chipwrap big"></div>
+        <p id="obAgeErr" class="form-error"></p>
+        <div class="row-btns">
+          <button id="obAgeBack" class="btn-ghost">← Back</button>
+          <button id="obAgeNext" class="btn-primary">Continue →</button>
+        </div>
+      </div>
+    </section>
     <section id="screen-ob-ready" class="screen hidden">
       <div class="ob-wrap center">
         <div class="big-emoji">🎉</div>
@@ -124,6 +140,7 @@
 
     <!-- ============ HOME / DASHBOARD ============ -->
     <section id="screen-home" class="screen hidden">
+      <div id="lingooHello" class="lingoo-hello"></div>
       <div class="dash-top">
         <h2 id="dashHello">Welcome back! 👋</h2>
         <span id="dashStreak" class="streak"></span>
@@ -296,6 +313,7 @@
         <p id="pfMeta" class="fine"></p>
         <p id="pfStreak" class="fine"></p>
         <div class="field"><label>English level</label><select id="pfLevel"></select></div>
+        <div class="field"><label>Age group</label><div id="pfAge" class="chipwrap"></div></div>
         <div class="field"><label>Learning goals</label><div id="pfGoals" class="chipwrap"></div></div>
         <button id="pfSave" class="btn-primary">Save Changes</button>
         <p id="pfSaved" class="fine"></p>
@@ -359,6 +377,24 @@
       <div id="adminBody"></div>
     </section>
 
+    <!-- ============ KIDS ZONE ============ -->
+    <section id="screen-kids" class="screen hidden"><div id="kidsBody"></div></section>
+
+    <!-- ============ WORKSHEETS & RESOURCES ============ -->
+    <section id="screen-worksheets" class="screen hidden">
+      <div class="screen-head"><h2>🖨️ Worksheets & Resources</h2>
+        <p>Printable practice for every age — preview, then print.</p></div>
+      <div id="wsLibrary"></div>
+    </section>
+
+    <!-- ============ DAILY / SAY IT / PARENTS ============ -->
+    <section id="screen-daily" class="screen hidden"></section>
+    <section id="screen-sayit" class="screen hidden"></section>
+    <section id="screen-parents" class="screen hidden"></section>
+
+    <!-- ============ CERTIFICATES ============ -->
+    <section id="screen-certs" class="screen hidden"><div id="certGallery"></div></section>
+
     <!-- ============ ACCESS GATE ============ -->
     <section id="screen-gate" class="screen hidden">
       <div class="screen-head"><button class="back-btn" id="gateBack">← Home</button></div>
@@ -368,6 +404,7 @@
 
   <div id="modalOv" class="modal-ov hidden"><div id="modalBox" class="modal-box"></div></div>
   <div id="toast" class="toast hidden"></div>
+  <div id="print-area"></div>
 
   <nav id="bottomNav" class="bottom-nav hidden">
     <button class="navbtn" data-nav="home">🏠<span>Home</span></button>
@@ -382,6 +419,12 @@
     <button class="navbtn" data-nav="convo">💬<span>Convo</span></button>
     <button class="navbtn" data-nav="ask">🤖<span>Ask</span></button>
     <button class="navbtn" data-nav="games">🎮<span>Games</span></button>
+    <button class="navbtn" data-nav="kids">🧒<span>Kids</span></button>
+    <button class="navbtn" data-nav="worksheets">🖨️<span>Print</span></button>
+    <button class="navbtn" data-nav="daily">📅<span>Daily</span></button>
+    <button class="navbtn" data-nav="sayit">🗣️<span>Say It</span></button>
+    <button class="navbtn" data-nav="parents">👨‍👩‍👧<span>Parents</span></button>
+    <button class="navbtn" data-nav="certs">🏆<span>Awards</span></button>
     <button class="navbtn hidden" data-nav="teacher" data-role="teacher">🎓<span>Teacher</span></button>
     <button class="navbtn hidden" data-nav="admin" data-role="admin">⚙️<span>Admin</span></button>
     <button class="navbtn" data-nav="progress">📊<span>Progress</span></button>

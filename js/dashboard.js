@@ -8,6 +8,8 @@ import { esc, dayOfYear } from "./utils.js";
 import { runAttempt, showResult } from "./assess.js";
 import { openSetup } from "./learn.js";
 import { reportHTML, renderStudentAssignments } from "./teacher.js";
+import { todayContent } from "./engage.js";
+import { mascotSVG } from "./mascot.js";
 
 function $(id) { return document.getElementById(id); }
 
@@ -42,11 +44,27 @@ function bar(pctOrNull, label) {
 }
 
 /* ---------------- home dashboard ---------------- */
+var GREETINGS = [
+  "Ready for today's adventure?",
+  "Let's learn something new!",
+  "Your English is growing every day!",
+  "Small steps, big English!",
+  "Time to shine, superstar!"
+];
+function pickGreeting(name) {
+  var n = 0;
+  for (var i = 0; i < name.length; i++) n += name.charCodeAt(i);
+  return GREETINGS[(n + dayOfYear()) % GREETINGS.length];
+}
+
 export function renderDashboard() {
   touchStreak();
   const name = S.profile.name || "Learner";
   $("dashHello").textContent = "Welcome back, " + name + "! 👋";
   $("dashStreak").textContent = "🔥 " + (S.profile.streak || 0) + "-day streak";
+  // Lingoo the owl greets the learner
+  $("lingooHello").innerHTML = mascotSVG("wave") +
+    '<div class="lingoo-bubble">' + esc(pickGreeting(name)) + "</div>";
 
   const m = masteryMap();
   const weak = weakestSlo(m);
@@ -69,7 +87,9 @@ export function renderDashboard() {
   const story = STORIES[doy % STORIES.length];
   const words = [0, 1, 2, 3, 4].map(function (k) { return WORDS[(doy * 5 + k) % WORDS.length]; });
 
+  const daily = todayContent();
   const rows = [
+    { e: "📅", t: "Daily English", s: 'Word of the day: "' + daily.word.word + '" + phrase & idiom', fn: function () { go("daily"); } },
     { e: "📖", t: "Today's Lesson", s: tSlo.title, fn: function () { go("lesson", tSlo.id); } },
     { e: "🧠", t: "Today's Vocabulary", s: words.map(function (w) { return w.word; }).join(", "), fn: function () { go("vocab"); } },
     { e: "✏️", t: "Today's Grammar", s: gSlo.title + " · quick 5-question practice", fn: function () { quickPractice(gSlo.id, gSlo.title + " — Quick Practice"); } },

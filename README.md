@@ -103,6 +103,51 @@ lesson opened 20, streak day 25…), badges (First Lesson, 7-Day Streak, Story
 Reader, Word Collector, Writing Star, SLO Master, Game Night) with earn toasts, streak +
 XP on the profile, badge shelf. No competitive leaderboards.
 
+## Part 3 — Kids, Worksheets, Daily, Family (all ages)
+
+**🧒 Kids Zone** (`js/kids.js`, `data/kids.js`) — ages 5–8, audio-first (every
+button label spoken via the shared `js/tts.js` read-aloud; no second TTS
+anywhere): Alphabet Explorer (A–Z, phonics "A says ah"), Phonics game, Picture
+Words (4 categories + flip-match), Listen & Tap, Rhyme Time, Story Time (3
+animated stories with hand-drawn SVG scenes + word-by-word narration), and
+🎬 **Watch** — two real animated videos (`assets/welcome.mp4`,
+`assets/phonics-abc.mp4`) with graceful "coming soon" fallback. Stars per
+activity persist in `S.kidsStars`.
+
+**🖨️ Worksheets & Resources** (`js/worksheets.js`, `print.css`) — 7 printable
+worksheet builders (trace letters, word↔picture match, fill-in-the-blanks from
+real SLO banks, seeded word search, sentence scramble, reading comprehension,
+coloring vocab), a library of 12 ready-made worksheets filterable by age group
+(Kids / Juniors / Teens+), a **teacher worksheet builder** (pick types + counts
+→ printable pack with answer key), and printable **achievement certificates**.
+Printing renders into `#print-area`; `print.css` hides the app chrome on paper.
+All builders are pure and offline — no fetches.
+
+**📅 Daily English + 🗣️ Say It** (`js/engage.js`, `data/daily.js`) — word,
+phrase, idiom and tongue-twister of the day (deterministic per date), daily
+check-in streak, pronunciation practice with mic scoring
+(`scorePronunciation`, graceful fallback when the browser can't listen), and
+Listen & Repeat with slow playback.
+
+**👨‍👩‍👧 Parent dashboard** (`js/engage.js`) — learner progress summary (XP,
+streak, SLOs mastered, words, stories, games), printable progress report, and
+"how to help" tips per age group.
+
+**🦉 Lingoo the mascot** (`js/mascot.js`) — an animated SVG owl who greets
+learners on Home with a rotating encouragement, plus dependency-free canvas
+confetti celebrations.
+
+**🏆 Certificate Center** (`js/certs.js`) — auto-awarded printable certificates
+for **students** (Brave Beginner, 7-Day Star, Reading Champion, Word Wizard,
+Writing Star, SLO Master, Game Champion, Course Completion), **teachers**
+(Dedicated Educator) and **parents** (Super Supporter). Awards are checked
+whenever badges are (idempotent); each certificate prints through the
+worksheets certificate builder with the learner's name and date.
+
+**Age groups** — onboarding now asks for an age group (🧒 Kids 5–8 / 🧑 Juniors
+9–12 / 🎓 Teens & Adults 13+), stored on `S.profile.ageGroup` and changeable in
+Profile. Parent tips and worksheet filters adapt to it.
+
 **Game Arcade** (`js/games.js`, route `games`, nav 🎮): six 60-second arcade
 rounds, all offline from bundled data — Word Scramble (typed unscramble with
 Urdu hint), Hangman (definition clue, 6 misses), Speed Match (word↔definition
@@ -374,3 +419,12 @@ Question types across banks: `mcq`, `fill`, `truefalse`, `order`, `reorder`,
 - `node test/mywork.test.js` — photo sizing math, OCR text sanitization,
   `writingUploads` doc shape (has `teacherIds`, no photo bytes), gallery
   eviction + photo-budget trimming, feedback never containing a rewrite.
+- `node test/kids.test.js` — 26 unique alphabet letters, exactly-1-correct
+  game generators, rhyme families, story page validity, star math.
+- `node test/worksheets.test.js` — seeded word-search generation (all words
+  findable, deterministic per seed), builder shapes, pack counts, certificate
+  contents. Asserts no network fetches (offline guarantee).
+- `node test/engage.test.js` — daily picker determinism, pronunciation scoring,
+  check-in idempotency, parent report builder.
+- `node test/certs.test.js` — badge→certificate mapping, all-12-SLOs course
+  completion, teacher/parent criteria, idempotent awarding.
