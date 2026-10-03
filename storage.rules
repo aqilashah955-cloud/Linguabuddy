@@ -1,0 +1,31 @@
+// LinguaBuddy — Firebase Storage security rules (rules_version '2').
+// Paste into the Firebase console: Storage → Rules → Publish.
+//
+// Data model:
+//   writing/{uid}/{docId}.jpg   "My Work" photos of handwritten work
+//
+// Privacy: each student writes only their own folder. Reads are limited
+// to the owning student and the admin. Class teachers do NOT read via
+// Storage paths — they open the photo through the unguessable download
+// URL stored on the Firestore writingUploads/{id} doc, which they may
+// read only when their uid is in that doc's teacherIds (see
+// firestore.rules). No student can ever open another student's photo.
+
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function signedIn() { return request.auth != null; }
+    function isAdmin() {
+      return signedIn() && request.auth.token.email == "REPLACE_WITH_OWNER_EMAIL";
+    }
+
+    match /writing/{uid}/{file} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow write: if signedIn() && request.auth.uid == uid
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+      allow delete: if signedIn() && request.auth.uid == uid;
+    }
+  }
+}
