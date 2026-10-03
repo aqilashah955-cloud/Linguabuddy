@@ -1,0 +1,70 @@
+/* LinguaBuddy — Engagement & Family styles (engage.css).
+   Parent wires this in: <link rel="stylesheet" href="css-snippets/engage.css"> */
+
+/* ---------- Daily ---------- */
+.dg-wrap { max-width: 640px; margin: 0 auto; padding: 12px; }
+.dg-head { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.dg-head .lingoo { width: 84px; height: 88px; flex: 0 0 auto; }
+.dg-head h2 { margin: 0; }
+.dg-cards { display: grid; gap: 12px; margin-bottom: 16px; }
+.dg-card { background: #fffdf6; border: 2px solid #e8dfc8; border-radius: 14px; padding: 14px; }
+.dg-tag { font-size: 13px; font-weight: 700; color: #7c6ff0; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+.dg-big { font-size: 22px; font-weight: 800; color: #1e3a8a; margin: 4px 0; }
+.dg-big .btn-sayit-play { vertical-align: middle; }
+.dg-tw { font-size: 19px; line-height: 1.5; }
+.dg-ex { margin-top: 6px; font-style: italic; color: #5b5b6e; }
+.dg-card .fine, .dg-wrap .fine { color: #6b6b7d; font-size: 13px; }
+.btn-sayit-play { background: #ede9fe; border: 2px solid #c4b5fd; border-radius: 10px; font-size: 18px; padding: 4px 10px; cursor: pointer; }
+.btn-sayit-play:hover { background: #ddd0fb; }
+
+/* ---------- Say It ---------- */
+.si-select { width: 100%; font-size: 16px; padding: 10px; border-radius: 10px; border: 2px solid #c4b5fd; margin-bottom: 10px; background: #fff; }
+.si-btns { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; align-items: center; }
+.si-score { margin-top: 12px; text-align: center; }
+.si-stars { font-size: 34px; animation: lingoo-pop .4s ease; }
+.si-msg { font-size: 16px; margin-top: 6px; }
+.lr-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 4px; border-bottom: 1px dashed #e8dfc8; }
+.lr-row:last-child { border-bottom: none; }
+.lr-btns { white-space: nowrap; }
+
+/* ---------- Parent dashboard ---------- */
+.pd-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+.pd-stat { background: #fffdf6; border: 2px solid #e8dfc8; border-radius: 14px; padding: 12px 6px; text-align: center; }
+.pd-emoji { font-size: 26px; }
+.pd-val { font-size: 24px; font-weight: 800; color: #1e3a8a; }
+.pd-label { font-size: 12px; color: #6b6b7d; }
+.pd-tips { margin: 8px 0; padding-left: 20px; line-height: 1.7; }
+
+/* ---------- Printable report ---------- */
+.pr-report { max-width: 560px; margin: 0 auto; font-family: inherit; color: #222; }
+.pr-report h2 { color: #1e3a8a; }
+.pr-name { font-size: 18px; margin-top: -8px; color: #444; }
+.pr-table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+.pr-table td { padding: 8px 10px; border-bottom: 1px solid #ddd; }
+.pr-foot { color: #666; font-style: italic; }
+
+/* ---------- Mascot ---------- */
+.lingoo { display: inline-block; }
+.lingoo-bounce { animation: lingoo-bounce 1.6s ease-in-out infinite; }
+@keyframes lingoo-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+/* blink: scales the open-eyes group briefly */
+.lingoo .lingoo-eyes { transform-box: fill-box; transform-origin: center; animation: lingoo-blink 5s infinite; }
+@keyframes lingoo-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(.08); }
+}
+@keyframes lingoo-pop {
+  0% { transform: scale(.4); }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* ---------- print: only the report ---------- */
+@media print {
+  body * { visibility: hidden; }
+  #print-area, #print-area * { visibility: visible; }
+  #print-area { position: absolute; left: 0; top: 0; width: 100%; }
+}
