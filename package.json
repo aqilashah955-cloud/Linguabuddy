@@ -1,0 +1,1 @@
+{"description":"LinguaBuddy — your AI companion for better English (student app, part 1)","license":"MIT","name":"linguabuddy","scripts":{"check":"for f in js/*.js data/*.js; do node --check \"$f\" || exit 1; done; echo OK"},"type":"module","version":"1.0.0"}

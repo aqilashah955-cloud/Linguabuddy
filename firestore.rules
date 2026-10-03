@@ -1,0 +1,84 @@
+// LinguaBuddy — Firestore security rules (rules_version '2').
+// Paste into the Firebase console: Firestore Database → Rules → Publish.
+//
+// Data model:
+//   users/{uid}                  profile + learning state mirror
+//   loginIds/{loginId}           {email, uid} — login-ID → email resolution
+//   classes/{id}                 {name, teacherId, studentIds[]}        (Part 2)
+//   assignments/{id}             {classId, type, sloIds, count, dueAt}  (Part 2)
+//   submissions/{id}             {studentId, worksheetId, answers, score, sloScores}
+//   vocabulary/{uid}/words/{w}   saved words per student
+//   readingProgress/{uid}/{rid}  story completion per student
+//
+// Curated content (SLOs, stories, words) ships as bundled JS data modules
+// and is NEVER read from Firestore — zero read costs, works offline.
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isAdmin() {
+      return signedIn() && request.auth.token.email == "REPLACE_WITH_OWNER_EMAIL";
+    }
+
+    // ---- user profiles: owners only (admin: full read) ----
+    match /users/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow write: if signedIn() && request.auth.uid == uid;
+    }
+
+    // ---- login-ID directory: anyone may resolve an ID to an email
+    // (needed on the login screen); only the owning signed-in user may
+    // create their own mapping, and mappings are immutable afterwards.
+    match /loginIds/{loginId} {
+      allow get: if true;
+      allow list: if false;
+      allow create: if signedIn()
+        && !exists(/databases/$(database)/documents/loginIds/$(loginId))
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasAll(["email", "uid"]);
+      allow update, delete: if false;
+    }
+
+    // ---- classes (teacher dashboard, Part 2) ----
+    match /classes/{id} {
+      allow read: if signedIn() && (
+        resource.data.teacherId == request.auth.uid ||
+        request.auth.uid in resource.data.studentIds || isAdmin());
+      allow create: if signedIn()
+        && request.resource.data.teacherId == request.auth.uid;
+      allow update, delete: if signedIn() && (
+        resource.data.teacherId == request.auth.uid || isAdmin());
+    }
+
+    // ---- assignments (Part 2) ----
+    match /assignments/{id} {
+      allow read: if signedIn();
+      allow create, update, delete: if signedIn() && (
+        isAdmin() ||
+        exists(/databases/$(database)/documents/classes/$(request.resource.data.classId)) &&
+        get(/databases/$(database)/documents/classes/$(request.resource.data.classId)).data.teacherId == request.auth.uid);
+    }
+
+    // ---- submissions: students write own, read own; teachers read their
+    // students' (checked client-side via class membership); admin reads all.
+    match /submissions/{id} {
+      allow read: if signedIn() && (
+        resource.data.studentId == request.auth.uid || isAdmin());
+      allow create: if signedIn()
+        && request.resource.data.studentId == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // ---- vocabulary: private to each student ----
+    match /vocabulary/{uid}/words/{word} {
+      allow read, write: if signedIn() && request.auth.uid == uid;
+    }
+
+    // ---- reading progress: private to each student ----
+    match /readingProgress/{uid}/{rid} {
+      allow read, write: if signedIn() && request.auth.uid == uid;
+    }
+  }
+}
