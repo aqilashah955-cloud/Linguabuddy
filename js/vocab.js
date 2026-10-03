@@ -7,6 +7,7 @@ import { S, save, addVocabWord } from "./store.js";
 import { WORDS } from "./engine.js";
 import { esc, shuffle } from "./utils.js";
 import { showScreen as show } from "./ui.js";
+import { awardXP, checkBadges, XP_TABLE } from "./gamify.js";
 
 function $(id) { return document.getElementById(id); }
 
@@ -32,6 +33,8 @@ export function renderVocab() {
         synonyms: w.syn.slice(), antonyms: w.ant.slice(),
         example: w.example, urdu: w.urdu
       });
+      awardXP(XP_TABLE.wordAdded, "word saved");
+      checkBadges();
       renderVocab();
     });
   });
@@ -94,6 +97,8 @@ export function initVocab() {
     });
     ["vwWord", "vwDef", "vwPos", "vwSyn", "vwAnt", "vwEx", "vwUrdu"].forEach(function (id) { $(id).value = ""; });
     $("vwMsg").textContent = "Saved ✓";
+    awardXP(XP_TABLE.wordAdded, "word saved");
+    checkBadges();
     setTimeout(function () { $("vwMsg").textContent = ""; }, 2000);
     renderVocab();
   });

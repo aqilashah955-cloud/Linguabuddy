@@ -10,6 +10,7 @@ const NAVMAP = {
   "screen-vocab": "vocab", "screen-word": "vocab", "screen-flash": "vocab", "screen-vquiz": "vocab",
   "screen-progress": "progress",
   "screen-profile": "profile",
+  "screen-games": "games",
   "screen-auth": null, "screen-forgot": null,
   "screen-ob-name": null, "screen-ob-goals": null, "screen-ob-level": null, "screen-ob-ready": null
 };

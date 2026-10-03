@@ -3,9 +3,11 @@
 // progress bars, streak, and counts.
 
 import { S, touchStreak } from "./store.js";
-import { SLOS, STORIES, WORDS, calculateSLOMastery, masteryLabel, weakestSlo, buildItems } from "./engine.js";
+import { SLOS, STORIES, WORDS, calculateSLOMastery, masteryLabel, weakestSlo, buildItems, buildProgressReport } from "./engine.js";
 import { esc, dayOfYear } from "./utils.js";
 import { runAttempt, showResult } from "./assess.js";
+import { openSetup } from "./learn.js";
+import { reportHTML, renderStudentAssignments } from "./teacher.js";
 
 function $(id) { return document.getElementById(id); }
 
@@ -112,6 +114,9 @@ export function renderDashboard() {
   $("todayWords").innerHTML = words.map(function (w) {
     return '<span class="word-chip">' + esc(w.word) + ' <em>' + esc(w.urdu) + "</em></span>";
   }).join("");
+
+  // teacher assignments (renders into #assignBox; hidden if none)
+  renderStudentAssignments().catch(function () {});
 }
 
 function quickPractice(sloId, title) {
@@ -172,6 +177,26 @@ export function renderProgress() {
       '<span class="fine">' + fmtDateX(a.date) + " · " + a.score + "/" + a.total + " marks</span></div>" +
       '<div class="score-pct">' + a.pct + "%</div></div>";
   }).join("") : '<p class="empty-msg">No attempts yet. Complete a worksheet to see it here.</p>';
+
+  // full progress report (Part 2) with clickable recommendations
+  const report = buildProgressReport({
+    mastery: m, attempts: mine, level: S.profile.level,
+    xp: S.profile.xp, streak: S.profile.streak,
+    vocabCount: S.vocab.length, storiesDone: Object.keys(S.reading || {}).length,
+    writingDone: (S.writing || []).length > 0, readingDone: S.reading
+  });
+  $("pgReport").innerHTML = reportHTML(report, null, true, routeRec);
+  $("pgReport").querySelectorAll("[data-rec]").forEach(function (b) {
+    b.addEventListener("click", function () { routeRec(report.recommendations[parseInt(b.getAttribute("data-rec"), 10)]); });
+  });
+  function routeRec(r) {
+    if (!r) return;
+    if (r.dest === "lesson") go("lesson", r.arg);
+    else if (r.dest === "story") go("story", r.arg);
+    else if (r.dest === "vocab") go("vocab");
+    else if (r.dest === "writing") go("writing");
+    else if (r.dest === "assess") openSetup(r.arg, "assess");
+  }
 
   function fmtDateX(ts) {
     const d = new Date(ts);

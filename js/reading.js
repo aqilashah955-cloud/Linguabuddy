@@ -7,6 +7,7 @@
 import { S, markReading, addVocabWord } from "./store.js";
 import { STORIES, storyById, storyMeta, recommendReading, buildItems } from "./engine.js";
 import { runAttempt, showResult } from "./assess.js";
+import { awardXP, checkBadges, XP_TABLE } from "./gamify.js";
 import { esc } from "./utils.js";
 import { showScreen as show } from "./ui.js";
 
@@ -159,6 +160,8 @@ export function startStoryQuiz() {
     timePerQ: 60, antiCopy: true, hints: false, lockKey: lockKey, lockLabel: "quiz",
     onDone: function (out) {
       markReading(curStory.id, out.pct);
+      awardXP(XP_TABLE.storyRead + XP_TABLE.storyQuizComplete, "story + quiz complete");
+      checkBadges();
       const rec = recommendReading(Object.keys(S.reading), null);
       showResult({
         title: curStory.title + " — Quiz", scoreLine: out.pct + "%",

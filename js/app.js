@@ -13,6 +13,14 @@ import { renderLearn, openLesson, openSetup, launchSetup, setGo as setLearnGo, s
 import { renderLibrary, openStory, startStoryQuiz, setGo as setReadGo } from "./reading.js";
 import { renderVocab, initVocab, setGo as setVocabGo } from "./vocab.js";
 import { submitAttempt, quitAttempt } from "./assess.js";
+import { renderTeacher, openClass, renderStudentAssignments, setTeacherGo, isTeacher, isAdmin } from "./teacher.js";
+import { renderAdmin, setAdminGo } from "./admin.js";
+import { renderGrammar, setGrammarGo } from "./grammar.js";
+import { renderWriting, setWritingGo } from "./writing.js";
+import { renderConvo, setConvoGo } from "./convo.js";
+import { renderAsk, setAskGo } from "./ask.js";
+import { renderGames, setGamesGo } from "./games.js";
+import { badgeList } from "./gamify.js";
 import { LEVEL_OPTS, GOAL_OPTS } from "./auth.js";
 
 function $(id) { return document.getElementById(id); }
@@ -35,6 +43,14 @@ export function go(dest, arg) {
     case "read": renderLibrary(); showScreen("screen-library", "read"); break;
     case "story": openStory(arg); break;
     case "vocab": renderVocab(); showScreen("screen-vocab", "vocab"); break;
+    case "grammar": renderGrammar(); showScreen("screen-grammar", "grammar"); break;
+    case "writing": renderWriting(); showScreen("screen-writing", "writing"); break;
+    case "convo": renderConvo(); showScreen("screen-convo", "convo"); break;
+    case "ask": renderAsk(); showScreen("screen-ask", "ask"); break;
+    case "games": renderGames(); showScreen("screen-games", "games"); break;
+    case "teacher": renderTeacher(); break;
+    case "class": openClass(arg); break;
+    case "admin": renderAdmin(); break;
     case "progress": renderProgress(); showScreen("screen-progress", "progress"); break;
     case "profile": renderProfile(); showScreen("screen-profile", "profile"); break;
     default: renderDashboard(); showScreen("screen-home", "home");
@@ -61,6 +77,16 @@ function renderBrowse() {
   });
 }
 
+/* Show/hide role-gated nav buttons. */
+export function refreshNav() {
+  document.querySelectorAll('[data-role="teacher"]').forEach(function (b) {
+    b.classList.toggle("hidden", !isTeacher());
+  });
+  document.querySelectorAll('[data-role="admin"]').forEach(function (b) {
+    b.classList.toggle("hidden", !isAdmin());
+  });
+}
+
 /* ---------------- profile ---------------- */
 function renderProfile() {
   const p = S.profile;
@@ -83,6 +109,21 @@ function renderProfile() {
   $("pfOnline").textContent = isConfigured()
     ? (fb().user ? "Signed in online · data syncs to your account" : "Online mode available")
     : "Offline mode — everything is stored on this device";
+  // badges
+  const badges = badgeList();
+  const earned = badges.filter(function (b) { return b.earned; });
+  let bh = '<h3 class="sec-title">🏅 Badges (' + earned.length + "/" + badges.length + ")</h3>";
+  bh += '<div class="badge-grid">' + badges.map(function (b) {
+    return '<div class="badge-card' + (b.earned ? "" : " locked") + '" title="' + esc(b.desc) + '">' +
+      '<div class="badge-emoji">' + (b.earned ? b.emoji : "🔒") + '</div><div class="badge-name">' + esc(b.name) + "</div></div>";
+  }).join("") + "</div>";
+  let bd = $("badgeBox");
+  if (!bd) {
+    bd = document.createElement("div");
+    bd.id = "badgeBox";
+    $("pfSaved").parentNode.appendChild(bd);
+  }
+  bd.innerHTML = bh;
 }
 
 function initProfile() {
@@ -106,13 +147,16 @@ function initProfile() {
 
 /* ---------------- boot ---------------- */
 function enterApp() {
+  refreshNav();
   if (!S.profile.onboarded) startOnboarding();
   else go("home");
 }
 
 async function boot() {
   // wire go() into modules
-  [setDashGo, setLearnGo, setReadGo, setVocabGo].forEach(function (fn) { fn(go); });
+  [setDashGo, setLearnGo, setReadGo, setVocabGo,
+   setTeacherGo, setAdminGo, setGrammarGo, setWritingGo, setConvoGo, setAskGo, setGamesGo]
+    .forEach(function (fn) { fn(go); });
   setAuthDone(function () { enterApp(); });
   setOnboardingDone(function () { go("home"); });
 
@@ -129,6 +173,7 @@ async function boot() {
   document.querySelectorAll("[data-gohome]").forEach(function (b) {
     b.addEventListener("click", function () { go("home"); });
   });
+  $("gateBack").addEventListener("click", function () { go("home"); });
 
   // attempt screen buttons
   $("submitBtn").addEventListener("click", function () { submitAttempt(false); });

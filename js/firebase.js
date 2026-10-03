@@ -130,7 +130,22 @@ export async function saveUserDoc(uid, data) {
 export async function saveSubmission(uid, sub) {
   if (!FB.ready || !uid) return;
   const { fsMod } = FB.fns;
-  await safe(fsMod.setDoc(fsMod.doc(FB.db, "submissions", sub.id), Object.assign({ studentId: uid }, sub)));
+  const payload = Object.assign({ studentId: uid }, sub);
+  // Attach the student's teachers' uids so class teachers can read this
+  // submission (see firestore.rules). The student can read their own
+  // classes via the studentIds membership rule.
+  try {
+    const cq = fsMod.query(fsMod.collection(FB.db, "classes"),
+      fsMod.where("studentIds", "array-contains", uid));
+    const snap = await fsMod.getDocs(cq);
+    const tids = [];
+    snap.docs.forEach(function (d) {
+      const t = d.data().teacherId;
+      if (t && tids.indexOf(t) < 0) tids.push(t);
+    });
+    payload.teacherIds = tids;
+  } catch (e) { payload.teacherIds = []; }
+  await safe(fsMod.setDoc(fsMod.doc(FB.db, "submissions", sub.id), payload));
 }
 
 export async function saveVocabWord(uid, word) {
