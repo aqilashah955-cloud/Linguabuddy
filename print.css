@@ -1,0 +1,63 @@
+/* LinguaBuddy — print stylesheet for 🖨️ Worksheets & Resources.
+   Add to index.html: <link rel="stylesheet" href="print.css" media="print">
+   (or media="all" — the screen rules hide #print-area anyway).
+   A div with id="print-area" must also be added to index.html (e.g. just
+   before </body>). Worksheets are rendered into it by js/worksheets.js
+   printHTML() right before window.print() is called. */
+
+/* ---------- screen: keep the print area invisible ---------- */
+@media screen {
+  #print-area { display: none; }
+}
+
+/* ---------- print: show ONLY the print area ---------- */
+@media print {
+  /* hide the whole app chrome */
+  body > *:not(#print-area) { display: none !important; }
+
+  #print-area {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* clean black-on-white worksheet look */
+  #print-area, #print-area * {
+    color: #000 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  #print-area h1 { font-size: 22pt; margin: 0 0 6pt; }
+  #print-area h2, #print-area h3 { font-size: 15pt; margin: 14pt 0 6pt; }
+  #print-area p, #print-area li, #print-area div { font-size: 12pt; line-height: 1.6; }
+  #print-area ul { margin: 6pt 0; padding-left: 20pt; }
+
+  /* dotted handwriting lines */
+  #print-area [style*="dotted"] { border-color: #000 !important; }
+
+  /* tracing letters: pale gray is intentional — keep it printable */
+  #print-area .ws-trace,
+  #print-area [style*="color:#d9d9d9"] { color: #bbb !important; }
+
+  /* each worksheet section starts on a fresh page */
+  #print-area .ws-page { page-break-before: always; }
+  #print-area .ws-page:first-child { page-break-before: avoid; }
+
+  /* avoid splitting items across pages */
+  #print-area .ws-item { page-break-inside: avoid; }
+
+  /* word-search grid */
+  #print-area table { border-collapse: collapse; }
+  #print-area td { border: 1pt solid #000 !important; }
+
+  /* certificate border prints crisply */
+  #print-area [style*="double"] { border-color: #000 !important; }
+
+  @page { margin: 14mm 12mm; }
+}
