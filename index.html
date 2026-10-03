@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LinguaBuddy — Your AI companion for better English</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script type="importmap">
+  {
+    "imports": {
+      "firebase/app": "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js",
+      "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js",
+      "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <button id="homeBtn" class="brand" data-gohome aria-label="Go home">
+        <span class="brand-logo">🦉</span>
+        <span>LinguaBuddy</span>
+      </button>
+      <div id="hdrName" class="hdr-name"></div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ AUTH ============ -->
+    <section id="screen-auth" class="screen hidden">
+      <div class="hero">
+        <h1>LinguaBuddy</h1>
+        <p class="hero-sub">Your AI companion for better English.</p>
+      </div>
+      <div class="auth-card">
+        <p id="authOnlineNote" class="fine hidden">Sign in with your login ID or email.</p>
+        <p id="authOfflineNote" class="fine hidden">Offline mode — your progress stays on this device.</p>
+        <div class="auth-tabs">
+          <button type="button" data-tab="login" class="active">Log In</button>
+          <button type="button" data-tab="signup">Sign Up</button>
+        </div>
+        <div id="loginForm">
+          <div class="field"><label>Login ID or email</label>
+            <input id="liId" type="text" placeholder="e.g. amina2026 or you@email.com" autocomplete="username" /></div>
+          <div class="field"><label>Password</label>
+            <input id="liPw" type="password" placeholder="Your password" autocomplete="current-password" /></div>
+          <button id="loginBtn" class="btn-primary btn-big">Log In</button>
+          <p class="fine center"><a href="#" id="forgotLink">Forgot password?</a></p>
+        </div>
+        <div id="signupForm" class="hidden">
+          <div class="field"><label>Full name</label><input id="suName" type="text" placeholder="Your full name" /></div>
+          <div class="field"><label>Choose a login ID</label><input id="suId" type="text" placeholder="e.g. amina2026" autocomplete="username" />
+            <p class="hint">3–20 characters: lowercase letters, numbers or _ only. Must be unique.</p></div>
+          <div class="field"><label>Email</label><input id="suEmail" type="email" placeholder="you@email.com" /></div>
+          <div class="field"><label>Password</label><input id="suPw" type="password" placeholder="At least 6 characters" autocomplete="new-password" /></div>
+          <div class="field"><label>Repeat password</label><input id="suPw2" type="password" placeholder="Repeat password" autocomplete="new-password" /></div>
+          <div class="field"><label>Age group</label><select id="suAge"></select></div>
+          <div class="field"><label>I am a…</label>
+            <label class="opt-label"><input type="radio" name="suRole" value="student" checked /> Student</label>
+            <label class="opt-label"><input type="radio" name="suRole" value="teacher" /> Teacher</label></div>
+          <div class="field"><label>My English level</label><select id="suLevel"></select></div>
+          <div class="field"><label>Learning goals (pick any)</label><div id="suGoals" class="chipwrap"></div></div>
+          <button id="signupBtn" class="btn-primary btn-big">Create Account</button>
+        </div>
+        <p id="authErr" class="form-error"></p>
+        <div id="localContinueWrap">
+          <div class="field"><label>Your name</label><input id="localName" type="text" placeholder="Type your name" /></div>
+          <button id="localContinueBtn" class="btn-ghost btn-big hidden">Continue on this device</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FORGOT PASSWORD ============ -->
+    <section id="screen-forgot" class="screen hidden">
+      <div class="screen-head"><button class="back-btn" id="forgotBack">← Back</button>
+        <h2>Reset Password</h2><p>We will email you a reset link.</p></div>
+      <div class="auth-card">
+        <div class="field"><label>Email</label><input id="fgEmail" type="email" placeholder="you@email.com" /></div>
+        <button id="forgotBtn" class="btn-primary btn-big">Send Reset Link</button>
+        <p id="fgMsg" class="fine"></p>
+      </div>
+    </section>
+
+    <!-- ============ ONBOARDING ============ -->
+    <section id="screen-ob-name" class="screen hidden">
+      <div class="ob-wrap">
+        <h2>Hi! What should we call you? 👋</h2>
+        <input id="obName" type="text" class="big-input" placeholder="Your name" maxlength="40" />
+        <p id="obNameErr" class="form-error"></p>
+        <button id="obNameNext" class="btn-primary btn-big">Continue →</button>
+      </div>
+    </section>
+    <section id="screen-ob-goals" class="screen hidden">
+      <div class="ob-wrap">
+        <h2>What do you want to improve?</h2>
+        <p class="fine">Pick as many as you like.</p>
+        <div id="obGoals" class="chipwrap big"></div>
+        <div class="row-btns">
+          <button id="obGoalsBack" class="btn-ghost">← Back</button>
+          <button id="obGoalsNext" class="btn-primary">Continue →</button>
+        </div>
+      </div>
+    </section>
+    <section id="screen-ob-level" class="screen hidden">
+      <div class="ob-wrap">
+        <h2>What is your current English level?</h2>
+        <div id="obLevels" class="chipwrap big"></div>
+        <p id="obLevelErr" class="form-error"></p>
+        <div class="row-btns">
+          <button id="obLevelBack" class="btn-ghost">← Back</button>
+          <button id="obLevelNext" class="btn-primary">Continue →</button>
+        </div>
+      </div>
+    </section>
+    <section id="screen-ob-ready" class="screen hidden">
+      <div class="ob-wrap center">
+        <div class="big-emoji">🎉</div>
+        <p id="obReadyText" class="ob-ready"></p>
+        <button id="obReadyBtn" class="btn-primary btn-big">Start Learning →</button>
+      </div>
+    </section>
+
+    <!-- ============ HOME / DASHBOARD ============ -->
+    <section id="screen-home" class="screen hidden">
+      <div class="dash-top">
+        <h2 id="dashHello">Welcome back! 👋</h2>
+        <span id="dashStreak" class="streak"></span>
+      </div>
+      <button id="continueCard" class="home-card wide"></button>
+      <h3 class="sec-title">Today's English</h3>
+      <div id="todayBox"></div>
+      <div id="todayWords" class="wordchips"></div>
+      <h3 class="sec-title">Your Progress</h3>
+      <div id="dashBars"></div>
+      <div id="dashCounts" class="countchips"></div>
+    </section>
+
+    <!-- ============ LEARN ============ -->
+    <section id="screen-learn" class="screen hidden">
+      <div class="screen-head"><h2>Learn</h2><p>Pick an SLO — each lesson ends with practice and an assessment.</p></div>
+      <div id="learnGrid" class="slo-grid"></div>
+    </section>
+
+    <!-- ============ LESSON ============ -->
+    <section id="screen-lesson" class="screen hidden">
+      <div class="screen-head"><button class="back-btn" data-gohome-lesson id="lesBack">← Learn</button>
+        <h2 id="lesTitle">Lesson</h2><p id="lesMeta" class="fine"></p></div>
+      <div id="lesBody"></div>
+      <div class="row-btns">
+        <button id="lesPracticeBtn" class="btn-ghost">✏️ Practice Worksheet</button>
+        <button id="lesAssessBtn" class="btn-primary">🎯 Take Assessment</button>
+      </div>
+    </section>
+
+    <!-- ============ REMEDIATION ============ -->
+    <section id="screen-remedy" class="screen hidden">
+      <div id="remBody"></div>
+    </section>
+
+    <!-- ============ PRACTICE / ASSESS BROWSER ============ -->
+    <section id="screen-browse" class="screen hidden">
+      <div class="screen-head"><h2 id="browseTitle">Practice</h2><p id="browseSub"></p></div>
+      <div id="browseGrid"></div>
+    </section>
+
+    <!-- ============ SETUP ============ -->
+    <section id="screen-setup" class="screen hidden">
+      <div class="screen-head"><h2 id="setupTitle">Worksheet</h2><p id="setupSub"></p></div>
+      <div class="setup-box">
+        <h3>How many questions?</h3>
+        <div class="count-row" id="setupCounts"></div>
+        <button id="beginBtn" class="btn-primary btn-big">Begin</button>
+      </div>
+    </section>
+
+    <!-- ============ ATTEMPT ============ -->
+    <section id="screen-attempt" class="screen hidden">
+      <div class="attempt-bar">
+        <div class="ab-left">
+          <div id="attTitle" class="ab-title">Worksheet</div>
+          <div id="ansCount" class="ab-sub">Answered 0 of 0</div>
+        </div>
+        <div class="ab-right">
+          <div id="timer" class="timer">00:00</div>
+          <div id="tabNote" class="ab-sub"></div>
+        </div>
+      </div>
+      <div id="tabWarn" class="tab-warn hidden"></div>
+      <div id="quizBox" class="quiz-box no-select"></div>
+      <div class="attempt-foot">
+        <button id="attemptQuit" class="btn-ghost">Quit</button>
+        <button id="submitBtn" class="btn-primary btn-big">Submit Answers</button>
+      </div>
+    </section>
+
+    <!-- ============ RESULT ============ -->
+    <section id="screen-result" class="screen hidden">
+      <div class="screen-head"><h2 id="rTitle">Your Result</h2></div>
+      <div id="rBanner" class="hidden"></div>
+      <div class="result-card">
+        <div id="rScore" class="r-score">0%</div>
+        <p id="rMeta" class="r-meta"></p>
+      </div>
+      <h3 class="sec-title" id="rSloTitle">Score by SLO</h3>
+      <div id="rSlo"></div>
+      <h3 class="sec-title">Answer Review</h3>
+      <div id="rReview"></div>
+      <div class="row-btns" id="rActions"></div>
+    </section>
+
+    <!-- ============ READING LIBRARY ============ -->
+    <section id="screen-library" class="screen hidden">
+      <div class="screen-head"><h2>Reading Library</h2><p>Read a story, learn its words, then take the quiz.</p></div>
+      <div id="libFilters" class="filter-row"></div>
+      <div id="storyGrid" class="story-grid"></div>
+    </section>
+
+    <!-- ============ STORY ============ -->
+    <section id="screen-story" class="screen hidden">
+      <div class="screen-head"><button class="back-btn" id="storyBack">← Library</button>
+        <h2 id="stTitle">Story</h2><p id="stMeta" class="fine"></p></div>
+      <div id="storyBody"></div>
+      <button id="stQuizBtn" class="btn-primary btn-big">Take the Quiz</button>
+    </section>
+
+    <!-- ============ VOCABULARY ============ -->
+    <section id="screen-vocab" class="screen hidden">
+      <div class="screen-head"><h2>My Vocabulary</h2><p>Save words, study flashcards, test yourself.</p></div>
+      <div id="vocabQuizBtns" class="row-btns">
+        <button id="vqFlash" class="btn-ghost">🃏 Flashcards</button>
+        <button id="vqMatch" class="btn-ghost">🔗 Matching Quiz</button>
+        <button id="vqFib" class="btn-ghost">✏️ Fill-in-the-Blank</button>
+      </div>
+      <div id="vocabSug"></div>
+      <h3 class="sec-title">My words</h3>
+      <div id="vocabList"></div>
+      <h3 class="sec-title">Add a word</h3>
+      <div class="form-card">
+        <div class="field"><label>Word</label><input id="vwWord" type="text" /></div>
+        <div class="field"><label>Meaning</label><input id="vwDef" type="text" /></div>
+        <div class="field"><label>Part of speech</label><input id="vwPos" type="text" placeholder="noun / verb / adjective…" /></div>
+        <div class="field"><label>Synonyms (comma separated)</label><input id="vwSyn" type="text" /></div>
+        <div class="field"><label>Antonyms (comma separated)</label><input id="vwAnt" type="text" /></div>
+        <div class="field"><label>Example sentence</label><input id="vwEx" type="text" /></div>
+        <div class="field"><label>Urdu meaning</label><input id="vwUrdu" type="text" /></div>
+        <button id="vocabAddBtn" class="btn-primary">Save Word</button>
+        <p id="vwMsg" class="fine"></p>
+      </div>
+    </section>
+
+    <!-- ============ WORD DETAIL ============ -->
+    <section id="screen-word" class="screen hidden">
+      <div class="screen-head"><button class="back-btn" id="wordBack">← Vocabulary</button>
+        <h2 id="wordTitle">Word</h2></div>
+      <div id="wordBody" class="form-card"></div>
+      <button id="wordDel" class="btn-danger">Remove Word</button>
+    </section>
+
+    <!-- ============ FLASHCARDS ============ -->
+    <section id="screen-flash" class="screen hidden">
+      <div class="screen-head"><button class="back-btn" id="flashBack">← Vocabulary</button>
+        <h2>Flashcards</h2><p id="flashCount" class="fine"></p></div>
+      <div id="flashCard" class="flashcard"></div>
+      <div class="row-btns">
+        <button id="flashDont" class="btn-ghost">Still learning</button>
+        <button id="flashKnow" class="btn-primary">I know it ✓</button>
+      </div>
+    </section>
+
+    <!-- ============ VOCAB QUIZ ============ -->
+    <section id="screen-vquiz" class="screen hidden">
+      <div class="screen-head"><button class="back-btn" id="vquizBack">← Vocabulary</button>
+        <h2>Vocabulary Quiz</h2></div>
+      <div id="vqBox"></div>
+    </section>
+
+    <!-- ============ PROGRESS ============ -->
+    <section id="screen-progress" class="screen hidden">
+      <div class="screen-head"><h2>My Progress</h2><p id="pgSummary" class="fine"></p></div>
+      <h3 class="sec-title">SLO Mastery</h3>
+      <div id="pgMastery"></div>
+      <h3 class="sec-title">Attempt History</h3>
+      <div id="pgList"></div>
+    </section>
+
+    <!-- ============ PROFILE ============ -->
+    <section id="screen-profile" class="screen hidden">
+      <div class="screen-head"><h2>My Profile</h2><p id="pfOnline" class="fine"></p></div>
+      <div class="form-card">
+        <h3 id="pfName">—</h3>
+        <p id="pfMeta" class="fine"></p>
+        <p id="pfStreak" class="fine"></p>
+        <div class="field"><label>English level</label><select id="pfLevel"></select></div>
+        <div class="field"><label>Learning goals</label><div id="pfGoals" class="chipwrap"></div></div>
+        <button id="pfSave" class="btn-primary">Save Changes</button>
+        <p id="pfSaved" class="fine"></p>
+      </div>
+      <button id="logoutBtn" class="btn-danger btn-big">Log Out</button>
+    </section>
+  </main>
+
+  <nav id="bottomNav" class="bottom-nav hidden">
+    <button class="navbtn" data-nav="home">🏠<span>Home</span></button>
+    <button class="navbtn" data-nav="learn">📚<span>Learn</span></button>
+    <button class="navbtn" data-nav="practice">📝<span>Practice</span></button>
+    <button class="navbtn" data-nav="assess">🎯<span>Assess</span></button>
+    <button class="navbtn" data-nav="read">📖<span>Read</span></button>
+    <button class="navbtn" data-nav="vocab">🧠<span>Words</span></button>
+    <button class="navbtn" data-nav="progress">📊<span>Progress</span></button>
+    <button class="navbtn" data-nav="profile">👤<span>Profile</span></button>
+  </nav>
+
+  <footer>
+    <p>LinguaBuddy · Your AI companion for better English.</p>
+  </footer>
+
+  <script src="firebase-config.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

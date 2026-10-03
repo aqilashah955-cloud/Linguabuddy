@@ -1,0 +1,179 @@
+// LinguaBuddy — app entry: init, router, bottom nav, profile screen.
+// Firebase-first when configured; fully local otherwise.
+
+import { showScreen } from "./ui.js";
+import { S, save, wipeAll } from "./store.js";
+import { fb, initFirebase, getUserDoc, signOut, onAuthChange, isConfigured } from "./firebase.js";
+import { SLOS, sloById } from "./engine.js";
+import { esc } from "./utils.js";
+import { renderAuth, initAuthUI, setAuthDone } from "./auth.js";
+import { startOnboarding, initOnboarding, setOnboardingDone } from "./onboarding.js";
+import { renderDashboard, renderProgress, setGo as setDashGo } from "./dashboard.js";
+import { renderLearn, openLesson, openSetup, launchSetup, setGo as setLearnGo, startRemediation } from "./learn.js";
+import { renderLibrary, openStory, startStoryQuiz, setGo as setReadGo } from "./reading.js";
+import { renderVocab, initVocab, setGo as setVocabGo } from "./vocab.js";
+import { submitAttempt, quitAttempt } from "./assess.js";
+import { LEVEL_OPTS, GOAL_OPTS } from "./auth.js";
+
+function $(id) { return document.getElementById(id); }
+
+/* ---------------- router ---------------- */
+let browseMode = "practice";
+export function go(dest, arg) {
+  switch (dest) {
+    case "home": renderDashboard(); showScreen("screen-home", "home"); break;
+    case "learn": renderLearn(); showScreen("screen-learn", "learn"); break;
+    case "lesson": openLesson(arg); break;
+    case "practice":
+      if (arg) openSetup(arg, "practice");
+      else { browseMode = "practice"; renderBrowse(); showScreen("screen-browse", "practice"); }
+      break;
+    case "assess":
+      if (arg) openSetup(arg, "assess");
+      else { browseMode = "assess"; renderBrowse(); showScreen("screen-browse", "assess"); }
+      break;
+    case "read": renderLibrary(); showScreen("screen-library", "read"); break;
+    case "story": openStory(arg); break;
+    case "vocab": renderVocab(); showScreen("screen-vocab", "vocab"); break;
+    case "progress": renderProgress(); showScreen("screen-progress", "progress"); break;
+    case "profile": renderProfile(); showScreen("screen-profile", "profile"); break;
+    default: renderDashboard(); showScreen("screen-home", "home");
+  }
+}
+
+function renderBrowse() {
+  const practice = browseMode === "practice";
+  $("browseTitle").textContent = practice ? "Practice Worksheets" : "Assessments";
+  $("browseSub").textContent = practice
+    ? "Relaxed practice with hints — no timer, no locks."
+    : "Timed assessments with anti-copying. Scores update your SLO mastery.";
+  $("browseGrid").innerHTML =
+    '<button class="mixed-card" id="browseMixed"><span class="mc-emoji">🎲</span>' +
+    '<span class="mc-text"><strong>Mixed ' + (practice ? "Practice" : "Test") + "</strong><br>Questions from all 12 SLOs</span>" +
+    '<span class="mc-arrow">→</span></button>' +
+    '<div class="slo-grid">' + SLOS.map(function (s) {
+      return '<button class="slo-card" data-slo="' + s.id + '"><h3>' + esc(s.title) + "</h3><p>" + esc(s.expl) + "</p>" +
+        '<span class="slo-count">' + s.questions.length + " questions</span></button>";
+    }).join("") + "</div>";
+  $("browseMixed").addEventListener("click", function () { openSetup("mixed", browseMode); });
+  $("browseGrid").querySelectorAll("[data-slo]").forEach(function (b) {
+    b.addEventListener("click", function () { openSetup(b.getAttribute("data-slo"), browseMode); });
+  });
+}
+
+/* ---------------- profile ---------------- */
+function renderProfile() {
+  const p = S.profile;
+  $("pfName").textContent = p.name || "—";
+  $("pfMeta").textContent =
+    (p.loginId ? "ID: " + p.loginId + " · " : "") +
+    (p.email ? p.email + " · " : "") +
+    "Role: " + (p.role || "student");
+  $("pfLevel").innerHTML = LEVEL_OPTS.map(function (l) {
+    return '<option value="' + l + '"' + (p.level === l ? " selected" : "") + ">" + l + "</option>";
+  }).join("");
+  $("pfGoals").innerHTML = GOAL_OPTS.map(function (g) {
+    const on = (p.goals || []).indexOf(g) >= 0 ? " on" : "";
+    return '<button type="button" class="chipbtn' + on + '" data-goal="' + g + '">' + g + "</button>";
+  }).join("");
+  $("pfGoals").querySelectorAll("[data-goal]").forEach(function (b) {
+    b.addEventListener("click", function () { b.classList.toggle("on"); });
+  });
+  $("pfStreak").textContent = "🔥 " + (p.streak || 0) + "-day streak · " + (p.xp || 0) + " XP";
+  $("pfOnline").textContent = isConfigured()
+    ? (fb().user ? "Signed in online · data syncs to your account" : "Online mode available")
+    : "Offline mode — everything is stored on this device";
+}
+
+function initProfile() {
+  $("pfSave").addEventListener("click", function () {
+    S.profile.level = $("pfLevel").value;
+    const g = [];
+    $("pfGoals").querySelectorAll(".chipbtn.on").forEach(function (b) { g.push(b.getAttribute("data-goal")); });
+    S.profile.goals = g;
+    save();
+    $("pfSaved").textContent = "Saved ✓";
+    setTimeout(function () { $("pfSaved").textContent = ""; }, 2000);
+  });
+  $("logoutBtn").addEventListener("click", async function () {
+    if (!confirm("Log out? Your progress on this device will be erased.")) return;
+    await signOut();
+    wipeAll(false);
+    renderAuth();
+    showScreen("screen-auth", null);
+  });
+}
+
+/* ---------------- boot ---------------- */
+function enterApp() {
+  if (!S.profile.onboarded) startOnboarding();
+  else go("home");
+}
+
+async function boot() {
+  // wire go() into modules
+  [setDashGo, setLearnGo, setReadGo, setVocabGo].forEach(function (fn) { fn(go); });
+  setAuthDone(function () { enterApp(); });
+  setOnboardingDone(function () { go("home"); });
+
+  renderAuth();
+  initAuthUI();
+  initOnboarding();
+  initVocab();
+  initProfile();
+
+  // bottom nav
+  document.querySelectorAll(".navbtn").forEach(function (b) {
+    b.addEventListener("click", function () { go(b.getAttribute("data-nav")); });
+  });
+  document.querySelectorAll("[data-gohome]").forEach(function (b) {
+    b.addEventListener("click", function () { go("home"); });
+  });
+
+  // attempt screen buttons
+  $("submitBtn").addEventListener("click", function () { submitAttempt(false); });
+  $("attemptQuit").addEventListener("click", quitAttempt);
+  $("beginBtn").addEventListener("click", launchSetup);
+  $("stQuizBtn").addEventListener("click", startStoryQuiz);
+
+  await initFirebase();
+  if (isConfigured()) {
+    onAuthChange(async function (u) {
+      if (u) {
+        const doc = await getUserDoc(u.uid);
+        if (doc) {
+          S.profile.name = doc.name || S.profile.name;
+          S.profile.loginId = doc.loginId || "";
+          S.profile.email = doc.email || "";
+          S.profile.uid = u.uid;
+          S.profile.role = doc.role || "student";
+          S.profile.level = doc.level || S.profile.level;
+          S.profile.goals = doc.goals || S.profile.goals;
+          S.profile.streak = doc.streak || S.profile.streak || 0;
+          if (doc.masteryEv) S.masteryEv = doc.masteryEv;
+          if (doc.sloLevel) S.sloLevel = doc.sloLevel;
+          if (doc.reading) S.reading = doc.reading;
+          // onboarded if we have the essentials
+          if (S.profile.name && S.profile.level) S.profile.onboarded = true;
+          save();
+        } else {
+          S.profile.uid = u.uid;
+          S.profile.email = u.email || "";
+          save();
+        }
+        enterApp();
+      } else {
+        renderAuth();
+        showScreen("screen-auth", null);
+      }
+    });
+  } else {
+    // local mode: straight to auth screen (name-only continue)
+    renderAuth();
+    showScreen("screen-auth", null);
+  }
+}
+
+if (typeof document !== "undefined") {
+  document.addEventListener("DOMContentLoaded", boot);
+}
