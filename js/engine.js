@@ -350,4 +350,136 @@ export function weakestSlo(masteryMap) {
   return worst;
 }
 
+/* ---------------- teacher analytics (pure) ----------------
+   Submissions carry: {studentId, perSlo:{sloId:{score,total,title}},
+   answers:[{type,sloId,score}], date}. These helpers turn them into
+   class analytics and student progress reports. */
+
+/* Group submission per-SLO scores into mastery evidence per student. */
+export function evidenceFromSubmissions(submissions) {
+  const out = {}; // studentId -> sloId -> [{pct,n,ts}]
+  (submissions || []).forEach(function (sub) {
+    if (!sub || !sub.studentId) return;
+    const per = sub.perSlo || {};
+    Object.keys(per).forEach(function (sloId) {
+      if (sloId === "story") return;
+      const p = per[sloId];
+      if (!p || !p.total) return;
+      const st = (out[sub.studentId] = out[sub.studentId] || {});
+      (st[sloId] = st[sloId] || []).push({
+        pct: Math.round(p.score / p.total * 100), n: p.total, ts: sub.date || 0
+      });
+    });
+  });
+  return out;
+}
+
+/* Per-SLO counts of Mastered / Developing / Needs Practice across a class. */
+export function computeClassAnalytics(studentIds, submissions) {
+  const ev = evidenceFromSubmissions(submissions);
+  const ids = studentIds || [];
+  return SLOS.map(function (s) {
+    let mastered = 0, developing = 0, needs = 0, sum = 0, n = 0;
+    const byStatus = { mastered: [], developing: [], needs: [] };
+    ids.forEach(function (sid) {
+      const m = calculateSLOMastery(s.id, (ev[sid] || {})[s.id]);
+      if (!m.count) return;
+      n++; sum += m.avg;
+      byStatus[m.status].push({ studentId: sid, avg: m.avg, count: m.count });
+      if (m.status === "mastered") mastered++;
+      else if (m.status === "developing") developing++;
+      else needs++;
+    });
+    return {
+      sloId: s.id, title: s.title,
+      mastered: mastered, developing: developing, needs: needs,
+      notStarted: ids.length - n,
+      avg: n ? Math.round(sum / n) : null, students: n,
+      byStatus: byStatus
+    };
+  });
+}
+
+const TYPE_LABEL = {
+  mcq: "multiple choice", passage: "reading questions", fib: "fill in the blanks",
+  tf: "true/false", reorder: "sentence ordering", match: "matching", short: "written answers"
+};
+export function typeLabel(t) { return TYPE_LABEL[t] || t; }
+
+/* Most-missed question types for one SLO (from answer summaries). */
+export function commonMissedTypes(submissions, sloId) {
+  const miss = {}, tot = {};
+  (submissions || []).forEach(function (sub) {
+    (sub.answers || []).forEach(function (a) {
+      if (a.sloId !== sloId) return;
+      tot[a.type] = (tot[a.type] || 0) + 1;
+      if (a.score < 1) miss[a.type] = (miss[a.type] || 0) + 1;
+    });
+  });
+  return Object.keys(miss).map(function (t) {
+    return { type: t, label: typeLabel(t), misses: miss[t], total: tot[t] || 0 };
+  }).sort(function (a, b) { return b.misses - a.misses; });
+}
+
+/* Suggested teaching intervention for a weak SLO. */
+export function suggestIntervention(sloId, missedTypes) {
+  const slo = sloById(sloId);
+  const les = lessonFor(sloId);
+  const types = (missedTypes || []).slice(0, 2).map(function (m) { return m.label; }).join(" and ");
+  let s = "Re-teach “" + (slo ? slo.title : sloId) + "” with 2–3 fresh examples, then assign a short remediation.";
+  if (types) s += " Most mistakes are in " + types + ".";
+  if (les && les.tip) s += " Key reminder for students: " + les.tip;
+  return s;
+}
+
+/* ---------------- student progress report (pure) ---------------- */
+export function buildProgressReport(ctx) {
+  // ctx: {mastery:{sloId:{status,avg,count}}, attempts, vocabCount,
+  //       storiesDone, writingDone, level}
+  const m = ctx.mastery || {};
+  const rows = SLOS.map(function (s) {
+    const x = m[s.id] || { status: "new", avg: 0, count: 0 };
+    return { sloId: s.id, title: s.title, status: x.status, avg: x.avg, count: x.count };
+  });
+  const withEv = rows.filter(function (r) { return r.count > 0; });
+  const byAvgDesc = withEv.slice().sort(function (a, b) { return b.avg - a.avg; });
+  const byAvgAsc = withEv.slice().sort(function (a, b) { return a.avg - b.avg; });
+  const strengths = byAvgDesc.filter(function (r) { return r.status === "mastered"; }).slice(0, 3)
+    .map(function (r) { return r.title; });
+  const weaknesses = byAvgAsc.filter(function (r) { return r.status === "needs"; }).slice(0, 3)
+    .map(function (r) { return r.title; });
+  if (!strengths.length && byAvgDesc.length) strengths.push(byAvgDesc[0].title + " (" + byAvgDesc[0].avg + "%)");
+  if (!weaknesses.length && byAvgAsc.length) weaknesses.push(byAvgAsc[0].title + " (" + byAvgAsc[0].avg + "%)");
+
+  const recs = [];
+  const weak = weakestSlo(m);
+  if (weak && weak.sloId) {
+    recs.push({ icon: "🎯", text: "Continue: " + weak.title, dest: "lesson", arg: weak.sloId });
+  }
+  const unread = STORIES.filter(function (s) { return !(ctx.readingDone || {})[s.id]; })[0];
+  if (unread) recs.push({ icon: "📚", text: "Read next: " + unread.title, dest: "story", arg: unread.id });
+  if ((ctx.vocabCount || 0) < 20) {
+    recs.push({ icon: "🧠", text: "Save 10 new words to your vocabulary", dest: "vocab", arg: null });
+  }
+  if (!ctx.writingDone) {
+    recs.push({ icon: "✍️", text: "Try the Writing Lab — get feedback on a paragraph", dest: "writing", arg: null });
+  }
+  const weekAgo = Date.now() - 7 * 86400000;
+  const recentAssess = (ctx.attempts || []).some(function (a) {
+    return a.mode === "assessment" && a.date > weekAgo;
+  });
+  if (!recentAssess && weak && weak.sloId) {
+    recs.push({ icon: "📝", text: "Take an assessment on " + weak.title, dest: "assess", arg: weak.sloId });
+  }
+
+  return {
+    level: ctx.level || "Beginner",
+    strengths: strengths, weaknesses: weaknesses,
+    sloRows: rows.sort(function (a, b) { return a.title.localeCompare(b.title); }),
+    vocabCount: ctx.vocabCount || 0, storiesDone: ctx.storiesDone || 0,
+    attempts: (ctx.attempts || []).length,
+    recommendations: recs.slice(0, 4)
+  };
+}
+
 export { SLOS, STORIES, LESSONS, STORYMETA, WORDS };

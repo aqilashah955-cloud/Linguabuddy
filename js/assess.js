@@ -13,6 +13,27 @@ function $(id) { return document.getElementById(id); }
 
 let ATT = null;
 
+/* True while a test is in progress and unsubmitted — used by the
+   AI-teacher Q&A to refuse direct answers during assessments. */
+export function attemptActive() { return !!(ATT && !ATT.submitted); }
+
+/* Test-only hook: lets node tests simulate an active attempt. */
+export function __setAttemptForTest(att) { ATT = att; }
+
+/* Compact, serializable per-question summary for teacher review and
+   analytics (stored on the attempt record). */
+export function summarizeResults(results) {
+  return (results || []).map(function (r) {
+    return {
+      q: String(r.item.q).slice(0, 160), type: r.item.type,
+      sloId: r.item.sloId, sloTitle: r.item.sloTitle,
+      given: String(r.res.given).slice(0, 160),
+      correct: String(r.res.correct).slice(0, 160),
+      score: r.res.score
+    };
+  });
+}
+
 /* ---------------- question rendering ---------------- */
 export function questionHTML(it, i, total, opts) {
   opts = opts || {};

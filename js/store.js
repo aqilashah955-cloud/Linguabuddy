@@ -18,14 +18,16 @@ function blankState() {
     profile: {
       name: "", loginId: "", email: "", uid: "", role: "student",
       ageGroup: "", level: "", goals: [], onboarded: false,
-      streak: 0, lastActive: "", xp: 0
+      streak: 0, lastActive: "", xp: 0, badges: [], lessonXp: {}
     },
-    attempts: [],   // {id, lockKey, student, kind, ref, title, mode, score, total, pct, perSlo, tabs, secs, date, usedKeys[]}
+    attempts: [],   // {id, lockKey, student, kind, ref, title, mode, score, total, pct, perSlo, tabs, secs, date, usedKeys[], answers[]}
     locks: {},
     masteryEv: {},  // sloId -> [{pct, n, ts}]
     sloLevel: {},   // sloId -> 1..5
     vocab: [],      // {word, definition, pos, synonyms[], antonyms[], example, urdu, correct, total, addedAt}
     reading: {},    // storyId -> {done, quizPct, date}
+    writing: [],    // {id, promptId, title, words, issues, date}
+    teacher: { classes: [], assignments: [] }, // offline-mode classes/assignments
     placement: null // {pct, level, date}
   };
 }

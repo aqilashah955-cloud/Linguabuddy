@@ -8,7 +8,8 @@ import {
   generateRemediation, generateReassessment, pickForLevel, adjustLevel,
   recommendReading, gradeItem
 } from "./engine.js";
-import { runAttempt, showResult, questionHTML, bindQuestion, readAnswer } from "./assess.js";
+import { runAttempt, showResult, questionHTML, bindQuestion, readAnswer, summarizeResults } from "./assess.js";
+import { awardXP, xpForAttempt, checkBadges } from "./gamify.js";
 import { esc } from "./utils.js";
 import { masteryMap } from "./dashboard.js";
 import { showScreen as show } from "./ui.js";
@@ -174,9 +175,12 @@ function finishAssessment(sloId, out, lockKey) {
     lockKey: lockKey, student: S.profile.name, kind: sloId === "mixed" ? "mixed" : "slo",
     ref: sloId, title: out.title, mode: "assessment",
     score: out.totalScore, total: out.items.length, pct: out.pct,
-    perSlo: out.perSlo, tabs: out.tabs, secs: out.secs, usedKeys: out.usedKeys
+    perSlo: out.perSlo, tabs: out.tabs, secs: out.secs, usedKeys: out.usedKeys,
+    answers: summarizeResults(out.results)
   };
   recordAttempt(att);
+  awardXP(xpForAttempt({ mode: "assessment", results: out.results }), "assessment complete");
+  checkBadges();
   // adaptive difficulty per SLO
   Object.keys(out.perSlo).forEach(function (id) {
     if (id === "story") return;
@@ -295,9 +299,12 @@ export function startReassessment(sloId) {
         lockKey: lockKey, student: S.profile.name, kind: "slo", ref: sloId,
         title: out.title, mode: "reassessment",
         score: out.totalScore, total: out.items.length, pct: out.pct,
-        perSlo: out.perSlo, tabs: out.tabs, secs: out.secs, usedKeys: out.usedKeys
+        perSlo: out.perSlo, tabs: out.tabs, secs: out.secs, usedKeys: out.usedKeys,
+        answers: summarizeResults(out.results)
       };
       recordAttempt(att);
+      awardXP(xpForAttempt({ mode: "reassessment", results: out.results }), "reassessment complete");
+      checkBadges();
       const p = out.perSlo[sloId];
       const pc = p ? Math.round(p.score / p.total * 100) : out.pct;
       S.sloLevel[sloId] = adjustLevel(S.sloLevel[sloId] || 1, pc);
