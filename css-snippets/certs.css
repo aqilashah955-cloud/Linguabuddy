@@ -1,0 +1,58 @@
+/* LinguaBuddy — 🏆 Certificate Center styles.
+   Gallery cards, locked state, parent claim card.
+   Printing itself goes through print.css (#print-area). */
+
+.certs-wrap { max-width: 900px; margin: 0 auto; padding: 12px; }
+.certs-h { color: #1e3a8a; margin: 18px 4px 8px; font-size: 20px; }
+
+.certs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.cert-card {
+  background: #fffdf7;
+  border: 2px solid #e5d9c3;
+  border-radius: 14px;
+  padding: 16px 12px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,.06);
+}
+.cert-card.locked {
+  opacity: .72;
+  background: #f7f4ec;
+  border-style: dashed;
+}
+.cert-emoji { font-size: 44px; line-height: 1.2; }
+.cert-title { font-weight: bold; color: #1e3a8a; margin: 6px 0 2px; font-size: 16px; }
+.cert-date { color: #777; font-size: 13px; margin-bottom: 8px; }
+.cert-hint { color: #666; font-size: 13px; margin-top: 6px; }
+
+.btn-print {
+  background: #1e3a8a; color: #fff; border: none; border-radius: 10px;
+  padding: 10px 16px; font-size: 15px; cursor: pointer; margin-top: 6px;
+  min-height: 44px;
+}
+.btn-print:active { transform: scale(.97); }
+
+.certs-empty {
+  background: #fffdf7; border: 2px dashed #e5d9c3; border-radius: 14px;
+  padding: 20px; text-align: center; color: #555;
+}
+.certs-empty .cert-emoji { font-size: 52px; }
+
+.certs-parent {
+  display: flex; align-items: center; gap: 14px;
+  background: #fff8e6; border: 2px solid #f0c96a; border-radius: 14px;
+  padding: 14px; margin-top: 22px;
+}
+.certs-parent .cert-emoji { font-size: 40px; }
+.certs-parent-t { flex: 1; }
+.certs-parent-t p { margin: 4px 0 0; color: #555; font-size: 14px; }
+.cert-claimed { font-size: 16px; font-weight: bold; color: #b8860b; white-space: nowrap; }
+
+@media (max-width: 480px) {
+  .certs-grid { grid-template-columns: repeat(2, 1fr); }
+  .certs-parent { flex-direction: column; text-align: center; }
+}
