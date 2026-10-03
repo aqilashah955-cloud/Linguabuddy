@@ -1,0 +1,120 @@
+/* ============================================================
+   LinguaBuddy — Kids Zone styles (ages 5-8).
+   Linked separately by the parent (e.g. <link href="css-snippets/kids.css">).
+   Uses the classroom theme vars: --paper, --card, --ink, --ink-deep,
+   --marigold, --marigold-soft, --text, --muted, --border, --ok, --bad.
+   ============================================================ */
+
+/* ---------- hub ---------- */
+.kz-hero { text-align: center; margin: 8px 0 14px; }
+.kz-heroemoji { font-size: 64px; line-height: 1; }
+.kz-hero h2 { color: var(--ink); font-size: 32px; margin: 4px 0; }
+
+.kz-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.kz-starcount { font-size: 20px; font-weight: bold; color: var(--ink); background: var(--marigold-soft);
+  border: 2px solid var(--marigold); border-radius: 999px; padding: 4px 14px; }
+
+.kz-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.kz-btn { background: var(--card); border: 3px solid var(--border); border-radius: var(--radius);
+  padding: 18px 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  box-shadow: var(--shadow); transition: transform .12s ease, border-color .12s ease; min-height: 150px; }
+.kz-btn:hover { transform: translateY(-3px); border-color: var(--marigold); }
+.kz-btn:active { transform: scale(.96); }
+.kz-btnemoji { font-size: 44px; line-height: 1; }
+.kz-btnlabel { font-size: 19px; font-weight: bold; color: var(--ink); }
+.kz-btnstars { font-size: 15px; letter-spacing: 2px; }
+.kz-btndesc { font-size: 13px; color: var(--muted); }
+
+.kz-acthead { display: flex; align-items: center; gap: 10px; margin: 8px 0 12px; flex-wrap: wrap; }
+.kz-acthead h3 { color: var(--ink); font-size: 24px; margin: 0; }
+.kz-center { text-align: center; }
+.kz-msg { min-height: 26px; text-align: center; font-weight: bold; color: var(--ink); font-size: 17px; }
+.kz-praise { text-align: center; font-size: 20px; font-weight: bold; color: var(--ok); margin-top: 10px; }
+
+/* ---------- alphabet ---------- */
+.kz-alpha-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 10px 0; }
+@media (max-width: 520px) { .kz-alpha-grid { grid-template-columns: repeat(4, 1fr); } }
+.kz-letter { font-size: 26px; font-weight: bold; color: var(--ink); background: var(--card);
+  border: 3px solid var(--border); border-radius: 14px; padding: 12px 0; cursor: pointer; min-height: 60px; }
+.kz-letter:hover { border-color: var(--marigold); }
+.kz-letter.met { background: var(--marigold-soft); border-color: var(--marigold); }
+
+.kz-lettercard { text-align: center; background: var(--card); border: 3px solid var(--border);
+  border-radius: var(--radius); padding: 24px 16px; box-shadow: var(--shadow); }
+.kz-bigletter { font-size: 110px; font-weight: bold; color: var(--ink); line-height: 1; }
+.kz-bigletter-sm { font-size: 44px; color: var(--marigold); margin-left: 6px; }
+.kz-letteremoji { font-size: 90px; line-height: 1.2; }
+.kz-letterword { font-size: 34px; font-weight: bold; color: var(--text); margin: 6px 0; }
+
+@keyframes kzPop { 0% { transform: scale(.3); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
+.kz-pop { animation: kzPop .45s ease; }
+.kz-pop2 { animation: kzPop .45s ease .12s backwards; }
+
+/* ---------- question cards / options ---------- */
+.kz-qcard { background: var(--card); border: 3px solid var(--border); border-radius: var(--radius);
+  padding: 20px 14px; box-shadow: var(--shadow); margin-top: 8px; }
+.kz-bigq { text-align: center; color: var(--ink); font-size: 24px; margin: 10px 0 16px; }
+.kz-hl { color: var(--marigold); font-size: 1.3em; }
+.kz-optrow { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.kz-optbtn { background: var(--paper); border: 3px solid var(--border); border-radius: 14px;
+  padding: 12px 14px; cursor: pointer; min-width: 96px; min-height: 96px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+.kz-optbtn:hover { border-color: var(--marigold); }
+.kz-optbtn.right { border-color: var(--ok); background: var(--ok-bg); }
+.kz-optbtn.wrong { border-color: var(--bad); opacity: .55; }
+.kz-optbtn:disabled { cursor: default; }
+.kz-optemoji { font-size: 52px; line-height: 1; }
+.kz-optword { font-size: 18px; font-weight: bold; color: var(--text); }
+.kz-bigemoji { font-size: 64px; }
+.kz-wordbtn { font-size: 26px; font-weight: bold; color: var(--ink); min-width: 110px; }
+
+/* ---------- picture words ---------- */
+.kz-chiprow { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 10px 0; }
+.kz-chip { font-size: 18px; font-weight: bold; color: var(--ink); background: var(--card);
+  border: 3px solid var(--border); border-radius: 999px; padding: 10px 18px; cursor: pointer; }
+.kz-chip:hover { border-color: var(--marigold); background: var(--marigold-soft); }
+
+.kz-picgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 12px 0; }
+@media (max-width: 520px) { .kz-picgrid { grid-template-columns: repeat(2, 1fr); } }
+.kz-piccard { background: var(--card); border: 3px solid var(--border); border-radius: 14px;
+  padding: 14px 6px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; min-height: 110px; }
+.kz-piccard:active { transform: scale(.94); }
+.kz-picemoji { font-size: 52px; line-height: 1; }
+.kz-picword { font-size: 17px; font-weight: bold; color: var(--ink); }
+
+/* ---------- match game ---------- */
+.kz-matchgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 12px 0; }
+@media (max-width: 520px) { .kz-matchgrid { grid-template-columns: repeat(2, 1fr); } }
+.kz-tile { background: var(--ink); border: 3px solid var(--ink-deep); border-radius: 14px;
+  min-height: 96px; cursor: pointer; font-size: 34px; color: #fff;
+  display: flex; align-items: center; justify-content: center; }
+.kz-tileback { font-size: 34px; }
+.kz-tile.open { background: var(--card); border-color: var(--marigold); color: var(--text); }
+.kz-tile.done { background: var(--ok-bg); border-color: var(--ok); color: var(--text); opacity: .75; }
+.kz-tileface { font-size: 30px; font-weight: bold; }
+
+/* ---------- story time ---------- */
+.kz-scene { background: var(--card); border: 3px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; box-shadow: var(--shadow); margin: 10px 0; }
+.kz-svg { display: block; width: 100%; height: auto; }
+.kz-storytext { font-size: 24px; line-height: 1.9; text-align: center; color: var(--text);
+  background: var(--card); border: 3px solid var(--border); border-radius: var(--radius);
+  padding: 16px 14px; margin: 10px 0; }
+.kw-w { border-radius: 6px; padding: 0 2px; transition: background .15s ease; }
+.kw-w.on { background: var(--marigold); color: #fff; }
+.kz-storybtns { justify-content: center; }
+
+/* ---------- end cards ---------- */
+.kz-endcard { text-align: center; background: var(--card); border: 3px solid var(--border);
+  border-radius: var(--radius); padding: 30px 16px; box-shadow: var(--shadow); }
+.kz-endemoji { font-size: 72px; line-height: 1; }
+.kz-stars-big { font-size: 40px; letter-spacing: 6px; margin: 10px 0; }
+
+/* ---------- videos ---------- */
+.kz-videos { display: grid; gap: 16px; }
+.kz-videocard { background: var(--card); border: 3px solid var(--border); border-radius: var(--radius);
+  padding: 14px; box-shadow: var(--shadow); }
+.kz-videocard h4 { color: var(--ink); margin-bottom: 8px; font-size: 19px; }
+.kz-videowrap video { width: 100%; border-radius: 10px; background: #000; }
+.kz-videosoon { text-align: center; font-size: 22px; color: var(--muted); padding: 40px 10px;
+  background: var(--paper); border-radius: 10px; }
