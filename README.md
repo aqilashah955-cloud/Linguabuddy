@@ -140,6 +140,25 @@ curated knowledge base (SLO explanations, vocabulary bank, grammar rules).
 Hints-first: while an assessment attempt is active (`attemptActive()`), it
 refuses direct answers and gives only hints.
 
+**📸 My Work** (`js/mywork.js`, route `mywork`, nav 📸): students write a
+story / application / essay / letter on paper, then photograph it (camera or
+gallery) or type it directly. Photos are compressed on-device (max 1280px,
+JPEG) with a small thumbnail; tapping "Scan photo" lazy-loads Tesseract.js
+from a CDN (only then — never at app start, so the app stays offline-first).
+**Honest OCR note:** handwriting recognition is imperfect, so the scanned
+text ALWAYS lands in an editable box with the instruction "Check what I read
+— fix any mistakes, then get feedback." If the reader can't download (offline),
+the app says so plainly and offers typing instead. Feedback reuses the
+Writing Lab's `analyzeWriting()` (issues + explanations + hints, never a
+rewrite), with a "Revise & check again" loop. Each piece is saved locally
+(max 15, oldest-first eviction; a 3.5 MB photo budget trims full photos from
+the oldest items first, thumbnails always kept). Online, the photo uploads to
+Firebase Storage `writing/{uid}/{id}.jpg` and metadata goes to Firestore
+`writingUploads/{id}` with `teacherIds` attached (same pattern as
+submissions) — the doc holds ONLY the download URL, never photo bytes, and
+no student can read another student's work. Gallery shows thumbnails with
+feedback counts; items reopen and delete.
+
 ### LLM plug-in point
 
 To connect a real AI tutor later, open `js/ask.js` and find the marked
@@ -223,7 +242,11 @@ Question types across banks: `mcq`, `fill`, `truefalse`, `order`, `reorder`,
 3. Project settings → Web app → copy values into `firebase-config.js`.
 4. Paste `firestore.rules` into Firestore → Rules → Publish
    (replace `REPLACE_WITH_OWNER_EMAIL` with the admin's email).
-5. Serve locally: `python3 -m http.server` in this folder (ES modules need
+5. (For 📸 My Work photo sync) Enable **Storage**, then paste
+   `storage.rules` into Storage → Rules → Publish (same email replacement).
+   Without this step the app still works fully offline — photos just stay on
+   the device.
+6. Serve locally: `python3 -m http.server` in this folder (ES modules need
    http://, not file://). Enable GitHub Pages (Settings → Pages → main →
    /(root)) to go live.
 
@@ -242,6 +265,11 @@ Question types across banks: `mcq`, `fill`, `truefalse`, `order`, `reorder`,
   state machine (win/lose/repeat), match deck + streak-bonus scoring, every
   error item marks exactly one mistake, reorder permutation, synonym/antonym
   round options, XP conversion, Game Night badge registration.
+- `node test/mywork.test.js` — photo sizing math (`targetSize`), OCR text
+  sanitization, `writingUploads` doc shape (has `teacherIds`, no photo bytes),
+  oldest-first gallery eviction, photo-budget trimming (oldest stripped first,
+  thumbnails kept), and the writing-lab guarantee that feedback never contains
+  a rewrite.
 
 ## Contents
 
@@ -341,3 +369,8 @@ Question types across banks: `mcq`, `fill`, `truefalse`, `order`, `reorder`,
   writing-lab never emitting a rewrite, `askTeacher` refusing answers during an
   active assessment, gamification XP math + badge idempotency, conversation
   feedback shape.
+- `node test/games.test.js` — arcade helpers: scramble, hangman, match
+  scoring, error items, synonym/antonym rounds, XP conversion.
+- `node test/mywork.test.js` — photo sizing math, OCR text sanitization,
+  `writingUploads` doc shape (has `teacherIds`, no photo bytes), gallery
+  eviction + photo-budget trimming, feedback never containing a rewrite.

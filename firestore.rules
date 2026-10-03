@@ -9,6 +9,9 @@
 //   submissions/{id}             {studentId, classId?, assignmentId?, answers, score, total, pct, perSlo, teacherIds[]}
 //   vocabulary/{uid}/words/{w}   saved words per student
 //   readingProgress/{uid}/{rid}  story completion per student
+//   writingUploads/{id}          My Work photo uploads: {studentId, title, type,
+//                                photoUrl (Storage URL only — never bytes),
+//                                text, feedbackCount, teacherIds[], createdAt}
 //
 // Curated content (SLOs, stories, words) ships as bundled JS data modules
 // and is NEVER read from Firestore — zero read costs, works offline.
@@ -94,6 +97,21 @@ service cloud.firestore {
     // ---- reading progress: private to each student ----
     match /readingProgress/{uid}/{rid} {
       allow read, write: if signedIn() && request.auth.uid == uid;
+    }
+
+    // ---- writingUploads: "My Work" photo uploads of handwritten work.
+    // Students write own + read own; a class teacher reads uploads whose
+    // teacherIds include them (attached at upload time, same pattern as
+    // submissions); admin reads all. The Firestore doc holds ONLY the
+    // Firebase Storage download URL — photo bytes live in Storage.
+    match /writingUploads/{id} {
+      allow read: if signedIn() && (
+        resource.data.studentId == request.auth.uid ||
+        request.auth.uid in resource.data.get("teacherIds", []) ||
+        isAdmin());
+      allow create: if signedIn()
+        && request.resource.data.studentId == request.auth.uid;
+      allow update, delete: if false;
     }
   }
 }
