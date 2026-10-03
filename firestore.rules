@@ -4,9 +4,9 @@
 // Data model:
 //   users/{uid}                  profile + learning state mirror
 //   loginIds/{loginId}           {email, uid} — login-ID → email resolution
-//   classes/{id}                 {name, teacherId, studentIds[]}        (Part 2)
-//   assignments/{id}             {classId, type, sloIds, count, dueAt}  (Part 2)
-//   submissions/{id}             {studentId, worksheetId, answers, score, sloScores}
+//   classes/{id}                 {name, teacherId, students[{uid,name,loginId}], studentIds[]}
+//   assignments/{id}             {classId, title, sloIds[], count, dueAt, teacherId}
+//   submissions/{id}             {studentId, classId?, assignmentId?, answers, score, total, pct, perSlo, teacherIds[]}
 //   vocabulary/{uid}/words/{w}   saved words per student
 //   readingProgress/{uid}/{rid}  story completion per student
 //
@@ -22,10 +22,16 @@ service cloud.firestore {
       return signedIn() && request.auth.token.email == "REPLACE_WITH_OWNER_EMAIL";
     }
 
-    // ---- user profiles: owners only (admin: full read) ----
+    // ---- user profiles: owners only (admin: full read).
+    // Role is set at signup (student/teacher); afterwards only the admin
+    // may change it, so a student can never promote themselves.
     match /users/{uid} {
       allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
-      allow write: if signedIn() && request.auth.uid == uid;
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.role in ["student", "teacher"];
+      allow update: if signedIn() && request.auth.uid == uid
+        && (isAdmin() || request.resource.data.role == resource.data.role);
+      allow delete: if false;
     }
 
     // ---- login-ID directory: anyone may resolve an ID to an email
@@ -52,20 +58,29 @@ service cloud.firestore {
         resource.data.teacherId == request.auth.uid || isAdmin());
     }
 
+    function teacherOfClass(classId) {
+      return classId != null
+        && exists(/databases/$(database)/documents/classes/$(classId))
+        && get(/databases/$(database)/documents/classes/$(classId)).data.teacherId == request.auth.uid;
+    }
+
     // ---- assignments (Part 2) ----
     match /assignments/{id} {
       allow read: if signedIn();
-      allow create, update, delete: if signedIn() && (
-        isAdmin() ||
-        exists(/databases/$(database)/documents/classes/$(request.resource.data.classId)) &&
-        get(/databases/$(database)/documents/classes/$(request.resource.data.classId)).data.teacherId == request.auth.uid);
+      allow create, update: if signedIn() && (
+        isAdmin() || teacherOfClass(request.resource.data.classId));
+      allow delete: if signedIn() && (
+        isAdmin() || teacherOfClass(resource.data.classId));
     }
 
-    // ---- submissions: students write own, read own; teachers read their
-    // students' (checked client-side via class membership); admin reads all.
+    // ---- submissions: students write own + read own; a class teacher
+    // reads submissions whose teacherIds include them (attached at submit
+    // time); admin reads all.
     match /submissions/{id} {
       allow read: if signedIn() && (
-        resource.data.studentId == request.auth.uid || isAdmin());
+        resource.data.studentId == request.auth.uid ||
+        request.auth.uid in resource.data.get("teacherIds", []) ||
+        isAdmin());
       allow create: if signedIn()
         && request.resource.data.studentId == request.auth.uid;
       allow update, delete: if false;

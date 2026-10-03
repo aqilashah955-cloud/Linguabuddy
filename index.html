@@ -132,6 +132,7 @@
       <h3 class="sec-title">Today's English</h3>
       <div id="todayBox"></div>
       <div id="todayWords" class="wordchips"></div>
+      <div id="assignBox" class="hidden"></div>
       <h3 class="sec-title">Your Progress</h3>
       <div id="dashBars"></div>
       <div id="dashCounts" class="countchips"></div>
@@ -281,6 +282,8 @@
       <div class="screen-head"><h2>My Progress</h2><p id="pgSummary" class="fine"></p></div>
       <h3 class="sec-title">SLO Mastery</h3>
       <div id="pgMastery"></div>
+      <h3 class="sec-title">Full Report</h3>
+      <div id="pgReport"></div>
       <h3 class="sec-title">Attempt History</h3>
       <div id="pgList"></div>
     </section>
@@ -299,7 +302,66 @@
       </div>
       <button id="logoutBtn" class="btn-danger btn-big">Log Out</button>
     </section>
+
+    <!-- ============ GRAMMAR LAB ============ -->
+    <section id="screen-grammar" class="screen hidden">
+      <div class="screen-head"><h2>Grammar Lab</h2><p>Pick a topic — each one teaches, then tests you.</p></div>
+      <div id="grammarBody"></div>
+    </section>
+
+    <!-- ============ WRITING LAB ============ -->
+    <section id="screen-writing" class="screen hidden">
+      <div class="screen-head"><h2>Writing Lab</h2><p>Write freely — I'll highlight issues and give hints, never rewrite your text.</p></div>
+      <div id="writingBody"></div>
+    </section>
+
+    <!-- ============ CONVERSATION ============ -->
+    <section id="screen-convo" class="screen hidden">
+      <div class="screen-head"><h2>Conversation Practice</h2><p>Guided role-plays with a friendly partner.</p></div>
+      <div id="convoBody"></div>
+    </section>
+
+    <!-- ============ ASK THE AI TEACHER ============ -->
+    <section id="screen-ask" class="screen hidden">
+      <div class="screen-head"><h2>Ask the AI Teacher</h2><p>Ask about grammar, words or lessons. During a test I can only give hints.</p></div>
+      <div id="askBody"></div>
+    </section>
+
+    <!-- ============ GAME ARCADE ============ -->
+    <section id="screen-games" class="screen hidden">
+      <div class="screen-head"><h2>🎮 Game Arcade</h2><p>60-second rounds of vocabulary and grammar games. Scores turn into XP!</p></div>
+      <div id="gamesBody"></div>
+    </section>
+
+    <!-- ============ TEACHER ============ -->
+    <section id="screen-teacher" class="screen hidden">
+      <div class="screen-head"><button class="back-btn" id="tchrBack">← Home</button>
+        <h2>Teacher Dashboard</h2><p id="tchrMode" class="fine"></p></div>
+      <div class="tabbar" id="tchrTabs"></div>
+      <div id="tchrBody"></div>
+    </section>
+
+    <!-- ============ CLASS DETAIL ============ -->
+    <section id="screen-class" class="screen hidden">
+      <div id="classBody"></div>
+    </section>
+
+    <!-- ============ ADMIN ============ -->
+    <section id="screen-admin" class="screen hidden">
+      <div class="screen-head"><button class="back-btn" id="adminBack">← Home</button>
+        <h2>Admin Panel</h2></div>
+      <div id="adminBody"></div>
+    </section>
+
+    <!-- ============ ACCESS GATE ============ -->
+    <section id="screen-gate" class="screen hidden">
+      <div class="screen-head"><button class="back-btn" id="gateBack">← Home</button></div>
+      <div id="gateBody"></div>
+    </section>
   </main>
+
+  <div id="modalOv" class="modal-ov hidden"><div id="modalBox" class="modal-box"></div></div>
+  <div id="toast" class="toast hidden"></div>
 
   <nav id="bottomNav" class="bottom-nav hidden">
     <button class="navbtn" data-nav="home">🏠<span>Home</span></button>
@@ -308,6 +370,13 @@
     <button class="navbtn" data-nav="assess">🎯<span>Assess</span></button>
     <button class="navbtn" data-nav="read">📖<span>Read</span></button>
     <button class="navbtn" data-nav="vocab">🧠<span>Words</span></button>
+    <button class="navbtn" data-nav="grammar">🔤<span>Grammar</span></button>
+    <button class="navbtn" data-nav="writing">✍️<span>Writing</span></button>
+    <button class="navbtn" data-nav="convo">💬<span>Convo</span></button>
+    <button class="navbtn" data-nav="ask">🤖<span>Ask</span></button>
+    <button class="navbtn" data-nav="games">🎮<span>Games</span></button>
+    <button class="navbtn hidden" data-nav="teacher" data-role="teacher">🎓<span>Teacher</span></button>
+    <button class="navbtn hidden" data-nav="admin" data-role="admin">⚙️<span>Admin</span></button>
     <button class="navbtn" data-nav="progress">📊<span>Progress</span></button>
     <button class="navbtn" data-nav="profile">👤<span>Profile</span></button>
   </nav>
