@@ -37,7 +37,7 @@ ok(CERT_TYPES.filter(function (c) { return c.for === "student"; }).length === 8,
 ok(CERT_TYPES.filter(function (c) { return c.for === "teacher"; }).length === 1, "1 teacher cert");
 ok(CERT_TYPES.filter(function (c) { return c.for === "parent"; }).length === 1, "1 parent cert");
 ok(!!certById("course-complete"), "course completion cert exists");
-ok(SLOS.length === 12, "12 SLOs in the course");
+ok(SLOS.length === 15, "15 SLOs in the course");
 
 /* ---- badge -> cert mapping (pure) ---- */
 let ids = earnedCertIds({ badges: ["first-lesson"] });
@@ -49,13 +49,13 @@ ids = earnedCertIds({ badges: ["first-lesson", "streak-7", "reader-5", "words-10
 ["brave-beginner", "star-7", "reading-champ", "word-wizard", "writing-star", "slo-master", "game-champ"]
   .forEach(function (id) { ok(ids.indexOf(id) >= 0, "badge maps to cert: " + id); });
 
-/* ---- course completion needs ALL 12 SLOs ---- */
-const eleven = fullMastery();
-delete eleven[SLOS[11].id];
-ok(earnedCertIds({ badges: [], masteryEv: eleven }).indexOf("course-complete") < 0,
-  "11/12 SLOs mastered -> no course completion");
+/* ---- course completion needs ALL 15 SLOs ---- */
+const fourteen = fullMastery();
+delete fourteen[SLOS[SLOS.length - 1].id];
+ok(earnedCertIds({ badges: [], masteryEv: fourteen }).indexOf("course-complete") < 0,
+  "14/15 SLOs mastered -> no course completion");
 ok(earnedCertIds({ badges: [], masteryEv: fullMastery() }).indexOf("course-complete") >= 0,
-  "12/12 SLOs mastered -> course completion awarded");
+  "15/15 SLOs mastered -> course completion awarded");
 
 /* ---- teacher cert ---- */
 ok(earnedCertIds({ teacherClasses: [{ id: "c1", students: [{}, {}] }] }).indexOf("educator") < 0,

@@ -669,3 +669,22 @@ mark { border-radius: 4px; padding: 0 2px; }
 .plan-price { font-size: 26px; font-weight: 800; color: #1e3a8a; margin-bottom: 12px; }
 .plan-wa { display: inline-block; text-decoration: none; font-size: 15px; padding: 10px 16px; }
 .sub-btns { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+
+/* ---------- School scheme (daily practice/test) ---------- */
+.school-card .school-line { margin: 4px 0 8px; }
+.school-card .row-flex { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
+.school-card .linklike { background: none; border: none; color: var(--accent, #4a7); cursor: pointer; padding: 4px 0; font-size: 0.9em; }
+.task-check { display: flex; gap: 10px; align-items: flex-start; padding: 10px; border: 1px solid #e0e0e0; border-radius: 10px; margin: 8px 0; cursor: pointer; }
+.task-check input { margin-top: 3px; transform: scale(1.2); }
+.task-check span { line-height: 1.45; }
+
+/* ---------- Aga Khan Schools hub ---------- */
+.ak-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.ak-row { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+  padding: 10px 12px; border: 1px solid #e0e0e0; border-radius: 10px; background: #fff; cursor: pointer; }
+.ak-row.current { border-color: #7c5cd6; background: #f4efff; }
+.ak-num { font-weight: 700; color: #7c5cd6; min-width: 38px; }
+.ak-main { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.ak-meta { font-size: 0.82em; color: #777; }
+.ak-go, .ak-badge { font-size: 1.1em; }
+.ak-today h3 { margin: 2px 0 6px; }
