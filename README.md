@@ -175,6 +175,20 @@ Role-plays (client calls, meetings, salary negotiation…), 📇 Business
 Vocabulary (casual→formal timed quiz + flashcards), 📄 CV Builder (form →
 printable CV).
 
+## Part 5 — AI Buddies (live chat)
+
+**💭 AI Buddies** (`js/buddies.js`, `data/buddies.js`) — five chat characters
+learners can talk with directly, live in the app: 🦉 Lingoo (patient owl tutor,
+all ages), 😎 Maya (casual friend, teens/adults), 🎓 Coach Zara (exam coach),
+🐣 Pip (kids 5–8, recasts only), 🤵 Mr. Bennett (business English). The built-in
+conversation engine works fully offline: 27 intents, 15 topics with follow-ups,
+30 common learner error patterns with gentle corrections, session memory
+(name, topics, corrections), typing indicator, quick replies, read-aloud toggle,
+and a session summary (messages, corrections, new words, XP, printable
+transcript). Optional **LLM plug-in**: paste an API key in the in-app settings
+(OpenAI-compatible endpoint) and the same buddies reply with a real AI —
+the key stays on the device, never synced.
+
 **Game Arcade** (`js/games.js`, route `games`, nav 🎮): six 60-second arcade
 rounds, all offline from bundled data — Word Scramble (typed unscramble with
 Urdu hint), Hangman (definition clue, 6 misses), Speed Match (word↔definition

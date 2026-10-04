@@ -21,6 +21,7 @@ const NAVMAP = {
   "screen-testprep": "testprep",
   "screen-pro": "pro",
   "screen-moretests": "moretests",
+  "screen-buddies": "buddies",
   "screen-auth": null, "screen-forgot": null,
   "screen-ob-name": null, "screen-ob-goals": null, "screen-ob-level": null, "screen-ob-age": null, "screen-ob-ready": null
 };
