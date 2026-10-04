@@ -273,7 +273,8 @@ function startChat(id) {
     '<button class="btn-primary" id="bdSend">Send</button></div>' +
     '<div class="bd-voicerow hidden" id="bdVoiceRow">' +
     '<button class="bd-micbig" id="bdMicBig">🎤<span>Tap & Speak</span></button>' +
-    '<p class="fine" id="bdListenMsg"></p></div>' +
+    '<p class="fine" id="bdListenMsg"></p>' +
+    '<button class="chipbtn sm" id="bdTestVoice" title="Check that you can hear the buddy">🔊 Test speaker</button></div>' +
     '<div class="row-btns"><button class="btn-ghost btn-sm" id="bdEnd">📝 End & Summary</button></div></div>';
   $("bdBack").addEventListener("click", showBuddies);
   $("bdVoice").addEventListener("click", function () { setVoiceMode(!chat.voiceMode); });
@@ -287,6 +288,12 @@ function startChat(id) {
   $("bdSend").addEventListener("click", sendMsg);
   $("bdMic").addEventListener("click", micTap);
   $("bdMicBig").addEventListener("click", micTap);
+  $("bdTestVoice").addEventListener("click", function () {
+    stopSpeak();
+    if (!speak("Hello! I am " + chat.ch.name + ". If you can hear me, your speaker works!")) {
+      toast("🔊 Your device can't read aloud right now.");
+    }
+  });
   $("bdInput").addEventListener("keydown", function (e) { if (e.key === "Enter") sendMsg(); });
   if (!speechRecCtor()) {
     // No mic on this browser: hide voice options, keep text chat fully working.
@@ -403,11 +410,19 @@ function buddySay(text) {
   chat.messages.push({ who: "buddy", text: text });
   // Hands-free discourse: when the buddy finishes speaking, open the mic
   // automatically so the conversation flows without tapping.
+  var ttsBtn = $("bdTts");
+  var resetBtn = function () {
+    if (ttsBtn) ttsBtn.textContent = chat.ttsOn ? "🔊 On" : "🔊 Off";
+  };
   var keepTalking = function () {
+    resetBtn();
     if (chat && chat.voiceMode && !chat.busy && !activeRec) startVoiceInput(true);
   };
-  if (chat.ttsOn && ttsAvailable()) speak(text, { onend: keepTalking });
-  else keepTalking();
+  if (chat.ttsOn && ttsAvailable()) {
+    if (ttsBtn) ttsBtn.textContent = "🔊 Speaking…";
+    var started = speak(text, { onend: keepTalking });
+    if (!started) keepTalking();
+  } else keepTalking();
 }
 
 function typingOn() {
