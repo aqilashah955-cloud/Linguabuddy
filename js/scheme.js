@@ -9,6 +9,7 @@ import { S, save, recordAttempt } from "./store.js";
 import { runAttempt, summarizeResults } from "./assess.js";
 import { xpForAttempt, checkBadges } from "./gamify.js";
 import { showScreen } from "./ui.js";
+import { printHTML } from "./worksheets.js";
 
 export { SCHEMES }; // re-exported for teacher.js class scheme picker
 
@@ -103,10 +104,10 @@ export function mappedLessons(scheme) {
 
 // ---------- session launch (DOM) ----------
 
-function finishSchoolAttempt(kind, st, out, lockKey) {
+function finishSchoolAttempt(kind, st, out, lockKey, refOverride) {
   const att = {
     lockKey: lockKey, student: S.profile.name, kind: "scheme-" + kind,
-    ref: st.scheme.id + ":L" + st.lesson,
+    ref: refOverride || (st.scheme.id + ":L" + st.lesson),
     title: out.title, mode: kind === "practice" ? "practice" : "assessment",
     score: out.totalScore, total: out.items.length, pct: out.pct,
     perSlo: out.perSlo, tabs: out.tabs, secs: out.secs, usedKeys: out.usedKeys,
@@ -206,6 +207,122 @@ export function startDaily(kind) {
   if (tasks.length && kind === "practice") { showSchoolTasks(kind, st, items); return; }
   if (items.length) { launchQuestions(kind, st, items); return; }
   if (tasks.length) { showSchoolTasks(kind, st, items); return; }
+}
+
+/* ================= monthly test ================= */
+
+// "September · Week 3" -> "September"
+export function monthOfLesson(scheme, n) {
+  const l = lessonOf(scheme, n);
+  if (!l || !l.week) return "";
+  return l.week.split("·")[0].trim();
+}
+
+export function monthLessons(scheme, month) {
+  if (!scheme || !month) return [];
+  return lessonNums(scheme)
+    .map(function (n) { return lessonOf(scheme, n); })
+    .filter(function (l) {
+      return l && monthOfLesson(scheme, l.n) === month &&
+        (((l.slos || []).length > 0) || ((l.tasks || []).length > 0));
+    });
+}
+
+function monthKey() {
+  const d = new Date();
+  return d.getFullYear() + "-" + (d.getMonth() + 1);
+}
+
+export function startMonthlyTest() {
+  const st = schoolState(S.profile);
+  if (!st) return;
+  const month = monthOfLesson(st.scheme, st.lesson);
+  const lessons = monthLessons(st.scheme, month).filter(function (l) { return (l.slos || []).length > 0; });
+  if (lessons.length < 2) {
+    alert("📋 The monthly test needs at least 2 written lessons in " + (month || "this month") + ".");
+    return;
+  }
+  const sloIds = [];
+  lessons.forEach(function (l) {
+    (l.slos || []).forEach(function (id) { if (sloIds.indexOf(id) < 0) sloIds.push(id); });
+  });
+  const seen = new Set();
+  (S.attempts || []).forEach(function (a) {
+    (a.usedKeys || []).forEach(function (k) { seen.add(k); });
+  });
+  const items = buildItems({
+    kind: "mixed", sloIds: sloIds, count: 20, exclude: seen,
+    seed: monthKey() + "|monthly|" + st.scheme.id + "|" + month
+  });
+  if (!items.length) return;
+  const lockKey = (S.profile.uid || S.profile.name || "s").toLowerCase() +
+    "|scheme-test|" + st.scheme.id + "|M:" + month + "|" + monthKey();
+  runAttempt({
+    title: "📋 Monthly Test — " + month + " · " + st.scheme.grade,
+    items: items, timePerQ: 60, antiCopy: true, hints: false,
+    lockKey: lockKey, lockLabel: "monthly test",
+    onDone: function (out) {
+      finishSchoolAttempt("test", st, out, lockKey, st.scheme.id + ":M:" + month);
+    }
+  });
+}
+
+/* ================= printable worksheet ================= */
+
+function wsQuestionHTML(i, it) {
+  let body = "";
+  if (it.type === "mcq") {
+    body = '<div style="margin-top:6px;">' + (it.options || []).map(function (o, j) {
+      return '<div style="margin:3px 0;">○ <b>' + "ABCD"[j] + ".</b> " + esc(o) + "</div>";
+    }).join("") + "</div>";
+  } else if (it.type === "fib") {
+    body = '<div style="border-bottom:1px solid #999;height:30px;margin-top:6px;"></div>';
+  } else if (it.type === "tf") {
+    body = '<div style="margin-top:6px;">○ True&emsp;&emsp;○ False</div>';
+  } else if (it.type === "reorder") {
+    body = '<div style="margin-top:6px;">' + (it.words || []).map(function (w) {
+      return '<span style="border:1px solid #999;padding:2px 8px;margin:2px;display:inline-block;">' + esc(w) + "</span>";
+    }).join("") + '</div><div style="border-bottom:1px solid #999;height:30px;margin-top:8px;"></div>';
+  }
+  return '<div style="margin-bottom:16px;"><b>' + (i + 1) + ".</b> " + esc(it.q) + body + "</div>";
+}
+
+export function akWorksheetHTML(scheme, n) {
+  const l = lessonOf(scheme, n) || {};
+  const title = l.title && !/^Lesson \d+$/.test(l.title) ? l.title : "Lesson " + n;
+  let html = '<div style="font-family:Georgia,\'Times New Roman\',serif;color:#111;max-width:720px;">' +
+    '<h1 style="font-size:24px;margin:0 0 4px;">🏫 ' + esc(scheme.board + " · " + scheme.grade + " English") + "</h1>" +
+    '<h2 style="font-size:18px;margin:0 0 4px;">Lesson ' + n + ": " + esc(title) + "</h2>" +
+    '<p style="color:#444;margin:0 0 12px;font-size:14px;">' +
+    esc([l.code ? "SLO " + l.code : "", l.week || "", l.skill || ""].filter(Boolean).join(" · ")) + "</p>" +
+    '<p style="margin:0 0 16px;font-size:14px;">Name: ________________________&nbsp;&nbsp;Date: ____________&nbsp;&nbsp;Score: ______ / 10</p>';
+  const slos = (l.slos || []);
+  if (slos.length) {
+    const seen = new Set();
+    (S.attempts || []).forEach(function (a) {
+      (a.usedKeys || []).forEach(function (k) { seen.add(k); });
+    });
+    const items = buildItems({
+      kind: "mixed", sloIds: slos, count: 10, exclude: seen,
+      seed: todayKey() + "|worksheet|" + scheme.id + "|L" + n
+    });
+    html += items.map(function (it, i) { return wsQuestionHTML(i, it); }).join("");
+    if (slos.indexOf("writing") >= 0) {
+      html += '<h3 style="font-size:16px;">✍️ Writing space</h3>';
+      for (let i = 0; i < 8; i++) html += '<div style="border-bottom:2px dotted #999;height:34px;"></div>';
+    }
+  }
+  (l.tasks || []).forEach(function (t) {
+    html += '<div style="margin-bottom:12px;">☐ ' + esc(t) + "</div>";
+  });
+  html += '<p style="margin-top:24px;color:#555;font-size:12px;">🦉 Check your answers in the LinguaBuddy app — no answer key is printed. Practice makes progress!</p></div>';
+  return html;
+}
+
+export function printAKWorksheet() {
+  const st = schoolState(S.profile);
+  if (!st || !isLessonMapped(st.scheme, st.lesson)) return;
+  printHTML(akWorksheetHTML(st.scheme, st.lesson));
 }
 
 // ---------- dashboard UI (DOM) ----------
@@ -360,6 +477,8 @@ export function renderAKHub() {
   }
   const mapped = isLessonMapped(st.scheme, st.lesson);
   const e = st.entry || {};
+  const month = monthOfLesson(st.scheme, st.lesson);
+  const monthlyReady = monthLessons(st.scheme, month).filter(function (l) { return (l.slos || []).length > 0; }).length >= 2;
   // today's lesson card
   html += '<div class="card ak-today"><p class="fine">' + esc(st.scheme.board + " · " + st.scheme.grade + " · " + st.scheme.subject) + "</p>" +
     "<h3>📍 Lesson " + st.lesson + (e.title && !/^Lesson \d+$/.test(e.title) ? ": " + esc(e.title) : "") + "</h3>" +
@@ -367,7 +486,11 @@ export function renderAKHub() {
     (e.code ? " · SLO " + esc(e.code) : "") + (e.week ? " · " + esc(e.week) : "") + "</p>" +
     (mapped
       ? '<div class="row-flex"><button class="btn-primary" id="akPractice">📝 Daily Practice</button>' +
-        '<button class="btn-secondary" id="akTest">🎯 Daily Test</button></div>'
+        '<button class="btn-secondary" id="akTest">🎯 Daily Test</button></div>' +
+        '<div class="row-flex">' +
+        (monthlyReady ? '<button class="btn-secondary" id="akMonthly">📋 ' + esc(month) + ' Test</button>' : "") +
+        '<button class="btn-ghost" id="akWorksheet">🖨️ Worksheet</button>' +
+        '<button class="btn-ghost" id="akMarks">📊 My Marks</button></div>'
       : '<p class="fine">📋 This lesson\'s SLOs are being added from the scheme of work — check back soon.</p>') +
     '<div class="row-flex"><button class="btn-ghost" id="akPrev">‹ Prev lesson</button>' +
     '<button class="btn-ghost" id="akNext">Next lesson ›</button>' +
@@ -387,6 +510,9 @@ export function renderAKHub() {
   if (mapped) {
     $("akPractice").addEventListener("click", function () { startDaily("practice"); });
     $("akTest").addEventListener("click", function () { startDaily("test"); });
+    if (monthlyReady) $("akMonthly").addEventListener("click", startMonthlyTest);
+    $("akWorksheet").addEventListener("click", printAKWorksheet);
+    $("akMarks").addEventListener("click", function () { go("marks"); });
   }
   $("akPrev").addEventListener("click", function () {
     S.profile.schemeLesson = clampLesson(st.scheme, st.lesson - 1); save(); renderAKHub(); renderSchoolBox();
