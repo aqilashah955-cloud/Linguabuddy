@@ -4,12 +4,13 @@
 // guided practice tasks. Pure logic is DOM-free and testable in node.
 
 import { SCHEMES } from "../data/schemes.js";
-import { buildItems, adjustLevel } from "./engine.js";
-import { todayKey, esc } from "./utils.js";
+import { buildItems, adjustLevel } from "./engine.js";import { todayKey, esc } from "./utils.js";
 import { S, save, recordAttempt } from "./store.js";
 import { runAttempt, summarizeResults } from "./assess.js";
 import { xpForAttempt, checkBadges } from "./gamify.js";
 import { showScreen } from "./ui.js";
+
+export { SCHEMES }; // re-exported for teacher.js class scheme picker
 
 function $(id) { return document.getElementById(id); }
 

@@ -96,5 +96,15 @@ ok(ml.every(function (l) { return l.title && l.code && l.week; }), "every hub le
 ok(mappedLessons(schemeById("ak-prep9-english")).length === 0, "unmapped scheme -> empty hub list");
 ok(mappedLessons(null).length === 0, "null scheme -> empty hub list");
 
+// regression: every app module must load (catches missing exports like SCHEMES)
+const modResults = await Promise.all([
+  import("../js/app.js").then(() => ["app.js", null]).catch(e => ["app.js", e.message]),
+  import("../js/teacher.js").then(() => ["teacher.js", null]).catch(e => ["teacher.js", e.message]),
+  import("../js/dashboard.js").then(() => ["dashboard.js", null]).catch(e => ["dashboard.js", e.message])
+]);
+modResults.forEach(function ([name, err]) {
+  ok(!err, name + " loads without missing exports" + (err ? " :: " + err : ""));
+});
+
 console.log("\n" + pass + " passed, " + fail + " failed");
 process.exit(fail ? 1 : 0);
