@@ -11,6 +11,7 @@ import { speak, speakSlow, ttsAvailable } from "./tts.js";
 import { calculateSLOMastery } from "./engine.js";
 import { mascotSVG, confettiBurst } from "./mascot.js";
 import { esc, todayKey } from "./utils.js";
+import { openMarksStudent } from "./marks.js";
 
 function $(id) { return (typeof document !== "undefined") ? document.getElementById(id) : null; }
 
@@ -382,9 +383,13 @@ export function renderParents() {
     '</div>' +
     '<div class="dg-card"><div class="dg-tag">💡 How to help</div><ul class="pd-tips">' + tips + '</ul></div>' +
     '<button id="pdPrint" class="btn-primary btn-big">🖨️ Printable report</button>' +
+    '<button id="pdMarks" class="btn-secondary btn-big">📊 Scheme test marks</button>' +
     '<p class="fine">Tip: in the print dialog choose “Save as PDF” to keep a copy.</p>' +
     '</div>';
   $("pdPrint").addEventListener("click", function () {
     if (!printReport()) toast("Printing is not available right now.");
+  });
+  $("pdMarks").addEventListener("click", function () {
+    openMarksStudent(S.profile.name, S.attempts, { dest: "parents" });
   });
 }
