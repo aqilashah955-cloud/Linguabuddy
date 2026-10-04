@@ -19,7 +19,8 @@ function blankState() {
       name: "", loginId: "", email: "", uid: "", role: "student",
       ageGroup: "", level: "", goals: [], onboarded: false,
       streak: 0, lastActive: "", xp: 0, badges: [], lessonXp: {},
-      trialStart: 0, subUntil: 0, subPlan: ""
+      trialStart: 0, subUntil: 0, subPlan: "",
+      schemeId: "", schemeLesson: 0,
     },
     attempts: [],   // {id, lockKey, student, kind, ref, title, mode, score, total, pct, perSlo, tabs, secs, date, usedKeys[], answers[]}
     locks: {},

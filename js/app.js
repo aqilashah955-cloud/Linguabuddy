@@ -30,6 +30,7 @@ import { showPro, setProGo } from "./pro.js";
 import { showMoreTests, setMoreTestsGo } from "./moretests.js";
 import { showBuddies, setBuddiesGo } from "./buddies.js";
 import { needsGate, ensureTrial, renderSubscribe, setBillingGo } from "./billing.js";
+import { renderAKHub, setGo as setAkGo } from "./scheme.js";
 import { warmVoices } from "./tts.js";
 import { badgeList } from "./gamify.js";
 import { LEVEL_OPTS, GOAL_OPTS } from "./auth.js";
@@ -78,6 +79,7 @@ export function go(dest, arg) {
     case "pro": showPro(); break;
     case "moretests": showMoreTests(); break;
     case "buddies": showBuddies(); break;
+    case "ak": renderAKHub(); showScreen("screen-ak"); break;
     case "teacher": renderTeacher(); break;
     case "class": openClass(arg); break;
     case "admin": renderAdmin(); break;
@@ -95,7 +97,7 @@ function renderBrowse() {
     : "Timed assessments with anti-copying. Scores update your SLO mastery.";
   $("browseGrid").innerHTML =
     '<button class="mixed-card" id="browseMixed"><span class="mc-emoji">🎲</span>' +
-    '<span class="mc-text"><strong>Mixed ' + (practice ? "Practice" : "Test") + "</strong><br>Questions from all 12 SLOs</span>" +
+    '<span class="mc-text"><strong>Mixed ' + (practice ? "Practice" : "Test") + "</strong><br>Questions from all 15 SLOs</span>" +
     '<span class="mc-arrow">→</span></button>' +
     '<div class="slo-grid">' + SLOS.map(function (s) {
       return '<button class="slo-card" data-slo="' + s.id + '"><h3>' + esc(s.title) + "</h3><p>" + esc(s.expl) + "</p>" +
@@ -205,7 +207,7 @@ async function boot() {
   [setDashGo, setLearnGo, setReadGo, setVocabGo,
    setTeacherGo, setAdminGo, setGrammarGo, setWritingGo, setConvoGo, setAskGo, setGamesGo, setMyworkGo,
    setKidsGo, setWorksheetsGo, setCertsGo,
-   setTestprepGo, setProGo, setMoreTestsGo, setBuddiesGo, setBillingGo]
+   setTestprepGo, setProGo, setMoreTestsGo, setBuddiesGo, setBillingGo, setAkGo]
     .forEach(function (fn) { fn(go); });
   warmVoices();
   setAuthDone(function () { enterApp(); });

@@ -6,6 +6,7 @@ const NAVMAP = {
   "screen-home": "home",
   "screen-learn": "learn", "screen-lesson": "learn", "screen-remedy": "learn",
   "screen-browse": null, "screen-setup": null, "screen-attempt": null, "screen-result": null,
+  "screen-school": null, "screen-ak": null,
   "screen-library": "read", "screen-story": "read",
   "screen-vocab": "vocab", "screen-word": "vocab", "screen-flash": "vocab", "screen-vquiz": "vocab",
   "screen-progress": "progress",

@@ -10,6 +10,7 @@ import { openSetup } from "./learn.js";
 import { reportHTML, renderStudentAssignments } from "./teacher.js";
 import { todayContent } from "./engage.js";
 import { mascotSVG } from "./mascot.js";
+import { renderSchoolBox } from "./scheme.js";
 
 function $(id) { return document.getElementById(id); }
 
@@ -17,7 +18,7 @@ let go = null;
 export function setGo(fn) { go = fn; }
 
 export const SKILLS = {
-  grammar: ["tenses", "sva", "voice", "speech", "articles", "prepositions", "punct", "clauses"],
+  grammar: ["tenses", "sva", "voice", "speech", "articles", "prepositions", "punct", "clauses", "pronouns", "adverbs", "adjectives"],
   vocab: ["synant", "vocab"],
   reading: ["reading"],
   writing: ["writing"]
@@ -137,6 +138,8 @@ export function renderDashboard() {
 
   // teacher assignments (renders into #assignBox; hidden if none)
   renderStudentAssignments().catch(function () {});
+  // school scheme: daily practice + test on taught lessons
+  renderSchoolBox();
 }
 
 function quickPractice(sloId, title) {

@@ -14,6 +14,7 @@ import {
   computeClassAnalytics, commonMissedTypes, suggestIntervention,
   buildProgressReport, evidenceFromSubmissions, buildItems
 } from "./engine.js";
+import { SCHEMES, schemeById, termOf, lessonOf } from "./scheme.js";
 import { runAttempt, showResult, summarizeResults } from "./assess.js";
 import { awardXP, xpForAttempt, checkBadges } from "./gamify.js";
 
@@ -217,6 +218,22 @@ export async function openClass(classId) {
   let html = '<div class="screen-head"><button class="back-btn" id="clsBack">← Classes</button>' +
     "<h2>" + esc(cls.name) + "</h2></div>";
   html += '<h3 class="sec-title">Students (' + (cls.students || []).length + ")</h3>";
+  // scheme lesson for this class
+  const schOpts = '<option value="">— No scheme —</option>' + SCHEMES.map(function (s) {
+    return '<option value="' + esc(s.id) + '"' + (cls.schemeId === s.id ? " selected" : "") + ">" +
+      esc(s.board + " · " + s.grade + " · " + s.subject) + "</option>";
+  }).join("");
+  const curSch = schemeById(cls.schemeId || "");
+  const curEntry = curSch ? lessonOf(curSch, cls.schemeLesson || 0) : null;
+  const curTerm = curSch ? termOf(curSch, cls.schemeLesson || 0) : null;
+  html += '<div class="form-card"><div class="field"><label>📚 Scheme lesson for this class</label>' +
+    '<div class="row-flex"><select id="clsScheme">' + schOpts + "</select>" +
+    '<input id="clsLesson" type="number" min="1" value="' + esc(String(cls.schemeLesson || "")) + '" placeholder="Lesson #" style="width:96px" />' +
+    '<button class="btn-primary btn-sm" id="clsSchemeSave">Set</button></div>' +
+    '<p class="fine" id="clsSchemeNote">' + (curEntry && curTerm
+      ? "Now: " + esc(curSch.grade) + " · " + esc(curTerm.name) + " · Lesson " + cls.schemeLesson +
+        (curEntry.title && !/^Lesson \d+$/.test(curEntry.title) ? " — " + esc(curEntry.title) : "")
+      : "Students practice the lesson you set here in their daily School Practice.") + "</p></div></div>";
   html += '<div class="form-card"><div class="field"><label>Add student by login ID' +
     (online() ? "" : " (offline: type the student's name)") + "</label>" +
     '<div class="row-flex"><input id="addStuInput" type="text" placeholder="e.g. amina2026" />' +
@@ -227,6 +244,20 @@ export async function openClass(classId) {
   $("classBody").innerHTML = html;
   show("screen-class");
   $("clsBack").addEventListener("click", function () { renderTeacher(); });
+  const schSaveBtn = $("clsSchemeSave");
+  if (schSaveBtn) schSaveBtn.addEventListener("click", async function () {
+    const sid = $("clsScheme").value;
+    const sch = schemeById(sid);
+    cls.schemeId = sch ? sch.id : "";
+    cls.schemeLesson = sch ? Math.max(1, Math.round(Number($("clsLesson").value) || 1)) : 0;
+    await saveClass(cls);
+    const e2 = sch ? lessonOf(sch, cls.schemeLesson) : null;
+    const t2 = sch ? termOf(sch, cls.schemeLesson) : null;
+    $("clsSchemeNote").textContent = (e2 && t2)
+      ? ("Now: " + sch.grade + " · " + t2.name + " · Lesson " + cls.schemeLesson +
+        (e2.title && !/^Lesson \d+$/.test(e2.title) ? " — " + e2.title : ""))
+      : "Students practice the lesson you set here in their daily School Practice.";
+  });
   function bindReports() {
     $("classBody").querySelectorAll("[data-report]").forEach(function (b) {
       b.onclick = function () { showStudentReport(cls, b.getAttribute("data-report"), subs); };
