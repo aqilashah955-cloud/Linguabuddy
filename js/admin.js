@@ -7,7 +7,7 @@ import { fb, isConfigured } from "./firebase.js";
 import { esc, fmtDate } from "./utils.js";
 import { showScreen as show } from "./ui.js";
 import { isAdmin } from "./teacher.js";
-import { PLANS, planById, grantSubscription, statusLine } from "./billing.js";
+import { PLANS, planById, grantSubscription, statusLine, renderSubscribe } from "./billing.js";
 
 function $(id) { return document.getElementById(id); }
 
@@ -120,6 +120,7 @@ function drawSubscriptions(box, users) {
     '<div class="fine">Students get a 3-day free trial, then need a plan. ' +
     "Activating extends from the current expiry date. " +
     (onlineMode ? "" : "Offline — managing this device only.") + "</div>" +
+    '<div class="row-btns" style="margin-bottom:10px"><button class="btn-ghost" id="subPreview">👁 Preview subscribe screen</button></div>' +
     rows.map(function (u) {
       const prof = {
         role: u.role, trialStart: u.trialStart,
@@ -135,6 +136,7 @@ function drawSubscriptions(box, users) {
         }).join("") + "</div></div>";
     }).join("");
   box.appendChild(wrap);
+  $("subPreview").addEventListener("click", function () { renderSubscribe(); });
   wrap.querySelectorAll("[data-sub-uid]").forEach(function (b) {
     b.addEventListener("click", async function () {
       const uid = b.getAttribute("data-sub-uid"), planId = b.getAttribute("data-plan");
