@@ -557,6 +557,11 @@ mark { border-radius: 4px; padding: 0 2px; }
 .mk-organization { background: #d9c8ff; } .mk-spelling { background: #ffb3ab; } .mk-punctuation { background: #b8f0c8; }
 .fb-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
 .fb-head { color: var(--ink); margin-bottom: 4px; }
+.fb-list { list-style: none; margin: 6px 0 2px; padding: 0; }
+.fb-list li { padding: 8px 0; border-top: 1px dashed var(--border); font-size: .95rem; }
+.fb-list li:first-child { border-top: 0; padding-top: 2px; }
+.fb-list code { background: var(--sand, #f4efe4); border-radius: 4px; padding: 0 4px; }
+.fb-head { color: var(--ink); margin-bottom: 4px; }
 .fb-hint { background: var(--marigold-soft); border-radius: 8px; padding: 8px 10px; margin-top: 6px; font-size: .92rem; }
 .cv-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-top: 16px; }
 .cv-head { color: var(--ink); font-size: 1.1rem; margin-bottom: 8px; }

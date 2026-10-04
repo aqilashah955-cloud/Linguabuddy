@@ -230,7 +230,9 @@ export function showBuddies() {
   if (!root) return;
   root.innerHTML =
     '<div class="bd-wrap"><div class="bd-head"><h2>💭 AI Buddies</h2>' +
-    '<p class="fine">Chat live with a buddy and practise real English. Works offline — no account, no cost.</p></div>' +
+    '<p class="fine">Chat live with a buddy and practise real English. Works offline — no account, no cost.' +
+    (speechRecCtor() ? ' 🎤 <strong>Voice chat is on</strong> — just talk, no typing needed!' : '') +
+    '</p></div>' +
     '<div class="bd-grid">' + CHARACTERS.map(function (c) {
       return '<button class="bd-card" data-buddy="' + c.id + '">' +
         '<div class="bd-emoji">' + c.emoji + "</div>" +
@@ -247,10 +249,11 @@ export function showBuddies() {
 
 function startChat(id) {
   const ch = characterById(id);
+  const micOk = !!speechRecCtor();
   chat = {
-    ch: ch, session: newSession(), messages: [], ttsOn: false, busy: false,
+    ch: ch, session: newSession(), messages: [], ttsOn: ttsAvailable(), busy: false,
     newWordsSeen: [], correctionsCount: 0,
-    voiceMode: id === "pip" // pre-primary kids get voice-first chat by default
+    voiceMode: micOk // voice chat ON by default — talk instead of typing
   };
   const root = $("screen-buddies");
   root.innerHTML =
@@ -299,38 +302,74 @@ function startChat(id) {
   if (!chat.voiceMode) $("bdInput").focus();
 }
 
-/* Voice chat mode: big mic button + replies read aloud automatically.
-   Built for pre-primary kids who can't type yet. */
+/* Voice chat: big mic button + replies read aloud automatically.
+   In voice mode the conversation is hands-free: after the buddy finishes
+   speaking, the mic opens on its own so the learner just keeps talking. */
+var activeRec = null; // current speech-recognition handle while listening
+
+function stopVoiceInput(silent) {
+  if (activeRec) { try { activeRec.stop(); } catch (e) {} activeRec = null; }
+  var big = $("bdMicBig"), msg = $("bdListenMsg");
+  if (big) big.classList.remove("listening");
+  if (msg && !silent) msg.textContent = "";
+}
+
 function setVoiceMode(on) {
   if (!chat) return;
   chat.voiceMode = on;
+  stopVoiceInput(true);
+  if (!on) stopSpeak();
   $("bdVoice").textContent = on ? "🎤 Voice: On" : "🎤 Voice: Off";
   $("bdTypeRow").classList.toggle("hidden", on);
   $("bdVoiceRow").classList.toggle("hidden", !on);
-  if (on && !chat.ttsOn) {
-    chat.ttsOn = true;
-    $("bdTts").textContent = "🔊 On";
-    if (!ttsAvailable()) toast("🔊 Your device can't read aloud — you can still talk!");
+  if (on && !chat.ttsOn && ttsAvailable()) chat.ttsOn = true;
+  $("bdTts").textContent = chat.ttsOn ? "🔊 On" : "🔊 Off";
+  if (on) {
+    var msg = $("bdListenMsg");
+    if (msg) msg.textContent = "Tap 🎤 and speak — I'll keep the conversation going!";
   }
 }
 
-function micTap() {
+/* One listening turn. auto=true means the hands-free loop triggered it. */
+function startVoiceInput(auto) {
   if (!chat || chat.busy) return;
   stopSpeak();
+  stopVoiceInput(true);
   var big = $("bdMicBig"), msg = $("bdListenMsg");
-  var r = startListen(function (txt) {
+  var rec = startListen(function (txt) {
+    activeRec = null;
     if (big) big.classList.remove("listening");
     if (msg) msg.textContent = "";
     txt = (txt || "").trim();
-    if (!txt) { toast("Didn't catch that — try again! 🎤"); return; }
+    if (!txt) {
+      // Empty (mic blocked, silence, error): never spin — hand control back.
+      if (msg && chat.voiceMode) msg.textContent = "Tap 🎤 when you're ready to speak.";
+      else if (!auto) toast("Didn't catch that — try again! 🎤");
+      return;
+    }
     userSays(txt);
   });
-  if (!r.supported) {
-    toast("🎤 This browser can't listen — type or tap a suggestion instead.");
+  if (!rec.supported) {
+    activeRec = null;
+    if (msg) msg.textContent = chat.voiceMode ? "Tap 🎤 to speak." : "";
+    if (!auto) toast("🎤 This browser can't listen — type or tap a suggestion instead.");
     return;
   }
+  activeRec = rec;
   if (big) big.classList.add("listening");
-  if (msg) msg.textContent = "Listening… speak now!";
+  if (msg) msg.textContent = auto ? "Your turn — speak!" : "Listening… speak now!";
+}
+
+/* Mic button: tap to talk; tap again while listening to cancel that turn. */
+function micTap() {
+  if (!chat || chat.busy) return;
+  if (activeRec) {
+    stopVoiceInput();
+    var m = $("bdListenMsg");
+    if (m) m.textContent = chat.voiceMode ? "Paused — tap 🎤 to keep talking." : "";
+    return;
+  }
+  startVoiceInput(false);
 }
 
 function renderQuick() {
@@ -362,7 +401,13 @@ function bubble(who, text) {
 function buddySay(text) {
   bubble("buddy", text);
   chat.messages.push({ who: "buddy", text: text });
-  if (chat.ttsOn) speak(text);
+  // Hands-free discourse: when the buddy finishes speaking, open the mic
+  // automatically so the conversation flows without tapping.
+  var keepTalking = function () {
+    if (chat && chat.voiceMode && !chat.busy && !activeRec) startVoiceInput(true);
+  };
+  if (chat.ttsOn && ttsAvailable()) speak(text, { onend: keepTalking });
+  else keepTalking();
 }
 
 function typingOn() {
@@ -456,6 +501,8 @@ function renderSettings() {
 function endChat() {
   if (!chat) return;
   stopSpeak();
+  stopVoiceInput(true);
+  chat.voiceMode = false;
   const userMsgs = chat.messages.filter(function (m) { return m.who === "user"; }).length;
   const xp = Math.min(20, Math.floor(userMsgs / 2));
   if (xp > 0) awardXP(xp, "Buddy chat");
