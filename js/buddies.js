@@ -11,6 +11,7 @@ import {
 import { S, save, touchStreak, recordAttempt } from "./store.js";
 import { awardXP, checkBadges, toast } from "./gamify.js";
 import { speak, stopSpeak, ttsAvailable } from "./tts.js";
+import { startListen, speechRecCtor } from "./engage.js";
 import { printHTML } from "./worksheets.js";
 import { showScreen as show } from "./ui.js";
 import { esc } from "./utils.js";
@@ -248,7 +249,8 @@ function startChat(id) {
   const ch = characterById(id);
   chat = {
     ch: ch, session: newSession(), messages: [], ttsOn: false, busy: false,
-    newWordsSeen: [], correctionsCount: 0
+    newWordsSeen: [], correctionsCount: 0,
+    voiceMode: id === "pip" // pre-primary kids get voice-first chat by default
   };
   const root = $("screen-buddies");
   root.innerHTML =
@@ -256,16 +258,22 @@ function startChat(id) {
     '<button class="back-btn" id="bdBack">← Buddies</button>' +
     '<div class="bd-who">' + ch.emoji + " <strong>" + esc(ch.name) + "</strong></div>" +
     '<div class="bd-tools">' +
+    '<button class="chipbtn sm" id="bdVoice" title="Voice chat: talk instead of typing">🎤 Voice: Off</button>' +
     '<button class="chipbtn sm" id="bdTts" title="Read replies aloud">🔊 Off</button>' +
     '<button class="chipbtn sm" id="bdSettings" title="AI settings">⚙️</button>' +
     "</div></div>" +
     '<div id="bdSettingsPanel" class="bd-settings hidden"></div>' +
     '<div id="bdLog" class="bd-log"></div>' +
     '<div id="bdQuick" class="bd-quick"></div>' +
-    '<div class="bd-inputrow"><input id="bdInput" type="text" placeholder="Type your message…" autocomplete="off" maxlength="500" />' +
+    '<div class="bd-inputrow" id="bdTypeRow"><input id="bdInput" type="text" placeholder="Type your message…" autocomplete="off" maxlength="500" />' +
+    '<button class="btn-icon" id="bdMic" title="Speak instead of typing">🎤</button>' +
     '<button class="btn-primary" id="bdSend">Send</button></div>' +
+    '<div class="bd-voicerow hidden" id="bdVoiceRow">' +
+    '<button class="bd-micbig" id="bdMicBig">🎤<span>Tap & Speak</span></button>' +
+    '<p class="fine" id="bdListenMsg"></p></div>' +
     '<div class="row-btns"><button class="btn-ghost btn-sm" id="bdEnd">📝 End & Summary</button></div></div>';
   $("bdBack").addEventListener("click", showBuddies);
+  $("bdVoice").addEventListener("click", function () { setVoiceMode(!chat.voiceMode); });
   $("bdTts").addEventListener("click", function () {
     chat.ttsOn = !chat.ttsOn;
     $("bdTts").textContent = chat.ttsOn ? "🔊 On" : "🔊 Off";
@@ -274,11 +282,55 @@ function startChat(id) {
   });
   $("bdSettings").addEventListener("click", renderSettings);
   $("bdSend").addEventListener("click", sendMsg);
+  $("bdMic").addEventListener("click", micTap);
+  $("bdMicBig").addEventListener("click", micTap);
   $("bdInput").addEventListener("keydown", function (e) { if (e.key === "Enter") sendMsg(); });
+  if (!speechRecCtor()) {
+    // No mic on this browser: hide voice options, keep text chat fully working.
+    $("bdMic").style.display = "none";
+    $("bdVoice").style.display = "none";
+    $("bdVoiceRow").classList.add("hidden");
+  } else if (chat.voiceMode) {
+    setVoiceMode(true);
+  }
   renderQuick();
   buddySay(ch.opener);
   $("bdEnd").addEventListener("click", endChat);
-  $("bdInput").focus();
+  if (!chat.voiceMode) $("bdInput").focus();
+}
+
+/* Voice chat mode: big mic button + replies read aloud automatically.
+   Built for pre-primary kids who can't type yet. */
+function setVoiceMode(on) {
+  if (!chat) return;
+  chat.voiceMode = on;
+  $("bdVoice").textContent = on ? "🎤 Voice: On" : "🎤 Voice: Off";
+  $("bdTypeRow").classList.toggle("hidden", on);
+  $("bdVoiceRow").classList.toggle("hidden", !on);
+  if (on && !chat.ttsOn) {
+    chat.ttsOn = true;
+    $("bdTts").textContent = "🔊 On";
+    if (!ttsAvailable()) toast("🔊 Your device can't read aloud — you can still talk!");
+  }
+}
+
+function micTap() {
+  if (!chat || chat.busy) return;
+  stopSpeak();
+  var big = $("bdMicBig"), msg = $("bdListenMsg");
+  var r = startListen(function (txt) {
+    if (big) big.classList.remove("listening");
+    if (msg) msg.textContent = "";
+    txt = (txt || "").trim();
+    if (!txt) { toast("Didn't catch that — try again! 🎤"); return; }
+    userSays(txt);
+  });
+  if (!r.supported) {
+    toast("🎤 This browser can't listen — type or tap a suggestion instead.");
+    return;
+  }
+  if (big) big.classList.add("listening");
+  if (msg) msg.textContent = "Listening… speak now!";
 }
 
 function renderQuick() {
@@ -334,6 +386,12 @@ async function sendMsg() {
   const text = inp.value.trim();
   if (!text) return;
   inp.value = "";
+  userSays(text);
+}
+
+/* Shared by typed, tapped and spoken input. */
+async function userSays(text) {
+  if (!chat || chat.busy) return;
   bubble("user", text);
   chat.messages.push({ who: "user", text: text });
   chat.busy = true;

@@ -185,7 +185,11 @@ conversation engine works fully offline: 27 intents, 15 topics with follow-ups,
 30 common learner error patterns with gentle corrections, session memory
 (name, topics, corrections), typing indicator, quick replies, read-aloud toggle,
 and a session summary (messages, corrections, new words, XP, printable
-transcript). Optional **LLM plug-in**: paste an API key in the in-app settings
+transcript). **🎤 Voice chat**: every buddy has a mic button — learners speak
+instead of typing (speech-to-text), and replies are read aloud; a dedicated
+voice-first mode (big "Tap & Speak" button, on by default for 🐣 Pip) lets
+pre-primary kids who can't type yet hold real spoken conversations — listening
+and speaking, the heart of active learning. Optional **LLM plug-in**: paste an API key in the in-app settings
 (OpenAI-compatible endpoint) and the same buddies reply with a real AI —
 the key stays on the device, never synced.
 
