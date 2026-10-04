@@ -62,15 +62,41 @@ export function chunkText(text) {
 
 function pickVoice(uri) {
   try {
+    // Auto mode: do NOT pin a voice — let the browser use its default.
+    // (Pinning a specific voice can select one whose data is broken on the device.)
+    if (!uri) return null;
     var voices = window.speechSynthesis.getVoices() || [];
-    if (uri) {
-      var hit = voices.filter(function (v) { return v.voiceURI === uri; })[0];
-      if (hit) return hit;
-    }
-    var en = voices.filter(function (v) { return v.lang && v.lang.toLowerCase().indexOf("en") === 0; });
-    var pref = en.filter(function (v) { return v.name && /female|samantha|zira|google us english/i.test(v.name); });
-    return pref[0] || en[0] || null;
+    var hit = voices.filter(function (v) { return v.voiceURI === uri; })[0];
+    return hit || null;
   } catch (e) { return null; }
+}
+
+/* Run cb once the device's voice list is loaded (or after 2s). Chains with any
+   existing onvoiceschanged handler instead of replacing it. */
+function withVoices(cb) {
+  try {
+    var ss = window.speechSynthesis;
+    if (ss.getVoices().length) { cb(); return; }
+    var prev = ss.onvoiceschanged, done = false;
+    var go = function () {
+      if (done) return; done = true;
+      try { ss.onvoiceschanged = prev || null; } catch (e) {}
+      cb();
+    };
+    ss.onvoiceschanged = function () { try { if (prev) prev(); } catch (e) {} go(); };
+    setTimeout(go, 2000);
+  } catch (e) { cb(); }
+}
+
+/* Snapshot of the speech engine for self-diagnosis. */
+export function voiceDiag() {
+  try {
+    var ss = window.speechSynthesis;
+    return {
+      state: ss.speaking ? "speaking" : (ss.pending ? "queued" : "idle"),
+      voices: ss.getVoices().length
+    };
+  } catch (e) { return { state: "unknown", voices: 0 }; }
 }
 
 // Token guards the delayed start: a newer speak()/stopSpeak() cancels a pending one.
@@ -97,13 +123,16 @@ export function speak(text, opts) {
     var next = function () {
       if (my !== speakToken) return; // superseded by a newer speak()/stop — stay silent
       if (idx >= chunks.length) { finish(); return; }
-      // Watchdog: if the engine wedges (no end/error), force-finish so the UI
-      // never sticks on "Speaking…" and the conversation can continue by mic.
+      // Watchdog: if the engine wedges (no end/error), report it and force-finish
+      // so the UI never sticks on "Speaking…" and the conversation can continue.
       disarm();
       (function (len) {
         watchdog = setTimeout(function () {
           if (my !== speakToken || done) return;
           try { window.speechSynthesis.cancel(); } catch (e) {}
+          if (typeof opts.onwedged === "function") {
+            try { opts.onwedged(voiceDiag()); } catch (e) {}
+          }
           finish();
         }, Math.max(9000, len * 150 + 8000));
       })(chunks[idx].length);
@@ -123,7 +152,12 @@ export function speak(text, opts) {
     };
     // Chrome quirk: speak() issued synchronously after cancel() can be silently
     // dropped, so the queue starts on the next tick (still within the gesture window).
-    setTimeout(function () { if (my === speakToken) next(); }, 80);
+    // Voices are awaited first: speaking before the voice list loads is another
+    // classic way an utterance gets stuck forever.
+    setTimeout(function () {
+      if (my !== speakToken) return;
+      withVoices(function () { if (my === speakToken) next(); });
+    }, 80);
     return true;
   } catch (e) {
     return false;

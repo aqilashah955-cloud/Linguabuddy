@@ -1,5 +1,5 @@
 // LinguaBuddy — TTS helper tests (plain node, no DOM).
-import { chunkText, ttsAvailable, speak, stopSpeak, listVoices } from "../js/tts.js";
+import { chunkText, ttsAvailable, speak, stopSpeak, listVoices, voiceDiag } from "../js/tts.js";
 
 let pass = 0, fail = 0;
 function ok(cond, name) {
@@ -56,6 +56,12 @@ ok(globalThis.window.speechSynthesis.cancelCount === 2,
   "cancel() issued when the engine had pending utterances");
 var vs = listVoices();
 ok(Array.isArray(vs) && vs.length === 0, "listVoices empty when device has no voices");
+var dg = voiceDiag();
+ok(dg && dg.voices === 0, "voiceDiag reports voice count on mock");
+globalThis.window.speechSynthesis.pending = false;
+globalThis.window.speechSynthesis.speaking = false;
+dg = voiceDiag();
+ok(dg && dg.state === "idle", "voiceDiag reports idle when engine is free");
 delete globalThis.window;
 delete globalThis.SpeechSynthesisUtterance;
 ok(ttsAvailable() === false, "guards restored after mock cleanup");

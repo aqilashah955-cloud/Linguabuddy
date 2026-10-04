@@ -10,7 +10,7 @@ import {
 } from "../data/buddies.js";
 import { S, save, touchStreak, recordAttempt } from "./store.js";
 import { awardXP, checkBadges, toast } from "./gamify.js";
-import { speak, stopSpeak, ttsAvailable, listVoices } from "./tts.js";
+import { speak, stopSpeak, ttsAvailable, listVoices, voiceDiag } from "./tts.js";
 import { startListen, speechRecCtor } from "./engage.js";
 import { printHTML } from "./worksheets.js";
 import { showScreen as show } from "./ui.js";
@@ -463,6 +463,20 @@ function bubble(who, text) {
   log.scrollTop = log.scrollHeight;
 }
 
+/* The voice engine wedged (no audio, no finish). Explain once per chat, with
+   the actual engine state, so the learner isn't left guessing. */
+function voiceTrouble(d) {
+  if (!chat || chat.voiceTroubleShown) return;
+  chat.voiceTroubleShown = true;
+  d = d || voiceDiag();
+  var fix = d.voices === 0
+    ? "Your Mac has no English voices installed. Open System Settings → Accessibility → Spoken Content and download an English voice, then come back."
+    : "Quick fixes: ① pick a different voice in the 🌐 picker below and tap 🔊 Test speaker, ② check your Mac's volume and sound output (System Settings → Sound → Output), ③ make sure this browser tab isn't muted.";
+  addMsg("buddy", "🔇 I tried to speak but no sound came out (voice engine: " + d.state +
+    ", voices found: " + d.voices + "). " + fix +
+    " Your mic still works — we can keep chatting by voice, you'll just read my replies for now! 💬");
+}
+
 function buddySay(text) {
   bubble("buddy", text);
   chat.messages.push({ who: "buddy", text: text });
@@ -478,7 +492,7 @@ function buddySay(text) {
   };
   if (chat.ttsOn && ttsAvailable()) {
     if (ttsBtn) ttsBtn.textContent = "🔊 Speaking…";
-    var started = speak(text, buddySpeakOpts({ onend: keepTalking }));
+    var started = speak(text, buddySpeakOpts({ onend: keepTalking, onwedged: voiceTrouble }));
     if (!started) keepTalking();
   } else keepTalking();
 }
