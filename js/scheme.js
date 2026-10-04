@@ -233,7 +233,7 @@ export function renderSchoolBox() {
     const opts = SCHEMES.map(function (s) {
       return '<option value="' + esc(s.id) + '">' + esc(s.board + " · " + s.grade + " · " + s.subject) + "</option>";
     }).join("");
-    box.innerHTML = '<div class="card school-card"><h3>🏫 School Practice</h3>' +
+    box.innerHTML = '<div class="card school-card"><h3>🏫 Aga Khan Schools</h3>' +
       '<p class="fine">Practice and test exactly what your school teaches — set your class once, then do your daily set.</p>' +
       '<div class="field"><label>Class / scheme</label><select id="schScheme">' + opts + "</select></div>" +
       '<div class="field"><label>Current lesson number</label>' +
@@ -267,7 +267,7 @@ export function renderSchoolBox() {
   const mapped = isLessonMapped(st.scheme, st.lesson);
   const termName = st.term ? st.term.name : "";
   const e = st.entry || {};
-  box.innerHTML = '<div class="card school-card"><h3>🏫 School Practice</h3>' +
+  box.innerHTML = '<div class="card school-card"><h3>🏫 Aga Khan Schools</h3>' +
     '<p class="school-line">' + esc(st.scheme.grade) + " · " + esc(termName) + " · " + lessonLabel(st) + "</p>" +
     (e.code ? '<p class="fine">SLO ' + esc(e.code) + (e.week ? " · " + esc(e.week) : "") + "</p>" : "") +
     (mapped ? "" : '<p class="fine">📋 This lesson\'s SLOs are being added from the scheme of work — check back soon.</p>') +
