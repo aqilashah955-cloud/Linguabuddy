@@ -18,7 +18,8 @@ function blankState() {
     profile: {
       name: "", loginId: "", email: "", uid: "", role: "student",
       ageGroup: "", level: "", goals: [], onboarded: false,
-      streak: 0, lastActive: "", xp: 0, badges: [], lessonXp: {}
+      streak: 0, lastActive: "", xp: 0, badges: [], lessonXp: {},
+      trialStart: 0, subUntil: 0, subPlan: ""
     },
     attempts: [],   // {id, lockKey, student, kind, ref, title, mode, score, total, pct, perSlo, tabs, secs, date, usedKeys[], answers[]}
     locks: {},
@@ -53,6 +54,7 @@ export function save() {
     saveUserDoc(S.profile.uid, {
       name: S.profile.name, level: S.profile.level, goals: S.profile.goals,
       streak: S.profile.streak, xp: S.profile.xp,
+      trialStart: S.profile.trialStart, subUntil: S.profile.subUntil, subPlan: S.profile.subPlan,
       masteryEv: S.masteryEv, sloLevel: S.sloLevel, reading: S.reading
     });
   }
