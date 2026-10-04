@@ -15,6 +15,7 @@ import {
   buildProgressReport, evidenceFromSubmissions, buildItems
 } from "./engine.js";
 import { SCHEMES, schemeById, termOf, lessonOf } from "./scheme.js";
+import { openMarksClass } from "./marks.js";
 import { runAttempt, showResult, summarizeResults } from "./assess.js";
 import { awardXP, xpForAttempt, checkBadges } from "./gamify.js";
 
@@ -234,6 +235,7 @@ export async function openClass(classId) {
       ? "Now: " + esc(curSch.grade) + " · " + esc(curTerm.name) + " · Lesson " + cls.schemeLesson +
         (curEntry.title && !/^Lesson \d+$/.test(curEntry.title) ? " — " + esc(curEntry.title) : "")
       : "Students practice the lesson you set here in their daily School Practice.") + "</p></div></div>";
+  html += '<div class="row-flex" style="margin:4px 0 12px;"><button class="btn-secondary" id="clsMarksBtn">📊 Marks — auto records</button></div>';
   html += '<div class="form-card"><div class="field"><label>Add student by login ID' +
     (online() ? "" : " (offline: type the student's name)") + "</label>" +
     '<div class="row-flex"><input id="addStuInput" type="text" placeholder="e.g. amina2026" />' +
@@ -244,6 +246,16 @@ export async function openClass(classId) {
   $("classBody").innerHTML = html;
   show("screen-class");
   $("clsBack").addEventListener("click", function () { renderTeacher(); });
+  const marksBtn = $("clsMarksBtn");
+  if (marksBtn) marksBtn.addEventListener("click", async function () {
+    marksBtn.textContent = "Loading…";
+    const subs = await loadInboxSubs();
+    const mine = subs.filter(function (s) {
+      return (cls.students || []).some(function (r) { return rosterKey(r) === subKey(s); });
+    });
+    marksBtn.textContent = "📊 Marks — auto records";
+    openMarksClass(cls, mine);
+  });
   const schSaveBtn = $("clsSchemeSave");
   if (schSaveBtn) schSaveBtn.addEventListener("click", async function () {
     const sid = $("clsScheme").value;

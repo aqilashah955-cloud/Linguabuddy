@@ -31,6 +31,7 @@ import { showMoreTests, setMoreTestsGo } from "./moretests.js";
 import { showBuddies, setBuddiesGo } from "./buddies.js";
 import { needsGate, ensureTrial, renderSubscribe, setBillingGo } from "./billing.js";
 import { renderAKHub, setGo as setAkGo } from "./scheme.js";
+import { openMarksStudent, setGo as setMarksGo } from "./marks.js";
 import { warmVoices } from "./tts.js";
 import { badgeList } from "./gamify.js";
 import { LEVEL_OPTS, GOAL_OPTS } from "./auth.js";
@@ -80,6 +81,7 @@ export function go(dest, arg) {
     case "moretests": showMoreTests(); break;
     case "buddies": showBuddies(); break;
     case "ak": renderAKHub(); showScreen("screen-ak"); break;
+    case "marks": openMarksStudent(); break;
     case "teacher": renderTeacher(); break;
     case "class": openClass(arg); break;
     case "admin": renderAdmin(); break;
@@ -207,7 +209,7 @@ async function boot() {
   [setDashGo, setLearnGo, setReadGo, setVocabGo,
    setTeacherGo, setAdminGo, setGrammarGo, setWritingGo, setConvoGo, setAskGo, setGamesGo, setMyworkGo,
    setKidsGo, setWorksheetsGo, setCertsGo,
-   setTestprepGo, setProGo, setMoreTestsGo, setBuddiesGo, setBillingGo, setAkGo]
+   setTestprepGo, setProGo, setMoreTestsGo, setBuddiesGo, setBillingGo, setAkGo, setMarksGo]
     .forEach(function (fn) { fn(go); });
   warmVoices();
   setAuthDone(function () { enterApp(); });
