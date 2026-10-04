@@ -275,7 +275,7 @@ function startChat(id) {
     '<button class="bd-micbig" id="bdMicBig">🎤<span>Tap & Speak</span></button>' +
     '<p class="fine" id="bdListenMsg"></p>' +
     '<div class="bd-voiceopts">' +
-    '<select id="bdVoiceSel" class="chipbtn sm" title="Choose the buddy\'s voice"><option value="">🌐 Auto voice</option></select>' +
+    '<select id="bdVoiceSel" class="chipbtn sm" title="Choose the buddy\'s voice"><option value="">🌐 Auto (female)</option></select>' +
     '<button class="chipbtn sm" id="bdRate" title="Slower speech for learners">🐢 Slow: Off</button>' +
     '<button class="chipbtn sm" id="bdTestVoice" title="Check that you can hear the buddy">🔊 Test speaker</button>' +
     "</div></div>" +
@@ -346,7 +346,13 @@ function fillVoiceSel() {
   if (!sel || !chat) return;
   var vs = listVoices();
   var cur = (S.settings && S.settings.buddyVoiceURI) || "";
-  var html = '<option value="">🌐 Auto voice</option>' + vs.map(function (v) {
+  // A voice saved before the female-only rule (e.g. Daniel) is retired.
+  if (cur && !vs.some(function (v) { return v.uri === cur; })) {
+    cur = "";
+    S.settings.buddyVoiceURI = "";
+    save();
+  }
+  var html = '<option value="">🌐 Auto (female)</option>' + vs.map(function (v) {
     return '<option value="' + esc(v.uri) + '"' + (v.uri === cur ? " selected" : "") + ">" +
       esc(v.name.length > 28 ? v.name.slice(0, 28) + "…" : v.name) + "</option>";
   }).join("");
@@ -362,7 +368,8 @@ function fillVoiceSel() {
 function buddySpeakOpts(extra) {
   var o = Object.assign({
     rate: chat.slowSpeech ? 0.7 : 0.95,
-    voiceURI: (S.settings && S.settings.buddyVoiceURI) || ""
+    voiceURI: (S.settings && S.settings.buddyVoiceURI) || "",
+    buddyId: chat.ch.id
   }, extra || {});
   return o;
 }

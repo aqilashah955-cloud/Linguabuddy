@@ -18,12 +18,11 @@ export function stopSpeak() {
   } catch (e) {}
 }
 
-/* English voices available on this device — for the voice picker. */
+/* English voices available on this device — female only, for the voice picker. */
 export function listVoices() {
   if (!ttsAvailable()) return [];
   try {
-    return (window.speechSynthesis.getVoices() || [])
-      .filter(function (v) { return v.lang && v.lang.toLowerCase().indexOf("en") === 0; })
+    return femaleVoiceObjs(window.speechSynthesis.getVoices() || [])
       .map(function (v) { return { name: v.name, lang: v.lang, uri: v.voiceURI }; });
   } catch (e) { return []; }
 }
@@ -62,14 +61,61 @@ export function chunkText(text, maxLen) {
   return out.length ? out : [String(text || "")];
 }
 
-function pickVoice(uri) {
+/* ---- female voices ----
+   The Web Speech API exposes no gender field, so we match well-known female
+   voice names. LinguaBuddy speakers are female by design. */
+var FEMALE_HINTS = [
+  "female",
+  "samantha", "zira", "karen", "moira", "tessa", "veena", "fiona", "serena",
+  "allison", "ava", "joana", "susan", "kate", "anna", "emma", "olivia",
+  "sophia", "amelia", "aria", "ellen", "martha", "jane", "lily", "sarah",
+  "lisa", "mary", "nora", "zoe", "kathy", "agnes", "princess", "victoria",
+  "google us english", "google uk english female"
+];
+
+/* Heuristic gender check. Pure — exported for tests. */
+export function isFemaleVoice(v) {
+  var n = String((v && v.name) || "").toLowerCase();
+  if (!n) return false;
+  for (var i = 0; i < FEMALE_HINTS.length; i++) {
+    if (n.indexOf(FEMALE_HINTS[i]) >= 0) return true;
+  }
+  return false;
+}
+
+function englishVoices(voices) {
+  return (voices || []).filter(function (v) {
+    return v.lang && v.lang.toLowerCase().indexOf("en") === 0;
+  });
+}
+
+/* Female English voices, best-known quality first. */
+function femaleVoiceObjs(voices) {
+  var fem = englishVoices(voices).filter(isFemaleVoice);
+  var good = /samantha|zira|google us english|google uk english female/i;
+  fem.sort(function (a, b) {
+    return (good.test(b.name) ? 1 : 0) - (good.test(a.name) ? 1 : 0);
+  });
+  return fem;
+}
+
+function pickVoice(uri, buddyId) {
   try {
-    // Auto mode: do NOT pin a voice — let the browser use its default.
-    // (Pinning a specific voice can select one whose data is broken on the device.)
-    if (!uri) return null;
     var voices = window.speechSynthesis.getVoices() || [];
-    var hit = voices.filter(function (v) { return v.voiceURI === uri; })[0];
-    return hit || null;
+    if (uri) {
+      var hit = voices.filter(function (v) { return v.voiceURI === uri; })[0];
+      // A saved male voice (e.g. picked before this rule) falls back to auto.
+      if (hit && isFemaleVoice(hit)) return hit;
+    }
+    // Auto: every speaker is female — a different voice per buddy for character.
+    var fem = femaleVoiceObjs(voices);
+    if (fem.length) {
+      var h = 0, s = String(buddyId || "lingoo");
+      for (var i = 0; i < s.length; i++) h = ((h * 31) + s.charCodeAt(i)) >>> 0;
+      return fem[h % fem.length];
+    }
+    var en = englishVoices(voices);
+    return en[0] || null; // last resort: never stay silent
   } catch (e) { return null; }
 }
 
@@ -117,7 +163,7 @@ export function speak(text, opts) {
     // Slow speech = fewer chars per second, so chunks must be shorter to stay
     // under Chrome's ~15s silent utterance cutoff.
     var chunks = chunkText(text, rate < 0.8 ? 100 : 160);
-    var voice = pickVoice(opts.voiceURI);
+    var voice = pickVoice(opts.voiceURI, opts.buddyId);
     var idx = 0, done = false, my = ++speakToken, watchdog = null;
     var disarm = function () { if (watchdog) { clearTimeout(watchdog); watchdog = null; } };
     var finish = function () {

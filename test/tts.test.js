@@ -1,5 +1,5 @@
 // LinguaBuddy — TTS helper tests (plain node, no DOM).
-import { chunkText, ttsAvailable, speak, stopSpeak, listVoices, voiceDiag } from "../js/tts.js";
+import { chunkText, ttsAvailable, speak, stopSpeak, listVoices, voiceDiag, isFemaleVoice } from "../js/tts.js";
 
 let pass = 0, fail = 0;
 function ok(cond, name) {
@@ -68,6 +68,49 @@ ok(dg && dg.state === "idle", "voiceDiag reports idle when engine is free");
 delete globalThis.window;
 delete globalThis.SpeechSynthesisUtterance;
 ok(ttsAvailable() === false, "guards restored after mock cleanup");
+
+section("female voice heuristic");
+ok(isFemaleVoice({ name: "Samantha" }), "Samantha is female");
+ok(isFemaleVoice({ name: "Google UK English Female" }), "Google UK English Female is female");
+ok(isFemaleVoice({ name: "Microsoft Zira Desktop" }), "Zira is female");
+ok(!isFemaleVoice({ name: "Daniel" }), "Daniel is not female");
+ok(!isFemaleVoice({ name: "Google UK English Male" }), "Google UK English Male is not female");
+ok(!isFemaleVoice({ name: "Alex" }), "Alex is not female");
+ok(!isFemaleVoice({}), "nameless voice is not female");
+ok(!isFemaleVoice(null), "null is not female");
+
+section("auto mode always picks a female voice (mocked voices)");
+globalThis.SpeechSynthesisUtterance = function (t) { this.text = t; };
+var picked = null;
+globalThis.window = {
+  speechSynthesis: {
+    speaking: false, pending: false, paused: false,
+    cancel: function () {}, resume: function () {},
+    speak: function (u) { picked = u; },
+    getVoices: function () {
+      return [
+        { name: "Daniel", lang: "en-US", voiceURI: "uri-daniel" },
+        { name: "Samantha", lang: "en-US", voiceURI: "uri-samantha" },
+        { name: "Alex", lang: "en-US", voiceURI: "uri-alex" },
+        { name: "Zira", lang: "en-US", voiceURI: "uri-zira" }
+      ];
+    }
+  }
+};
+var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+speak("hello", { buddyId: "maya" });
+await sleep(250);
+ok(picked && picked.voice && isFemaleVoice(picked.voice), "auto pick is female, got " + (picked && picked.voice && picked.voice.name));
+ok(picked.voice.name !== "Daniel" && picked.voice.name !== "Alex", "male voices never auto-picked");
+picked = null;
+speak("hi", { buddyId: "maya", voiceURI: "uri-daniel" });
+await sleep(250);
+ok(picked && picked.voice && isFemaleVoice(picked.voice), "saved male voice ignored, fell back to female");
+var femList = listVoices();
+ok(femList.length === 2 && femList.every(function (v) { return /samantha|zira/i.test(v.name); }),
+  "voice picker lists female voices only (" + femList.map(function (v) { return v.name; }).join(", ") + ")");
+delete globalThis.window;
+delete globalThis.SpeechSynthesisUtterance;
 
 console.log("\n" + pass + " passed, " + fail + " failed");
 process.exit(fail ? 1 : 0);
