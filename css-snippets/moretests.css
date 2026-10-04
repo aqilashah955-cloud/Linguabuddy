@@ -1,0 +1,70 @@
+/* LinguaBuddy — 🌍 More International Tests styles.
+   Cream / ink-blue / marigold theme, mobile-first. */
+
+.mt-hero { text-align: center; padding: 18px 12px 6px; }
+.mt-hero h2 { color: var(--ink-deep); margin: 0 0 6px; }
+
+.mt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; padding: 12px; }
+.mt-btn { background: var(--card); border: 2px solid var(--border); border-radius: 14px; padding: 16px 10px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; min-height: 120px; }
+.mt-btn:active { transform: scale(0.97); }
+.mt-emoji { font-size: 34px; }
+.mt-t { font-weight: 700; color: var(--ink-deep); font-size: 15px; }
+
+.mt-hubbar { display: flex; align-items: flex-start; gap: 10px; padding: 12px 12px 0; }
+.mt-hubbar h2 { margin: 0; color: var(--ink-deep); font-size: 20px; }
+
+.mt-card { background: var(--card); border: 2px solid var(--border); border-radius: 14px;
+  padding: 16px; margin: 12px; }
+.mt-card h3 { color: var(--ink-deep); margin: 14px 0 8px; }
+
+.mt-passage { max-height: 320px; overflow-y: auto; background: var(--paper); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px; margin-bottom: 12px; line-height: 1.65; }
+.mt-passage p { margin: 0 0 10px; }
+.mt-read { background: var(--marigold-soft); border: 1px solid var(--border); border-radius: 10px;
+  padding: 12px; margin: 10px 0; line-height: 1.6; }
+.mt-prompt { background: var(--paper); border-left: 4px solid var(--marigold); padding: 10px 12px;
+  border-radius: 0 10px 10px 0; margin: 12px 0; }
+.mt-bigtext { font-size: 17px; line-height: 1.7; background: var(--paper); border-radius: 10px; padding: 12px; }
+
+.mt-q { background: var(--paper); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin: 10px 0; }
+.mt-opt { display: block; padding: 8px 6px; cursor: pointer; border-radius: 8px; }
+.mt-opt:hover { background: var(--marigold-soft); }
+.mt-opt input { margin-right: 8px; }
+.mt-blank { border: 0; border-bottom: 2px solid var(--marigold); background: transparent;
+  font-size: 16px; padding: 2px 6px; width: 130px; color: var(--text); }
+select.mt-blank { width: auto; max-width: 100%; }
+
+.mt-opts { display: grid; gap: 8px; margin-top: 10px; }
+.mt-optbtn { background: var(--paper); border: 2px solid var(--border); border-radius: 10px; padding: 12px;
+  text-align: left; cursor: pointer; font-size: 15px; min-height: 52px; }
+.mt-optbtn:active { border-color: var(--marigold); }
+
+.mt-score { font-size: 30px; font-weight: 800; color: var(--ink-deep); margin: 6px 0 12px; }
+.mt-result .fine { margin: 6px 0; }
+
+.mt-review { margin-top: 14px; }
+.mt-rev { border-radius: 10px; padding: 10px 12px; margin: 8px 0; border: 1px solid var(--border); }
+.mt-rev.ok { background: var(--ok-bg); }
+.mt-rev.bad { background: #fdecea; }
+.mt-rev p { margin: 4px 0; }
+
+.mt-guide { background: var(--paper); border: 1px dashed var(--marigold); border-radius: 10px;
+  padding: 10px 14px; margin: 12px 0; }
+.mt-guide summary { cursor: pointer; font-weight: 700; color: var(--ink-deep); }
+.mt-area { width: 100%; min-height: 180px; border: 2px solid var(--border); border-radius: 10px;
+  padding: 12px; font-size: 16px; line-height: 1.6; margin: 10px 0; box-sizing: border-box; }
+.mt-crit { background: var(--paper); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin: 8px 0; }
+.mt-crit p { margin: 6px 0; }
+
+.mt-stars { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 10px 0; }
+.mt-starwrap button { background: none; border: 0; font-size: 30px; cursor: pointer; color: var(--marigold); padding: 2px 4px; }
+
+.mt-tips { padding-left: 20px; line-height: 1.7; }
+.mt-tips li { margin-bottom: 8px; }
+.mt-heads { line-height: 1.8; }
+
+@media (max-width: 480px) {
+  .mt-grid { grid-template-columns: repeat(2, 1fr); }
+  .mt-card { margin: 8px; padding: 12px; }
+}
