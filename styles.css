@@ -655,3 +655,17 @@ mark { border-radius: 4px; padding: 0 2px; }
   padding: 8px 14px; font-weight: 600; color: var(--ink-deep); position: relative; }
 .lingoo-bubble:before { content: ""; position: absolute; left: -8px; top: 50%; margin-top: -7px;
   border: 7px solid transparent; border-right-color: var(--border); border-left: 0; }
+
+/* ============ subscriptions ============ */
+.sub-wrap { max-width: 640px; margin: 0 auto; padding: 32px 16px; text-align: center; }
+.sub-mascot { font-size: 64px; margin-bottom: 8px; }
+.sub-wrap h2 { color: #1e3a8a; margin: 0 0 10px; }
+.sub-sub { color: #5b5b5b; line-height: 1.55; margin-bottom: 22px; }
+.plan-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 14px; }
+.plan-card { background: #fffdf7; border: 2px solid #e7dcc3; border-radius: 16px; padding: 16px 12px; }
+.plan-tag { display: inline-block; font-size: 12px; font-weight: 700; color: #b45309; background: #fef3c7;
+  border-radius: 20px; padding: 3px 10px; margin-bottom: 8px; }
+.plan-card h3 { margin: 0 0 4px; color: #1e3a8a; }
+.plan-price { font-size: 26px; font-weight: 800; color: #1e3a8a; margin-bottom: 12px; }
+.plan-wa { display: inline-block; text-decoration: none; font-size: 15px; padding: 10px 16px; }
+.sub-btns { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }

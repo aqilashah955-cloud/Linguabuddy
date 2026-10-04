@@ -7,6 +7,7 @@ import { fb, isConfigured } from "./firebase.js";
 import { esc, fmtDate } from "./utils.js";
 import { showScreen as show } from "./ui.js";
 import { isAdmin } from "./teacher.js";
+import { PLANS, planById, grantSubscription, statusLine } from "./billing.js";
 
 function $(id) { return document.getElementById(id); }
 
@@ -27,6 +28,14 @@ async function fsCount(coll) {
 async function setRole(uid, role) {
   const m = fb().fns.fsMod;
   await m.setDoc(m.doc(fb().db, "users", uid), { role: role }, { merge: true });
+}
+async function activatePlanOnline(u, planId) {
+  const plan = planById(planId);
+  const m = fb().fns.fsMod;
+  const base = Math.max(Date.now(), u.subUntil || 0); // extend from current expiry
+  await m.setDoc(m.doc(fb().db, "users", u.id), {
+    subUntil: base + plan.months * 30 * 864e5, subPlan: plan.id
+  }, { merge: true });
 }
 
 export function renderAdmin() {
@@ -93,6 +102,58 @@ async function drawAdmin() {
         alert("Could not update role: " + (e.message || e));
         drawAdmin();
       }
+    });
+  });
+  drawSubscriptions(box, users);
+}
+
+/* Subscriptions: trial/sub status per user + one-tap plan activation. */
+function drawSubscriptions(box, users) {
+  const wrap = document.createElement("div");
+  const onlineMode = online();
+  const rows = onlineMode ? users : [{
+    id: "local", name: S.profile.name || "(this device)",
+    loginId: S.profile.loginId, role: S.profile.role,
+    trialStart: S.profile.trialStart, subUntil: S.profile.subUntil, subPlan: S.profile.subPlan
+  }];
+  wrap.innerHTML = '<h3 class="sec-title">💳 Subscriptions</h3>' +
+    '<div class="fine">Students get a 3-day free trial, then need a plan. ' +
+    "Activating extends from the current expiry date. " +
+    (onlineMode ? "" : "Offline — managing this device only.") + "</div>" +
+    rows.map(function (u) {
+      const prof = {
+        role: u.role, trialStart: u.trialStart,
+        subUntil: u.subUntil, subPlan: u.subPlan
+      };
+      return '<div class="roster-row"><div><strong>' + esc(u.name || u.id) + "</strong>" +
+        '<br><span class="fine">' + esc(u.loginId ? "ID: " + u.loginId : (u.email || "")) +
+        " · " + esc(statusLine(prof, Date.now())) + "</span></div>" +
+        '<div class="sub-btns">' + PLANS.map(function (pl) {
+          return '<button class="chipbtn sm" data-sub-uid="' + esc(u.id) + '" data-plan="' + pl.id +
+            '" title="Activate ' + esc(pl.name) + " — Rs " + pl.price.toLocaleString("en-PK") + '">' +
+            esc(pl.name) + "</button>";
+        }).join("") + "</div></div>";
+    }).join("");
+  box.appendChild(wrap);
+  wrap.querySelectorAll("[data-sub-uid]").forEach(function (b) {
+    b.addEventListener("click", async function () {
+      const uid = b.getAttribute("data-sub-uid"), planId = b.getAttribute("data-plan");
+      const plan = planById(planId);
+      b.disabled = true;
+      try {
+        if (onlineMode) {
+          const u = rows.filter(function (x) { return x.id === uid; })[0] || {};
+          await activatePlanOnline(u, planId);
+        } else {
+          grantSubscription(S.profile, planId);
+          save();
+        }
+        alert("✅ " + plan.name + " activated.");
+      } catch (e) {
+        alert("Could not activate: " + (e.message || e));
+      }
+      b.disabled = false;
+      drawAdmin();
     });
   });
 }

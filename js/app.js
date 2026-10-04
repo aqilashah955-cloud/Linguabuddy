@@ -29,6 +29,7 @@ import { showTestprep, setTestprepGo } from "./testprep.js";
 import { showPro, setProGo } from "./pro.js";
 import { showMoreTests, setMoreTestsGo } from "./moretests.js";
 import { showBuddies, setBuddiesGo } from "./buddies.js";
+import { needsGate, ensureTrial, renderSubscribe, setBillingGo } from "./billing.js";
 import { warmVoices } from "./tts.js";
 import { badgeList } from "./gamify.js";
 import { LEVEL_OPTS, GOAL_OPTS } from "./auth.js";
@@ -38,6 +39,14 @@ function $(id) { return document.getElementById(id); }
 /* ---------------- router ---------------- */
 let browseMode = "practice";
 export function go(dest, arg) {
+  // Subscription gate: expired students see only the subscribe screen (and
+  // their profile). Teachers/admins and active trials/subs pass through.
+  const hadTrial = !!S.profile.trialStart;
+  if (dest !== "subscribe" && dest !== "profile" && needsGate(S.profile, Date.now())) {
+    if (!hadTrial) save(); // persist a just-started trial
+    renderSubscribe();
+    return;
+  }
   switch (dest) {
     case "home": renderDashboard(); showScreen("screen-home", "home"); break;
     case "learn": renderLearn(); showScreen("screen-learn", "learn"); break;
@@ -186,6 +195,7 @@ function initProfile() {
 /* ---------------- boot ---------------- */
 function enterApp() {
   refreshNav();
+  if (needsGate(S.profile, Date.now())) { renderSubscribe(); return; }
   if (!S.profile.onboarded) startOnboarding();
   else go("home");
 }
@@ -195,7 +205,7 @@ async function boot() {
   [setDashGo, setLearnGo, setReadGo, setVocabGo,
    setTeacherGo, setAdminGo, setGrammarGo, setWritingGo, setConvoGo, setAskGo, setGamesGo, setMyworkGo,
    setKidsGo, setWorksheetsGo, setCertsGo,
-   setTestprepGo, setProGo, setMoreTestsGo, setBuddiesGo]
+   setTestprepGo, setProGo, setMoreTestsGo, setBuddiesGo, setBillingGo]
     .forEach(function (fn) { fn(go); });
   warmVoices();
   setAuthDone(function () { enterApp(); });
@@ -236,6 +246,9 @@ async function boot() {
           S.profile.level = doc.level || S.profile.level;
           S.profile.goals = doc.goals || S.profile.goals;
           S.profile.streak = doc.streak || S.profile.streak || 0;
+          if (doc.trialStart) S.profile.trialStart = doc.trialStart;
+          S.profile.subUntil = doc.subUntil || 0;
+          S.profile.subPlan = doc.subPlan || "";
           if (doc.masteryEv) S.masteryEv = doc.masteryEv;
           if (doc.sloLevel) S.sloLevel = doc.sloLevel;
           if (doc.reading) S.reading = doc.reading;

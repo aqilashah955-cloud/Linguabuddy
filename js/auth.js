@@ -4,6 +4,7 @@
 
 import { fb, isConfigured, signUp, signIn, signOut, resetPassword, validLoginId, onAuthChange } from "./firebase.js";
 import { S, save } from "./store.js";
+import { ensureTrial } from "./billing.js";
 import { esc } from "./utils.js";
 import { showScreen as showLocal } from "./ui.js";
 
@@ -117,6 +118,7 @@ export function initAuthUI() {
     if (!v) { $("authErr").textContent = "Type your name to continue."; return; }
     S.profile.name = v;
     S.profile.onboarded = S.profile.onboarded || false;
+    ensureTrial(S.profile);
     save();
     done("local");
   });

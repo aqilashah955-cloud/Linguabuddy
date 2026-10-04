@@ -5,6 +5,7 @@
 // learning path is ready!"
 
 import { S, save, touchStreak } from "./store.js";
+import { ensureTrial } from "./billing.js";
 import { GOAL_OPTS, LEVEL_OPTS } from "./auth.js";
 import { buildPlacementItems, placementLevel } from "./engine.js";
 import { runAttempt, showResult } from "./assess.js";
@@ -107,7 +108,9 @@ export function initOnboarding() {
     const ag = chosenAge();
     if (!ag) { $("obAgeErr").textContent = "Pick the age group that fits best."; return; }
     S.profile.ageGroup = ag;
-    S.profile.onboarded = true; save();
+    S.profile.onboarded = true;
+    ensureTrial(S.profile);
+    save();
     touchStreak();
     finishOnboarding();
   });
