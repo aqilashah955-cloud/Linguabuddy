@@ -8,7 +8,24 @@ export function ttsAvailable() {
 
 export function stopSpeak() {
   speakToken++;
-  if (ttsAvailable()) window.speechSynthesis.cancel();
+  if (!ttsAvailable()) return;
+  try {
+    var ss = window.speechSynthesis;
+    // Cancel ONLY when the engine is actually busy. cancel() on an empty
+    // queue can wedge Chrome's engine so the next speak() hangs forever
+    // (utterance stuck: no audio, no onend — the "stuck Speaking…" bug).
+    if (ss.speaking || ss.pending || ss.paused) ss.cancel();
+  } catch (e) {}
+}
+
+/* English voices available on this device — for the voice picker. */
+export function listVoices() {
+  if (!ttsAvailable()) return [];
+  try {
+    return (window.speechSynthesis.getVoices() || [])
+      .filter(function (v) { return v.lang && v.lang.toLowerCase().indexOf("en") === 0; })
+      .map(function (v) { return { name: v.name, lang: v.lang, uri: v.voiceURI }; });
+  } catch (e) { return []; }
 }
 
 export function speakSlow(text, opts) {
@@ -43,9 +60,13 @@ export function chunkText(text) {
   return out.length ? out : [String(text || "")];
 }
 
-function pickVoice() {
+function pickVoice(uri) {
   try {
     var voices = window.speechSynthesis.getVoices() || [];
+    if (uri) {
+      var hit = voices.filter(function (v) { return v.voiceURI === uri; })[0];
+      if (hit) return hit;
+    }
     var en = voices.filter(function (v) { return v.lang && v.lang.toLowerCase().indexOf("en") === 0; });
     var pref = en.filter(function (v) { return v.name && /female|samantha|zira|google us english/i.test(v.name); });
     return pref[0] || en[0] || null;
@@ -55,7 +76,7 @@ function pickVoice() {
 // Token guards the delayed start: a newer speak()/stopSpeak() cancels a pending one.
 var speakToken = 0;
 
-// Speak text aloud. opts: {rate (default 0.95), lang (default "en-US"), onend, onword}
+// Speak text aloud. opts: {rate (default 0.95), lang (default "en-US"), voiceURI, onend, onword}
 // Long text is spoken as chained sentence chunks; onend fires after the last one.
 export function speak(text, opts) {
   opts = opts || {};
@@ -65,23 +86,34 @@ export function speak(text, opts) {
     try { if (window.speechSynthesis.paused) window.speechSynthesis.resume(); } catch (e) {}
     stopSpeak();
     var chunks = chunkText(text);
-    var voice = pickVoice();
+    var voice = pickVoice(opts.voiceURI);
     var rate = typeof opts.rate === "number" ? opts.rate : 0.95;
-    var idx = 0;
-    var done = false;
+    var idx = 0, done = false, my = ++speakToken, watchdog = null;
+    var disarm = function () { if (watchdog) { clearTimeout(watchdog); watchdog = null; } };
     var finish = function () {
-      if (done) return; done = true;
+      if (done) return; done = true; disarm();
       if (typeof opts.onend === "function") { try { opts.onend(); } catch (e) {} }
     };
     var next = function () {
+      if (my !== speakToken) return; // superseded by a newer speak()/stop — stay silent
       if (idx >= chunks.length) { finish(); return; }
+      // Watchdog: if the engine wedges (no end/error), force-finish so the UI
+      // never sticks on "Speaking…" and the conversation can continue by mic.
+      disarm();
+      (function (len) {
+        watchdog = setTimeout(function () {
+          if (my !== speakToken || done) return;
+          try { window.speechSynthesis.cancel(); } catch (e) {}
+          finish();
+        }, Math.max(9000, len * 150 + 8000));
+      })(chunks[idx].length);
       var u = new SpeechSynthesisUtterance(chunks[idx++]);
       u.lang = opts.lang || "en-US";
       u.rate = rate;
       u.pitch = typeof opts.pitch === "number" ? opts.pitch : 1;
       if (voice) u.voice = voice;
-      u.onend = next;
-      u.onerror = next; // skip a failed chunk instead of hanging the queue
+      u.onend = function () { disarm(); next(); };
+      u.onerror = function () { disarm(); next(); }; // skip a failed chunk instead of hanging
       if (typeof opts.onword === "function" && idx === 1) {
         u.onboundary = function (e) {
           if (e.name === "word") opts.onword({ charIndex: e.charIndex });
@@ -91,7 +123,6 @@ export function speak(text, opts) {
     };
     // Chrome quirk: speak() issued synchronously after cancel() can be silently
     // dropped, so the queue starts on the next tick (still within the gesture window).
-    var my = ++speakToken;
     setTimeout(function () { if (my === speakToken) next(); }, 80);
     return true;
   } catch (e) {
