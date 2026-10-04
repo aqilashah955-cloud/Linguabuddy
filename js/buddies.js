@@ -10,7 +10,7 @@ import {
 } from "../data/buddies.js";
 import { S, save, touchStreak, recordAttempt } from "./store.js";
 import { awardXP, checkBadges, toast } from "./gamify.js";
-import { speak, stopSpeak, ttsAvailable } from "./tts.js";
+import { speak, stopSpeak, ttsAvailable, listVoices } from "./tts.js";
 import { startListen, speechRecCtor } from "./engage.js";
 import { printHTML } from "./worksheets.js";
 import { showScreen as show } from "./ui.js";
@@ -252,7 +252,7 @@ function startChat(id) {
   const micOk = !!speechRecCtor();
   chat = {
     ch: ch, session: newSession(), messages: [], ttsOn: ttsAvailable(), busy: false,
-    newWordsSeen: [], correctionsCount: 0,
+    newWordsSeen: [], correctionsCount: 0, slowSpeech: false,
     voiceMode: micOk // voice chat ON by default — talk instead of typing
   };
   const root = $("screen-buddies");
@@ -274,7 +274,11 @@ function startChat(id) {
     '<div class="bd-voicerow hidden" id="bdVoiceRow">' +
     '<button class="bd-micbig" id="bdMicBig">🎤<span>Tap & Speak</span></button>' +
     '<p class="fine" id="bdListenMsg"></p>' +
-    '<button class="chipbtn sm" id="bdTestVoice" title="Check that you can hear the buddy">🔊 Test speaker</button></div>' +
+    '<div class="bd-voiceopts">' +
+    '<select id="bdVoiceSel" class="chipbtn sm" title="Choose the buddy\'s voice"><option value="">🌐 Auto voice</option></select>' +
+    '<button class="chipbtn sm" id="bdRate" title="Slower speech for learners">🐢 Slow: Off</button>' +
+    '<button class="chipbtn sm" id="bdTestVoice" title="Check that you can hear the buddy">🔊 Test speaker</button>' +
+    "</div></div>" +
     '<div class="row-btns"><button class="btn-ghost btn-sm" id="bdEnd">📝 End & Summary</button></div></div>';
   $("bdBack").addEventListener("click", showBuddies);
   $("bdVoice").addEventListener("click", function () { setVoiceMode(!chat.voiceMode); });
@@ -288,10 +292,22 @@ function startChat(id) {
   $("bdSend").addEventListener("click", sendMsg);
   $("bdMic").addEventListener("click", micTap);
   $("bdMicBig").addEventListener("click", micTap);
+  $("bdRate").addEventListener("click", function () {
+    chat.slowSpeech = !chat.slowSpeech;
+    $("bdRate").textContent = chat.slowSpeech ? "🐢 Slow: On" : "🐢 Slow: Off";
+    toast(chat.slowSpeech ? "🐢 Slow speech on — great for listening practice!" : "Speech speed back to normal.");
+  });
+  fillVoiceSel();
+  if (ttsAvailable()) {
+    try {
+      window.speechSynthesis.onvoiceschanged = function () { fillVoiceSel(); };
+    } catch (e) { /* ignore */ }
+  }
   $("bdTestVoice").addEventListener("click", function () {
     stopSpeak();
     var msg = $("bdListenMsg");
-    var said = speak("Hello! I am " + chat.ch.name + ". If you can hear me, your speaker works!");
+    var said = speak("Hello! I am " + chat.ch.name + ". If you can hear me, your speaker works!",
+      buddySpeakOpts());
     if (!said) { toast("🔊 Your device can't read aloud right now."); return; }
     if (msg) msg.textContent = "🔊 Testing…";
     // Diagnostic: a moment later, report what the speech engine is actually doing.
@@ -322,6 +338,33 @@ function startChat(id) {
   buddySay(ch.opener);
   $("bdEnd").addEventListener("click", endChat);
   if (!chat.voiceMode) $("bdInput").focus();
+}
+
+/* Voice options: picker + slow-speech toggle. The choice persists on this device. */
+function fillVoiceSel() {
+  var sel = $("bdVoiceSel");
+  if (!sel || !chat) return;
+  var vs = listVoices();
+  var cur = (S.settings && S.settings.buddyVoiceURI) || "";
+  var html = '<option value="">🌐 Auto voice</option>' + vs.map(function (v) {
+    return '<option value="' + esc(v.uri) + '"' + (v.uri === cur ? " selected" : "") + ">" +
+      esc(v.name.length > 28 ? v.name.slice(0, 28) + "…" : v.name) + "</option>";
+  }).join("");
+  if (sel.innerHTML !== html) sel.innerHTML = html;
+  sel.onchange = function () {
+    S.settings = S.settings || {};
+    S.settings.buddyVoiceURI = sel.value;
+    save();
+    toast(sel.value ? "🎤 Voice changed — tap 🔊 Test speaker to hear it." : "🌐 Back to automatic voice.");
+  };
+}
+
+function buddySpeakOpts(extra) {
+  var o = Object.assign({
+    rate: chat.slowSpeech ? 0.7 : 0.95,
+    voiceURI: (S.settings && S.settings.buddyVoiceURI) || ""
+  }, extra || {});
+  return o;
 }
 
 /* Voice chat: big mic button + replies read aloud automatically.
@@ -435,7 +478,7 @@ function buddySay(text) {
   };
   if (chat.ttsOn && ttsAvailable()) {
     if (ttsBtn) ttsBtn.textContent = "🔊 Speaking…";
-    var started = speak(text, { onend: keepTalking });
+    var started = speak(text, buddySpeakOpts({ onend: keepTalking }));
     if (!started) keepTalking();
   } else keepTalking();
 }

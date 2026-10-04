@@ -82,3 +82,8 @@
   50% { box-shadow: 0 0 0 16px rgba(179,38,30,0); }
 }
 #bdListenMsg { min-height: 20px; margin-top: 8px; font-weight: 600; color: #b3261e; }
+
+/* ============ voice options (picker + rate + test) ============ */
+.bd-voiceopts { display: flex; gap: 6px; justify-content: center; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+#bdVoiceSel { max-width: 190px; }
+#bdVoiceSel option { color: #1e3a8a; }
