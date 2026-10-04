@@ -7,6 +7,7 @@ export function ttsAvailable() {
 }
 
 export function stopSpeak() {
+  speakToken++;
   if (ttsAvailable()) window.speechSynthesis.cancel();
 }
 
@@ -51,6 +52,9 @@ function pickVoice() {
   } catch (e) { return null; }
 }
 
+// Token guards the delayed start: a newer speak()/stopSpeak() cancels a pending one.
+var speakToken = 0;
+
 // Speak text aloud. opts: {rate (default 0.95), lang (default "en-US"), onend, onword}
 // Long text is spoken as chained sentence chunks; onend fires after the last one.
 export function speak(text, opts) {
@@ -85,7 +89,10 @@ export function speak(text, opts) {
       }
       window.speechSynthesis.speak(u);
     };
-    next();
+    // Chrome quirk: speak() issued synchronously after cancel() can be silently
+    // dropped, so the queue starts on the next tick (still within the gesture window).
+    var my = ++speakToken;
+    setTimeout(function () { if (my === speakToken) next(); }, 80);
     return true;
   } catch (e) {
     return false;

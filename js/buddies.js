@@ -290,9 +290,24 @@ function startChat(id) {
   $("bdMicBig").addEventListener("click", micTap);
   $("bdTestVoice").addEventListener("click", function () {
     stopSpeak();
-    if (!speak("Hello! I am " + chat.ch.name + ". If you can hear me, your speaker works!")) {
-      toast("🔊 Your device can't read aloud right now.");
-    }
+    var msg = $("bdListenMsg");
+    var said = speak("Hello! I am " + chat.ch.name + ". If you can hear me, your speaker works!");
+    if (!said) { toast("🔊 Your device can't read aloud right now."); return; }
+    if (msg) msg.textContent = "🔊 Testing…";
+    // Diagnostic: a moment later, report what the speech engine is actually doing.
+    setTimeout(function () {
+      try {
+        var ss = window.speechSynthesis;
+        var n = ss.getVoices().length;
+        var st = ss.speaking ? "speaking" : (ss.pending ? "queued" : "idle");
+        if (msg) {
+          msg.textContent = "🔊 Test result — engine: " + st + " · voices: " + n + ". " +
+            (n === 0 ? "No voices found: on your Mac open System Settings → Accessibility → Spoken Content and download an English voice."
+            : st === "idle" ? "The browser didn't play audio: check Mac volume, the output device, and Chrome sound permission for this site."
+            : "The browser is playing audio — if you hear nothing, check Mac volume and output device.");
+        }
+      } catch (e) { /* ignore */ }
+    }, 700);
   });
   $("bdInput").addEventListener("keydown", function (e) { if (e.key === "Enter") sendMsg(); });
   if (!speechRecCtor()) {
