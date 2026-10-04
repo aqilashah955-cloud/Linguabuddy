@@ -1,6 +1,6 @@
 // LinguaBuddy curated content — SLO question banks (Middle, grades 6-8)
 // Versioned data module. Works offline; zero Firestore read costs.
-export const DATA_VERSION_SLOS = "1.0.0";
+export const DATA_VERSION_SLOS = "1.1.0";
 
 export const SLOS = [
 {
@@ -129,6 +129,54 @@ export const SLOS = [
     { t: "reorder", q: "Arrange the words into a correct sentence.", w: ["I", "stayed", "home", "because", "I", "was", "ill"], a: "I stayed home because I was ill" },
     { t: "fib", q: "An ___ sentence asks a question.", a: ["interrogative"] },
     { t: "mcq", q: "\u201CThe boy who won the prize is my friend.\u201D The clause \u201Cwho won the prize\u201D is:", o: ["independent", "dependent", "a phrase", "the predicate"], a: 1 }
+  ]
+},
+{
+  id: "pronouns", title: "Pronouns",
+  expl: "Pronouns take the place of nouns: I, you, he, she, it, we, they (personal); this, that, these, those (demonstrative); who, which (interrogative); each other (reciprocal); somebody, anyone (indefinite).",
+  questions: [
+    { t: "mcq", q: "___ is my best friend.", o: ["Her", "She", "Hers", "Her's"], a: 1 },
+    { t: "mcq", q: "The teacher praised ___ for our hard work.", o: ["we", "us", "our", "ours"], a: 1 },
+    { t: "mcq", q: "___ of these two books do you prefer?", o: ["What", "Which", "Whose", "Whom"], a: 1 },
+    { t: "mcq", q: "The two brothers helped ___ with the homework.", o: ["one another only", "each other", "themselves", "itself"], a: 1 },
+    { t: "fib", q: "This pen is ___. (my / mine)", a: ["mine"] },
+    { t: "tf", q: "\u201CMe and him went to the market\u201D is correct.", a: false },
+    { t: "mcq", q: "___ knocked at the door, but I could not see who it was.", o: ["Somebody", "Anybody", "Nobody", "Everybody"], a: 0 },
+    { t: "reorder", q: "Arrange the words into a correct sentence.", w: ["These", "are", "my", "books"], a: "These are my books" },
+    { t: "mcq", q: "___ flowers in the garden are beautiful.", o: ["This", "That", "These", "This ones"], a: 2 },
+    { t: "fib", q: "The dog wagged ___ tail happily. (its / it's)", a: ["its"] }
+  ]
+},
+{
+  id: "adverbs", title: "Adverbs",
+  expl: "Adverbs describe verbs, adjectives or other adverbs — how, when, where or how often: slowly, very, yesterday, always. Many are formed by adding -ly to an adjective.",
+  questions: [
+    { t: "mcq", q: "She sings ___.", o: ["beautiful", "beautifully", "beauty", "beautify"], a: 1 },
+    { t: "mcq", q: "The tortoise walks ___.", o: ["slow", "slowly", "slowness", "slowerly"], a: 1 },
+    { t: "fib", q: "The baby slept ___ through the night. (peaceful / peacefully)", a: ["peacefully"] },
+    { t: "mcq", q: "She ___ visits her grandmother on Sundays.", o: ["regular", "regularly", "regulation", "regulate"], a: 1 },
+    { t: "tf", q: "\u201CHe runs very quick\u201D is correct.", a: false },
+    { t: "mcq", q: "He left the room ___ because he was late.", o: ["in a hurry", "hurried", "hurry", "with hurry"], a: 0 },
+    { t: "reorder", q: "Arrange the words into a correct sentence.", w: ["She", "speaks", "English", "fluently"], a: "She speaks English fluently" },
+    { t: "mcq", q: "In \u201CI will call you when I arrive\u201D, the adverb clause is:", o: ["I will call you", "when I arrive", "call you", "I arrive"], a: 1 },
+    { t: "fib", q: "___ he crossed the busy road. (Careful / Carefully)", a: ["Carefully"] },
+    { t: "mcq", q: "It was ___ hot to play outside in the afternoon.", o: ["very", "too", "so"], a: 1 }
+  ]
+},
+{
+  id: "adjectives", title: "Adjectives",
+  expl: "Adjectives describe nouns: a tall building, the tired child. They usually come before the noun, can be formed from nouns and verbs (beauty \u2192 beautiful, excite \u2192 exciting), and work in phrases like \u201Cthe girl in red\u201D.",
+  questions: [
+    { t: "mcq", q: "She wore a ___ dress to the party.", o: ["beauty", "beautiful", "beautifully", "beautify"], a: 1 },
+    { t: "mcq", q: "The ___ man helped the lost child.", o: ["kind", "kindly", "kindness", "kinderly"], a: 0 },
+    { t: "fib", q: "Form an adjective from \u201Cdanger\u201D: ___", a: ["dangerous"] },
+    { t: "mcq", q: "The story was very ___.", o: ["excite", "exciting", "excitedly", "excitement"], a: 1 },
+    { t: "tf", q: "In \u201Ca red car\u201D, the adjective comes AFTER the noun.", a: false },
+    { t: "reorder", q: "Arrange the words into a correct sentence.", w: ["She", "is", "a", "clever", "girl"], a: "She is a clever girl" },
+    { t: "mcq", q: "The girl ___ won the first prize.", o: ["in red", "in redly", "redly in", "with redly"], a: 0 },
+    { t: "fib", q: "The food smells ___. (good / well)", a: ["good"] },
+    { t: "mcq", q: "\u201CThe tired children slept early.\u201D The adjective is:", o: ["children", "tired", "slept", "early"], a: 1 },
+    { t: "mcq", q: "Form an adjective from \u201Ccare\u201D:", o: ["careful", "carely", "caringly", "cared"], a: 0 }
   ]
 },
 {

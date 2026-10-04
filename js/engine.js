@@ -69,7 +69,12 @@ export function buildItems(spec) {
     if (!slo) return [];
     pool = slo.questions.map(function (q, bi) { return { slo: slo, q: q, bankIndex: bi }; });
   } else if (spec.kind === "mixed") {
-    const order = shuffle(SLOS.slice(), rand);
+    let slos = SLOS;
+    if (spec.sloIds && spec.sloIds.length) {
+      slos = SLOS.filter(function (s) { return spec.sloIds.indexOf(s.id) >= 0; });
+      if (!slos.length) return [];
+    }
+    const order = shuffle(slos.slice(), rand);
     const seen = {};
     let i = 0, guard = 0;
     while (pool.length < spec.count && guard < 2000) {
@@ -231,6 +236,7 @@ export function pickForLevel(slo, level, count, exclude) {
 const SLO_SKILL = {
   tenses: "grammar", sva: "grammar", voice: "grammar", speech: "grammar",
   articles: "grammar", prepositions: "grammar", punct: "grammar", clauses: "grammar",
+  pronouns: "grammar", adverbs: "grammar", adjectives: "grammar",
   synant: "vocab", vocab: "vocab", reading: "reading", writing: "writing"
 };
 

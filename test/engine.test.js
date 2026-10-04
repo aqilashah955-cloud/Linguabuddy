@@ -17,8 +17,8 @@ function section(s) { console.log("\n" + s); }
 
 /* ---------- data integrity ---------- */
 section("data integrity");
-ok(D_SLOS.length === 12, "12 SLOs present");
-ok(D_SLOS.every(s => s.questions.length === 10), "every SLO has exactly 10 questions (120 total)");
+ok(D_SLOS.length === 15, "15 SLOs present");
+ok(D_SLOS.every(s => s.questions.length === 10), "every SLO has exactly 10 questions (150 total)");
 ok(STORIES.length === 8, "8 stories present");
 ok(STORIES.every(s => s.quiz.length === 5), "every story has 5 quiz questions");
 
