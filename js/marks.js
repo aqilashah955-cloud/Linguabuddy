@@ -13,6 +13,34 @@ function $(id) { return document.getElementById(id); }
 let go = null;
 export function setGo(fn) { go = fn; }
 
+// The marks screen normally lives in index.html; if a deploy is mid-rollout
+// and the section is missing, create it on the fly so the feature keeps working.
+function ensureMarksScreen() {
+  if (!$("screen-marks")) {
+    const sec = document.createElement("section");
+    sec.id = "screen-marks";
+    sec.className = "screen hidden";
+    sec.innerHTML = '<div id="marksBody"></div>';
+    const main = document.querySelector("main");
+    if (main) main.appendChild(sec);
+  }
+  if (!$("marks-css") && document.head) {
+    const st = document.createElement("style");
+    st.id = "marks-css";
+    st.textContent = ".mark-summary{display:flex;gap:18px;margin:10px 0}" +
+      ".mark-summary>div{display:flex;flex-direction:column}.mark-summary strong{font-size:1.5em}" +
+      ".mark-group{border:1px solid #e6e6e6;border-radius:10px;padding:10px 12px;margin:10px 0}" +
+      ".mark-ghead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}" +
+      ".mark-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-top:1px dashed #eee;font-size:.95em}" +
+      ".mark-row .good{color:#1d8a4c}.mark-row .mid{color:#b07d10}.mark-row .low{color:#c0392b}" +
+      ".mark-student{border:1px solid #e6e6e6;border-radius:10px;padding:10px 12px;margin:8px 0}" +
+      ".mark-groups-mini{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}" +
+      ".mark-groups-mini .chip{background:#f1efff;border-radius:20px;padding:3px 10px;font-size:.82em}";
+    document.head.appendChild(st);
+  }
+  return $("marksBody");
+}
+
 export const PERIODS = [
   { id: "day", label: "Daily" },
   { id: "week", label: "Weekly" },
@@ -208,8 +236,10 @@ function bindPeriodTabs(rerender) {
 export function openMarksStudent(name, attempts, back) {
   back = back || { dest: "ak" };
   const render = function () {
+    const body = ensureMarksScreen();
+    if (!body) return;
     const entry = studentMarks(name || S.profile.name || "Learner", attempts || S.attempts, curPeriod);
-    $("marksBody").innerHTML =
+    body.innerHTML =
       '<div class="screen-head"><button class="back-btn" id="marksBack">← Back</button><h2>📊 My Marks</h2></div>' +
       '<div class="card"><p class="fine">Auto-recorded from your scheme tests — daily, weekly, monthly and semester-wise.</p>' +
       periodTabsHTML() +
@@ -219,9 +249,9 @@ export function openMarksStudent(name, attempts, back) {
       groupsHTML(entry) +
       '<button class="btn-secondary" id="marksShare">📤 Share on WhatsApp</button></div>';
     showScreen("screen-marks");
-    $("marksBack").addEventListener("click", function () { go(back.dest, back.arg); });
+    body.querySelector("#marksBack").addEventListener("click", function () { go(back.dest, back.arg); });
     bindPeriodTabs(render);
-    $("marksShare").addEventListener("click", function () {
+    body.querySelector("#marksShare").addEventListener("click", function () {
       window.open(waLink(marksWhatsAppText(entry, "Aga Khan Schools")), "_blank");
     });
   };
@@ -239,7 +269,9 @@ export function openMarksClass(cls, subs) {
     });
     const report = classMarks(entries, curPeriod);
     const tested = report.filter(function (e) { return e.count > 0; }).length;
-    $("marksBody").innerHTML =
+    const body = ensureMarksScreen();
+    if (!body) return;
+    body.innerHTML =
       '<div class="screen-head"><button class="back-btn" id="marksBack">← Class</button><h2>📊 Marks — ' + esc(cls.name) + "</h2></div>" +
       '<div class="card"><p class="fine">Auto-recorded from students\' scheme tests. <b>No manual entry needed.</b></p>' +
       periodTabsHTML() +
@@ -253,9 +285,9 @@ export function openMarksClass(cls, subs) {
           }).join("") + "</div>" : "") + "</div>";
       }).join("") + "</div>";
     showScreen("screen-marks");
-    $("marksBack").addEventListener("click", function () { go("class", cls.id); });
+    body.querySelector("#marksBack").addEventListener("click", function () { go("class", cls.id); });
     bindPeriodTabs(render);
-    $("marksBody").querySelectorAll("[data-share]").forEach(function (b) {
+    body.querySelectorAll("[data-share]").forEach(function (b) {
       b.addEventListener("click", function () {
         const e = report.filter(function (x) { return x.name === b.getAttribute("data-share"); })[0];
         if (e) window.open(waLink(marksWhatsAppText(e, cls.name + " · Aga Khan Schools")), "_blank");
