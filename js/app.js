@@ -25,6 +25,9 @@ import { showKidsHome, setKidsGo } from "./kids.js";
 import { showWorksheets, setWorksheetsGo } from "./worksheets.js";
 import { renderDaily, renderSayIt, renderParents } from "./engage.js";
 import { showCerts, setCertsGo } from "./certs.js";
+import { showTestprep, setTestprepGo } from "./testprep.js";
+import { showPro, setProGo } from "./pro.js";
+import { showMoreTests, setMoreTestsGo } from "./moretests.js";
 import { warmVoices } from "./tts.js";
 import { badgeList } from "./gamify.js";
 import { LEVEL_OPTS, GOAL_OPTS } from "./auth.js";
@@ -61,6 +64,9 @@ export function go(dest, arg) {
     case "sayit": renderSayIt(); showScreen("screen-sayit", "sayit"); break;
     case "parents": renderParents(); showScreen("screen-parents", "parents"); break;
     case "certs": showCerts(); break;
+    case "testprep": showTestprep(); break;
+    case "pro": showPro(); break;
+    case "moretests": showMoreTests(); break;
     case "teacher": renderTeacher(); break;
     case "class": openClass(arg); break;
     case "admin": renderAdmin(); break;
@@ -186,7 +192,8 @@ async function boot() {
   // wire go() into modules
   [setDashGo, setLearnGo, setReadGo, setVocabGo,
    setTeacherGo, setAdminGo, setGrammarGo, setWritingGo, setConvoGo, setAskGo, setGamesGo, setMyworkGo,
-   setKidsGo, setWorksheetsGo, setCertsGo]
+   setKidsGo, setWorksheetsGo, setCertsGo,
+   setTestprepGo, setProGo, setMoreTestsGo]
     .forEach(function (fn) { fn(go); });
   warmVoices();
   setAuthDone(function () { enterApp(); });

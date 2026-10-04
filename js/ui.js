@@ -18,6 +18,9 @@ const NAVMAP = {
   "screen-sayit": "sayit",
   "screen-parents": "parents",
   "screen-certs": "certs",
+  "screen-testprep": "testprep",
+  "screen-pro": "pro",
+  "screen-moretests": "moretests",
   "screen-auth": null, "screen-forgot": null,
   "screen-ob-name": null, "screen-ob-goals": null, "screen-ob-level": null, "screen-ob-age": null, "screen-ob-ready": null
 };

@@ -148,6 +148,33 @@ worksheets certificate builder with the learner's name and date.
 9–12 / 🎓 Teens & Adults 13+), stored on `S.profile.ageGroup` and changeable in
 Profile. Parent tips and worksheet filters adapt to it.
 
+## Part 4 — Test prep & Professionals
+
+**🎓 IELTS & Duolingo** (`js/testprep.js`, `data/ielts.js`, `data/duolingo.js`):
+IELTS Reading (3 academic passages, T/F/NG + headings + MCQ, band estimate),
+Listening (device TTS as the "audio", exam-realistic replay limits), Writing
+(Task 1 & 2 with structure guides — never model answers — feedback mapped to
+the 4 band criteria), Speaking (Parts 1/2/3, cue cards, 60s+120s timers, mic
+recording, self-assessment → band). Duolingo English Test: Read & Select (60s),
+Read & Complete (3 min), Listen & Type (TTS ×3 plays), Interactive Writing
+(5 min), Speaking Sample. Printable score reports; every score labeled
+"practice estimate — not an official score".
+
+**🌍 More international tests** (`js/moretests.js`, `data/moretests.js`):
+TOEFL iBT (reading, listening, integrated speaking/writing), PTE Academic (read
+aloud, repeat sentence, describe image, retell lecture, essay), Cambridge B2
+First & C1 Advanced (Use of English: cloze, open cloze, word formation;
+gapped-text reading), TOEIC (listening + reading, 10–990 estimator), and an OET
+starter for healthcare workers (letter-writing structure guides). Timed
+practice, instant scoring, printable reports — all estimates, never official.
+
+**💼 Professionals** (`js/pro.js`, `data/professional.js`): ✉️ Email Lab (8
+workplace scenarios, tone checker + writing feedback), 🎤 Interview Prep (20
+questions, STAR method tips, mock interviews, answer recording), 🤝 Workplace
+Role-plays (client calls, meetings, salary negotiation…), 📇 Business
+Vocabulary (casual→formal timed quiz + flashcards), 📄 CV Builder (form →
+printable CV).
+
 **Game Arcade** (`js/games.js`, route `games`, nav 🎮): six 60-second arcade
 rounds, all offline from bundled data — Word Scramble (typed unscramble with
 Urdu hint), Hangman (definition clue, 6 misses), Speed Match (word↔definition
@@ -428,3 +455,9 @@ Question types across banks: `mcq`, `fill`, `truefalse`, `order`, `reorder`,
   check-in idempotency, parent report builder.
 - `node test/certs.test.js` — badge→certificate mapping, all-12-SLOs course
   completion, teacher/parent criteria, idempotent awarding.
+- `node test/testprep.test.js` — IELTS band-table boundaries, overall-band
+  rounding, DET scoring, fake-word disjointness, answer-key integrity.
+- `node test/moretests.test.js` — TOEFL/PTE/TOEIC/Cambridge score math,
+  grader helpers, full data integrity.
+- `node test/pro.test.js` — email tone checks, CV builder escaping, interview
+  data integrity, role-play graph termination.
