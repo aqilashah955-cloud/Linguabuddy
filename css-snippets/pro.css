@@ -1,0 +1,62 @@
+/* LinguaBuddy — 💼 Professionals styles (theme: cream / ink-blue / marigold). */
+
+.pro-hub { max-width: 860px; margin: 0 auto; }
+.pro-hero { text-align: center; margin: 8px 0 14px; }
+.pro-heroemoji { font-size: 52px; }
+.pro-hero h2 { color: var(--ink-deep); margin: 4px 0; }
+
+.pro-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.pro-card { display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+  background: var(--card); border: 2px solid var(--border); border-radius: 16px;
+  padding: 16px; cursor: pointer; text-align: left; transition: transform .12s, box-shadow .12s; }
+.pro-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(30,58,138,.12); border-color: var(--marigold); }
+.pro-card strong { color: var(--ink-deep); font-size: 1.05rem; }
+.pro-emoji { font-size: 34px; }
+
+.pro-panel { background: var(--card); border: 2px solid var(--border); border-radius: 16px;
+  padding: 16px; margin: 12px 0; max-width: 860px; }
+.pro-panel h3 { color: var(--ink-deep); margin-top: 0; }
+.pro-panel h4 { color: var(--ink); margin: 12px 0 4px; }
+
+.pro-tips { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; margin-bottom: 18px; }
+.pro-tip { display: flex; gap: 10px; background: var(--card); border: 2px solid var(--border);
+  border-radius: 12px; padding: 12px; }
+.pro-tipemoji { font-size: 26px; flex: 0 0 auto; }
+.pro-tip p { margin: 4px 0 0; }
+
+.pro-chips { margin: 10px 0; }
+.pro-tmpl { background: #fff; border: 2px dashed var(--marigold); border-radius: 12px;
+  padding: 14px; margin: 10px 0; font-size: .95rem; line-height: 1.7; white-space: normal; }
+
+.pro-text, .pro-input { width: 100%; box-sizing: border-box; border: 2px solid var(--border);
+  border-radius: 10px; padding: 10px 12px; font-size: 1rem; font-family: inherit;
+  background: #fff; color: var(--text); margin: 6px 0 12px; }
+.pro-text:focus, .pro-input:focus { outline: none; border-color: var(--ink); }
+
+.pro-kw { display: inline-block; background: var(--marigold-soft); border: 1px solid var(--marigold);
+  border-radius: 999px; padding: 3px 10px; margin: 2px; font-size: .85rem; }
+
+.pro-stars { margin: 8px 0; }
+.pro-star { font-size: 34px; background: none; border: none; cursor: pointer; color: var(--marigold); padding: 2px 6px; }
+
+.pro-opts { display: grid; gap: 8px; margin: 12px 0; }
+.pro-opt { background: #fff; border: 2px solid var(--border); border-radius: 12px;
+  padding: 12px; font-size: 1.05rem; cursor: pointer; text-align: left; color: var(--text); }
+.pro-opt:hover { border-color: var(--ink); }
+
+.pro-flash { width: 100%; min-height: 170px; background: linear-gradient(135deg, var(--ink), var(--ink-deep));
+  color: #fff; border: none; border-radius: 16px; cursor: pointer; padding: 24px; margin: 10px 0; }
+.pro-flash-q { font-size: 1.6rem; font-weight: 700; }
+.pro-flash-a { font-size: 1.6rem; font-weight: 700; color: var(--marigold); }
+.pro-flash .fine { color: #dbe4ff; }
+
+.pro-cvwrap { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 760px) { .pro-cvwrap { grid-template-columns: 1fr 1fr; } }
+.pro-cvprev { background: #fff; border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px; max-height: 560px; overflow: auto; }
+
+@media (max-width: 560px) {
+  .pro-grid { grid-template-columns: 1fr 1fr; }
+  .pro-card { padding: 12px; }
+  .pro-emoji { font-size: 28px; }
+}
