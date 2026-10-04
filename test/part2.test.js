@@ -134,5 +134,23 @@ ok(fb.strengths.length > 0, "strengths listed");
 ok(Array.isArray(fb.nextSteps), "next steps array present");
 ok(fb.strengths.length <= 3 && fb.nextSteps.length <= 2, "feedback is concise (<=3 strengths, <=2 next steps)");
 
+/* ---------- writing lab: precise highlights (regression: "i" in "things") ---------- */
+section("writing highlight precision");
+const txtP = "We learn new things every day. i am happy becasue coutries are far. She is good at english";
+const precise = analyzeWriting(txtP, { kind: "paragraph", minWords: 5 });
+ok(Array.isArray(precise.marks) && precise.marks.length > 0, "marks array returned with offsets");
+ok(precise.marks.every(function (m) { return m.at >= 0 && m.at + m.len <= txtP.length; }),
+  "every mark offset stays inside the text (no drift)");
+const iMarks = precise.marks.filter(function (m) { return txtP.slice(m.at, m.at + m.len) === "i"; });
+ok(iMarks.length === 1 && txtP[iMarks[0].at - 1] === " ", "standalone pronoun 'i' marked exactly once (not the 'i' in 'things')");
+ok(!precise.marks.some(function (m) { return txtP.slice(Math.max(0, m.at - 3), m.at + m.len) === "thi"; }),
+  "no mark lands inside the word 'things'");
+ok(precise.issues.some(function (x) { return x.category === "spelling" && x.found === "becasue"; }), "misspelling 'becasue' flagged");
+ok(precise.issues.some(function (x) { return x.category === "spelling" && x.found === "coutries"; }), "misspelling 'coutries' flagged");
+ok(precise.issues.some(function (x) { return x.category === "punctuation" && x.found === "english"; }), "lowercase proper noun 'english' flagged");
+ok(precise.issues.every(function (x) {
+  return JSON.stringify(Object.keys(x).sort()) === JSON.stringify(["category", "explain", "found", "hint"]);
+}), "issue shape unchanged (category/found/explain/hint only)");
+
 console.log("\n" + pass + " passed, " + fail + " failed");
 process.exit(fail ? 1 : 0);

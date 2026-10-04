@@ -20,11 +20,21 @@ let go = null;
 export function setWritingGo(fn) { go = fn; }
 
 const SPELLING = {
-  teh: "the", recieve: "receive", adress: "address", becuase: "because",
-  definately: "definitely", seperate: "separate", wich: "which",
-  freind: "friend", writting: "writing", grammer: "grammar",
+  teh: "the", recieve: "receive", adress: "address", becuase: "because", becasue: "because",
+  definately: "definitely", seperate: "separate", wich: "which", whitch: "which",
+  freind: "friend", freinds: "friends", writting: "writing", grammer: "grammar",
   happyness: "happiness", tommorow: "tomorrow", enviroment: "environment",
-  beautifull: "beautiful", knowlege: "knowledge", occassion: "occasion"
+  beautifull: "beautiful", knowlege: "knowledge", occassion: "occasion",
+  coutries: "countries", coutry: "country", thier: "their", beleive: "believe",
+  neccessary: "necessary", exersise: "exercise", alot: "a lot", untill: "until",
+  occured: "occurred", begining: "beginning", arguement: "argument",
+  maintanance: "maintenance", posession: "possession", tendancy: "tendency"
+};
+/* Lowercase words that must always be capitalized (languages, places). */
+const PROPER = {
+  english: "English", urdu: "Urdu", pakistan: "Pakistan", lahore: "Lahore",
+  karachi: "Karachi", islamabad: "Islamabad", punjab: "Punjab", sindh: "Sindh",
+  america: "America", england: "England", india: "India", quran: "Quran"
 };
 const ADJECTIVES = ["big", "small", "tall", "short", "long", "red", "blue", "green", "black", "white",
   "yellow", "beautiful", "pretty", "ugly", "happy", "sad", "angry", "kind", "brave", "strong",
@@ -41,77 +51,165 @@ function wordsOf(text) {
   return (text.toLowerCase().match(/[a-z']+/g) || []);
 }
 
-/* Pure: returns {issues:[{category, found, explain, hint}]}.
+/* Pure: returns {issues:[{category, found, explain, hint}], marks:[{at,len,cat}]}.
+   issues keep the stable {category,found,explain,hint} shape (tests + My Work rely on it).
+   marks carry exact character offsets so the UI can highlight precisely what is wrong.
    The function only DESCRIBES problems; it never produces corrected text. */
 export function analyzeWriting(text, prompt) {
   const issues = [];
+  const marks = [];
   const t = String(text || "").trim();
   const words = wordsOf(t);
   const sents = sentencesOf(t);
 
-  function add(category, found, explain, hint) {
-    if (issues.length >= 7) return;
+  function mark(at, len, cat) {
+    if (typeof at !== "number" || at < 0 || at >= t.length) return;
+    marks.push({ at: at, len: Math.max(1, len | 0), cat: cat });
+  }
+  function add(category, found, explain, hint, ats, len) {
+    if (issues.length >= 8) return;
     if (issues.some(function (x) { return x.category === category && x.found === found; })) return;
     issues.push({ category: category, found: found, explain: explain, hint: hint });
+    if (ats != null) {
+      (Array.isArray(ats) ? ats : [ats]).forEach(function (a) { mark(a, len, category); });
+    }
+  }
+  /* Collect every match offset of a global regex. max caps runaway loops. */
+  function allIdx(re, max) {
+    const out = [];
+    let m;
+    re.lastIndex = 0;
+    while ((m = re.exec(t)) !== null) {
+      out.push({ i: m.index, m: m });
+      if (out.length >= (max || 12)) break;
+      if (m[0].length === 0) re.lastIndex++;
+    }
+    return out;
+  }
+  function isSentenceStart(idx) {
+    return idx === 0 || /[.!?…]["']?\s+$/.test(t.slice(0, idx));
   }
 
-  if (!t) return { issues: [] };
+  if (!t) return { issues: issues, marks: marks };
 
-  // ---- spelling: common misspellings ----
+  // ---- spelling: common misspellings (every occurrence marked) ----
   Object.keys(SPELLING).forEach(function (w) {
-    const re = new RegExp("\\b" + w + "\\b", "i");
-    const m = t.match(re);
-    if (m) add("spelling", m[0],
-      "“" + m[0] + "” is spelled incorrectly. The correct spelling is “" + SPELLING[w] + "”.",
-      "Look at the word again and fix one letter at a time.");
+    const hits = allIdx(new RegExp("\\b" + w + "\\b", "gi"));
+    if (!hits.length) return;
+    const shown = hits[0].m[0];
+    const n = hits.length;
+    add("spelling", shown,
+      "“" + shown + "” is spelled “" + SPELLING[w] + "”." + (n > 1 ? " It appears " + n + " times — fix them all." : ""),
+      "Sound the word out slowly, then fix it letter by letter.",
+      hits.map(function (h) { return h.i; }), shown.length);
   });
 
-  // ---- grammar: subject–verb agreement ----
-  let m1 = t.match(/\bi\s+(goes|eats|plays|does|has|watches|writes|reads)\b/i);
-  if (m1) add("grammar", m1[0],
-    "After “I”, use the base form of the verb: “I go”, “I eat”, “I play” — not “" + m1[0] + "”.",
-    "Remove the -s ending after “I”. What is the base verb here?");
-  let m2 = t.match(/\b(he|she|it)\s+(go|eat|play|do|have|watch|write|read)\b(?!\s+(a|the|to)\b)/i);
-  if (m2) add("grammar", m2[0],
-    "With “he / she / it”, most verbs add -s: “he goes”, “she eats”. (“have” becomes “has”.)",
-    "How does this verb change after “he / she / it”?");
-  let m3 = t.match(/\b(me|him|her|them)\s+(am|is|are|was|were)\b/i);
-  if (m3) add("grammar", m3[0],
-    "“me / him / her / them” are object pronouns — they cannot be the subject. Use “I / he / she / they”: “I am”, “they are”.",
-    "Which subject pronoun replaces “" + m3[1] + "”?");
-  let m4 = t.match(/\ba\s+[aeiou][a-z]+\b/i);
-  if (m4) add("grammar", m4[0],
-    "Use “an” (not “a”) before a word that starts with a vowel sound: “an apple”, “an umbrella”.",
-    "What sound does the next word start with?");
-  let m5 = t.match(/\ban\s+(?![aeiou])[a-z]+\b/i);
-  if (m5 && !/an (hour|honest|honour)\b/i.test(m5[0])) add("grammar", m5[0],
-    "Use “a” (not “an”) before a word that starts with a consonant sound: “a book”, “a cat”.",
-    "What sound does the next word start with?");
-  let m6 = t.match(/\bdid\s+not\s+\w+ed\b/i) || t.match(/\bdidn'?t\s+\w+ed\b/i);
-  if (m6) add("grammar", m6[0],
-    "After “did / did not”, use the base verb: “did not go” — not “did not went”.",
-    "“Did” already shows the past. What is the base form of this verb?");
+  // ---- grammar: subject–verb agreement & articles (every occurrence marked) ----
+  const GRAMMAR_RULES = [
+    { re: /\bi\s+(goes|eats|plays|does|has|watches|writes|reads)\b/gi,
+      why: "After “I”, use the base form of the verb — “I go”, “I eat”, “I play” — never with -s.",
+      hint: "Remove the -s ending after “I”. What is the base verb here?" },
+    { re: /\b(he|she|it)\s+(go|eat|play|do|have|watch|write|read)\b(?!\s+(a|the|to)\b)/gi,
+      why: "With “he / she / it”, most verbs add -s: “he goes”, “she eats”. (“have” becomes “has”.)",
+      hint: "How does this verb change after “he / she / it”?" },
+    { re: /\b(me|him|her|them)\s+(am|is|are|was|were)\b/gi,
+      why: "“me / him / her / them” are object pronouns — they cannot start a sentence. Use “I / he / she / they”: “I am”, “they are”.",
+      hint: "Which subject pronoun replaces this word?" },
+    { re: /\ba\s+[aeiou][a-z]+\b/gi,
+      why: "Use “an” (not “a”) before a word that starts with a vowel sound: “an apple”, “an umbrella”.",
+      hint: "What sound does the next word start with — a vowel or a consonant?" },
+    { re: /\bdid\s+not\s+\w+ed\b/gi,
+      why: "After “did / did not”, use the base verb: “did not go” — not “did not went”. “Did” already shows the past.",
+      hint: "“Did” already shows the past. What is the base form of this verb?" },
+    { re: /\bdidn'?t\s+\w+ed\b/gi,
+      why: "After “didn't”, use the base verb: “didn't go” — not “didn't went”.",
+      hint: "What is the base form of this verb?" },
+    { re: /\b([a-z]{2,})\s+\1\b/gi,
+      why: "You repeated a word. One is enough — delete the extra one.",
+      hint: "Read the sentence aloud. Where do you stumble on the repeated word?" }
+  ];
+  GRAMMAR_RULES.forEach(function (r) {
+    const hits = allIdx(r.re);
+    if (!hits.length) return;
+    // "an + consonant" needs its exception check; keep it out of the table
+    const shown = hits[0].m[0];
+    add("grammar", shown, r.why + (hits.length > 1 ? " (Found " + hits.length + " times.)" : ""), r.hint,
+      hits.map(function (h) { return h.i; }), shown.length);
+  });
+  // an + consonant (with hour/honest exceptions)
+  (function () {
+    const hits = allIdx(/\ban\s+([a-z]+)\b/gi).filter(function (h) {
+      return !/^(hour|honest|honour|heir)/i.test(h.m[1]);
+    }).filter(function (h) { return !/^[aeiou]/i.test(h.m[1]); });
+    if (!hits.length) return;
+    const shown = hits[0].m[0];
+    add("grammar", shown,
+      "Use “a” (not “an”) before a word that starts with a consonant sound: “a book”, “a cat”.",
+      "What sound does the next word start with?",
+      hits.map(function (h) { return h.i; }), shown.length);
+  })();
 
   // ---- punctuation / capitalization ----
-  let m7 = t.match(/(^|[\s("])i(?=[\s.,!?)'"])/);
-  if (m7) add("punctuation", "i",
-    "The pronoun “I” is always written with a capital letter, even in the middle of a sentence.",
-    "Find the small “i” that means yourself and capitalize it.");
-  const firstCap = t.match(/^[a-z]/) || t.match(/[.!?…]\s+[a-z]/);
-  if (firstCap) add("punctuation", firstCap[0].trim(),
-    "Every sentence must start with a capital letter.",
-    "Look at the first letter of each sentence.");
-  if (t.length > 10 && !/[.!?…]["']?$/.test(t.trim())) add("punctuation", t.slice(-20),
-    "Your writing does not end with a full stop (.), question mark (?) or exclamation mark (!).",
-    "How should this last sentence end?");
+  // standalone "i" meaning yourself (never the i inside "things"!)
+  (function () {
+    const hits = allIdx(/(^|[\s("])i(?=[\s.,!?)'":;])/g);
+    if (!hits.length) return;
+    const ats = hits.map(function (h) { return h.i + h.m[1].length; });
+    add("punctuation", "i",
+      "The pronoun “I” is always capital, even mid-sentence." + (ats.length > 1 ? " I found " + ats.length + " small “i”s." : ""),
+      "Find every small “i” that means “yourself” and capitalize it.",
+      ats, 1);
+  })();
+  // proper nouns in lowercase (english -> English), except at sentence start
+  Object.keys(PROPER).forEach(function (w) {
+    const hits = allIdx(new RegExp("\\b" + w + "\\b", "g")).filter(function (h) { return !isSentenceStart(h.i); });
+    if (!hits.length) return;
+    const shown = hits[0].m[0];
+    add("punctuation", shown,
+      "“" + PROPER[w] + "” is a name — names of languages and places always start with a capital letter.",
+      "Which words in your text are names? Capitalize their first letter.",
+      hits.map(function (h) { return h.i; }), shown.length);
+  });
+  // sentences starting with a small letter (skip "i" — the pronoun rule covers it)
+  (function () {
+    const ats = [];
+    const first = t.match(/^([a-z])/);
+    if (first && first[1] !== "i") ats.push(0);
+    allIdx(/([.!?…]["']?\s+)([a-z])/g).forEach(function (h) {
+      const at = h.i + h.m[1].length;
+      if (h.m[2] !== "i") ats.push(at);
+    });
+    if (!ats.length) return;
+    const letters = ats.map(function (a) { return t[a]; });
+    const uniq = letters.filter(function (c, ix) { return letters.indexOf(c) === ix; });
+    add("punctuation", uniq.join(", "),
+      "Every sentence must start with a capital letter." + (ats.length > 1 ? " I found " + ats.length + " sentences starting small." : ""),
+      "Look at the first letter of each sentence and capitalize it.",
+      ats, 1);
+  })();
+  // missing space after punctuation: "day.We"
+  (function () {
+    const hits = allIdx(/([.!?,;:])(?=[A-Za-z])/g);
+    if (!hits.length) return;
+    add("punctuation", hits[0].m[0] + t[hits[0].i + 1],
+      "Leave a space after . ! ? , ; and : — “day. We”, not “day.We”.",
+      "Where do two words touch a punctuation mark with no space? Add one.",
+      hits.map(function (h) { return h.i; }), 2);
+  })();
+  // no end mark at all
+  if (t.length > 10 && !/[.!?…]["']?$/.test(t)) {
+    add("punctuation", "",
+      "Your writing does not end with a full stop (.), question mark (?) or exclamation mark (!).",
+      "Read your last sentence aloud — how should it end?");
+  }
 
   // ---- vocabulary ----
   const freq = {};
   words.forEach(function (w) { if (!STOP.has(w) && w.length > 3) freq[w] = (freq[w] || 0) + 1; });
   const rep = Object.keys(freq).sort(function (a, b) { return freq[b] - freq[a]; })[0];
   if (rep && freq[rep] >= 4) add("vocabulary", rep,
-    "You used the word “" + rep + "” " + freq[rep] + " times. Repeating one word makes writing feel flat.",
-    "Can you replace one “" + rep + "” with a synonym or a different phrase?");
+    "You used “" + rep + "” " + freq[rep] + " times. Repeating one word makes writing feel flat.",
+    "Replace one “" + rep + "” with a synonym or a different phrase — which one?");
   const adj = words.filter(function (w) { return ADJECTIVES.indexOf(w) >= 0; });
   if (prompt && prompt.kind === "descriptive" && adj.length < 2 && words.length > 15) add("vocabulary", "",
     "Descriptive writing paints a picture with describing words (adjectives). I found fewer than two.",
@@ -148,22 +246,26 @@ export function analyzeWriting(text, prompt) {
       "Where could you break this into a new paragraph?");
   }
 
-  return { issues: issues };
+  return { issues: issues, marks: marks };
 }
 
-function highlight(text, issues) {
-  let h = esc(text);
-  const seen = new Set();
-  issues.forEach(function (is) {
-    if (!is.found || seen.has(is.found)) return;
-    seen.add(is.found);
-    const needle = esc(is.found);
-    const idx = h.indexOf(needle);
-    if (idx >= 0) {
-      h = h.slice(0, idx) + '<mark class="mk-' + is.category + '">' + needle + "</mark>" + h.slice(idx + needle.length);
-    }
+/* Offset-based highlighter: marks = [{at, len, cat}] on the RAW text.
+   Escape-safe — it slices the raw text and escapes each piece, so offsets
+   can never drift (the old indexOf-on-escaped-text approach highlighted the
+   wrong characters, e.g. the "i" inside "things"). Overlapping marks: first wins. */
+function highlight(text, marks) {
+  const ms = (marks || []).slice().sort(function (a, b) { return a.at - b.at; });
+  let out = "";
+  let pos = 0;
+  ms.forEach(function (m) {
+    if (m.at < pos || m.at >= text.length) return;
+    const end = Math.min(text.length, m.at + Math.max(1, m.len | 0));
+    out += esc(text.slice(pos, m.at));
+    out += '<mark class="mk-' + m.cat + '">' + esc(text.slice(m.at, end)) + "</mark>";
+    pos = end;
   });
-  return h;
+  out += esc(text.slice(pos));
+  return out;
 }
 
 const CAT_META = {
@@ -224,18 +326,46 @@ function checkWriting() {
   awardXP(XP_TABLE.writingChecked, "writing feedback");
   checkBadges();
 
-  let html = '<div class="wr-text"><h4>Your text</h4><p>' + highlight(text, res.issues) + "</p></div>";
+  let html = '<div class="wr-text"><h4>Your text</h4><p>' + highlight(text, res.marks) + "</p></div>";
   if (!res.issues.length) {
     html += '<div class="notice ok">🎉 Excellent! I found no issues in this piece. Try a harder prompt next.</div>';
   } else {
-    html += '<h4>' + res.issues.length + " thing" + (res.issues.length === 1 ? "" : "s") + " to look at</h4>";
-    html += res.issues.map(function (is, i) {
-      const meta = CAT_META[is.category] || { icon: "•", name: is.category };
+    // Group issues by category so feedback reads as a short, prioritized list
+    // instead of many repetitive cards.
+    const CAT_ORDER = ["spelling", "grammar", "punctuation", "vocabulary", "organization"];
+    const groups = [];
+    res.issues.forEach(function (is) {
+      let g = null;
+      for (let i = 0; i < groups.length; i++) if (groups[i].cat === is.category) g = groups[i];
+      if (!g) { g = { cat: is.category, items: [] }; groups.push(g); }
+      g.items.push(is);
+    });
+    groups.sort(function (a, b) { return CAT_ORDER.indexOf(a.cat) - CAT_ORDER.indexOf(b.cat); });
+
+    const total = res.issues.length;
+    html += "<h4>" + total + " thing" + (total === 1 ? "" : "s") + " to look at</h4>";
+    html += groups.map(function (g) {
+      const meta = CAT_META[g.cat] || { icon: "•", name: g.cat };
+      const lis = g.items.map(function (is) {
+        return "<li>" + (is.found ? '<code>"' + esc(is.found) + '"</code> — ' : "") +
+          esc(is.explain) + '<br><span class="fb-hint">💡 Hint: ' + esc(is.hint) + "</span></li>";
+      }).join("");
       return '<div class="fb-card"><div class="fb-head">' + meta.icon + " <strong>" + meta.name + "</strong>" +
-        (is.found ? ' · <code>"' + esc(is.found) + '"</code>' : "") + "</div>" +
-        "<p>" + esc(is.explain) + "</p>" +
-        '<p class="fb-hint">💡 Hint: ' + esc(is.hint) + "</p></div>";
+        ' <span class="fine">· ' + g.items.length + (g.items.length === 1 ? " issue" : " issues") + "</span></div>" +
+        '<ul class="fb-list">' + lis + "</ul></div>";
     }).join("");
+
+    // A little balance: name what's already working.
+    const strengths = [];
+    if (words >= 15 && !res.issues.some(function (x) { return x.category === "spelling"; }))
+      strengths.push("clean spelling");
+    if (words >= (curPrompt ? curPrompt.minWords : 40))
+      strengths.push("reached the word target");
+    if (sentencesOf(text).length >= 3)
+      strengths.push(sentencesOf(text).length + " complete sentences");
+    if (strengths.length)
+      html += '<div class="notice ok">💪 What’s working: ' + esc(strengths.join(" · ")) + ". Keep it up!</div>";
+
     html += '<div class="notice">Now it’s your turn: edit your text above using these hints, then press <strong>Check Again</strong>. I will never rewrite it for you — fixing it yourself is how the learning sticks.</div>';
     html += '<div class="row-btns"><button class="btn-primary" id="wpRecheck">Check Again</button></div>';
   }
