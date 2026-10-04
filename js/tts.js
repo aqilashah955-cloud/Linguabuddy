@@ -47,13 +47,15 @@ export function warmVoices() {
 
 /* Split text into sentence-sized chunks. Chrome silently stops a single
    utterance after ~15 seconds, so long buddy replies are queued chunk by
-   chunk instead of one giant utterance. Pure — exported for tests. */
-export function chunkText(text) {
+   chunk instead of one giant utterance. maxLen keeps slow speech (fewer
+   chars per second) safely under the cutoff too. Pure — exported for tests. */
+export function chunkText(text, maxLen) {
+  maxLen = maxLen || 160;
   var bits = String(text || "").split(/([.!?…]+["']?\s+)/);
   var out = [], cur = "";
   for (var i = 0; i < bits.length; i += 2) {
     var piece = bits[i] + (bits[i + 1] || "");
-    if (cur && cur.length + piece.length > 160) { out.push(cur); cur = ""; }
+    if (cur && cur.length + piece.length > maxLen) { out.push(cur); cur = ""; }
     cur += piece;
   }
   if (cur) out.push(cur);
@@ -111,9 +113,11 @@ export function speak(text, opts) {
     // Recover from Chrome's stuck/paused synthesis state.
     try { if (window.speechSynthesis.paused) window.speechSynthesis.resume(); } catch (e) {}
     stopSpeak();
-    var chunks = chunkText(text);
-    var voice = pickVoice(opts.voiceURI);
     var rate = typeof opts.rate === "number" ? opts.rate : 0.95;
+    // Slow speech = fewer chars per second, so chunks must be shorter to stay
+    // under Chrome's ~15s silent utterance cutoff.
+    var chunks = chunkText(text, rate < 0.8 ? 100 : 160);
+    var voice = pickVoice(opts.voiceURI);
     var idx = 0, done = false, my = ++speakToken, watchdog = null;
     var disarm = function () { if (watchdog) { clearTimeout(watchdog); watchdog = null; } };
     var finish = function () {
@@ -134,7 +138,7 @@ export function speak(text, opts) {
             try { opts.onwedged(voiceDiag()); } catch (e) {}
           }
           finish();
-        }, Math.max(9000, len * 150 + 8000));
+        }, Math.max(7000, len * 100 + 5000));
       })(chunks[idx].length);
       var u = new SpeechSynthesisUtterance(chunks[idx++]);
       u.lang = opts.lang || "en-US";

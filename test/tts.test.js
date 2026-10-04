@@ -23,6 +23,9 @@ c = chunkText("");
 ok(Array.isArray(c) && c.length === 1, "empty text yields one empty chunk");
 c = chunkText("No punctuation here at all");
 ok(c.length === 1 && c[0] === "No punctuation here at all", "text without sentence marks stays whole");
+c = chunkText(origLong, 100);
+ok(c.length > 3 && c.every(function (x) { return x.length <= 115; }), "slow-speech chunks stay short (" + c.length + ")");
+ok(c.join("") === origLong, "short chunks rejoin losslessly");
 
 section("tts guards (no DOM)");
 ok(ttsAvailable() === false, "ttsAvailable false without window");
