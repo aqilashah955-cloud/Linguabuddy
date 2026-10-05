@@ -1,6 +1,6 @@
 // LinguaBuddy curated content — SLO question banks (Middle, grades 6-8)
 // Versioned data module. Works offline; zero Firestore read costs.
-export const DATA_VERSION_SLOS = "1.1.0";
+export const DATA_VERSION_SLOS = "1.2.0";
 
 export const SLOS = [
 {
@@ -177,6 +177,166 @@ export const SLOS = [
     { t: "fib", q: "The food smells ___. (good / well)", a: ["good"] },
     { t: "mcq", q: "\u201CThe tired children slept early.\u201D The adjective is:", o: ["children", "tired", "slept", "early"], a: 1 },
     { t: "mcq", q: "Form an adjective from \u201Ccare\u201D:", o: ["careful", "carely", "caringly", "cared"], a: 0 }
+  ]
+},
+{
+  id: "syllables", title: "Syllables & Word Parts",
+  expl: "AK SLO E-07-B1-01: break words into syllables, hear vowel sounds, spot silent letters, and use prefixes, suffixes and root words to decode and pronounce new words.",
+  questions: [
+    { t: "mcq", q: "How many syllables are in \u201Cbeautiful\u201D?", o: ["2", "3", "4", "1"], a: 1 },
+    { t: "mcq", q: "Which word has a silent letter?", o: ["knife", "book", "pen", "table"], a: 0 },
+    { t: "fib", q: "The silent letter in \u201Cwrite\u201D is ___.", a: ["w"] },
+    { t: "mcq", q: "The prefix in \u201Cunhappy\u201D means:", o: ["again", "not", "before", "with"], a: 1 },
+    { t: "mcq", q: "Add a prefix to \u201Cpossible\u201D to mean \u201Cnot possible\u201D:", o: ["unpossible", "impossible", "dispossible", "nonpossible"], a: 1 },
+    { t: "fib", q: "The root word in \u201Ccarelessness\u201D is ___.", a: ["care"] },
+    { t: "mcq", q: "How many syllables are in \u201Ceducation\u201D?", o: ["3", "4", "5", "2"], a: 1 },
+    { t: "tf", q: "\u201CPsychology\u201D starts with a silent \u2018p\u2019.", a: true },
+    { t: "mcq", q: "Which shows the correct syllable division of \u201Cbasket\u201D?", o: ["ba-sket", "bas-ket", "bask-et", "b-asket"], a: 1 },
+    { t: "mcq", q: "The suffix \u201C-ful\u201D in \u201Chopeful\u201D means:", o: ["without", "full of", "again", "not"], a: 1 }
+  ]
+},
+{
+  id: "sentence-patterns", title: "Sentence Patterns: SVOO & SVOC",
+  expl: "AK SLO E-07-C5-02: English sentence patterns — SVO (She kicked the ball), SVOO with direct and indirect objects (She gave him a gift), SVOC with an object complement (They made him captain).",
+  questions: [
+    { t: "mcq", q: "In \u201CShe gave me a pen\u201D, the INDIRECT object is:", o: ["She", "gave", "me", "a pen"], a: 2 },
+    { t: "mcq", q: "In \u201CShe gave me a pen\u201D, the DIRECT object is:", o: ["She", "gave", "me", "a pen"], a: 3 },
+    { t: "mcq", q: "Which sentence follows the SVOO pattern?", o: ["He runs fast.", "She bought him a book.", "They are happy.", "The baby sleeps."], a: 1 },
+    { t: "mcq", q: "In \u201CThey elected him president\u201D, \u201Cpresident\u201D is:", o: ["a direct object", "an indirect object", "an object complement", "the subject"], a: 2 },
+    { t: "fib", q: "The pattern of \u201CHe told her a story\u201D is ___.", a: ["SVOO"] },
+    { t: "tf", q: "In \u201CShe made tea\u201D, \u201Ctea\u201D is the direct object.", a: true },
+    { t: "mcq", q: "Which sentence is SVOC?", o: ["She gave him flowers.", "We painted the wall blue.", "He eats rice.", "Birds fly."], a: 1 },
+    { t: "reorder", q: "Arrange the words into an SVOO sentence.", w: ["She", "sent", "me", "a", "letter"], a: "She sent me a letter" },
+    { t: "mcq", q: "In \u201CThe teacher called Ali a star\u201D, the complement describes:", o: ["the teacher", "called", "Ali", "a star"], a: 2 },
+    { t: "fib", q: "SVOC stands for Subject-Verb-Object-___.", a: ["Complement", "complement"] }
+  ]
+},
+{
+  id: "formal-letters", title: "Formal Letters & Emails",
+  expl: "AK SLO E-07-D4-07: write formal letters and emails (applications, complaints) — correct layout, greeting, clear paragraphs, polite tone and closing.",
+  questions: [
+    { t: "mcq", q: "Which greeting is correct for a formal letter?", o: ["Hi there!", "Dear Sir,", "Hey!", "Hello buddy,"], a: 1 },
+    { t: "mcq", q: "Where does the date go in a formal letter?", o: ["at the very end", "below the sender's address", "in the middle", "no date is needed"], a: 1 },
+    { t: "tf", q: "\u201CYours faithfully\u201D is a suitable closing for a formal letter.", a: true },
+    { t: "mcq", q: "Which sentence fits a formal complaint letter?", o: ["Your product is trash, fix it!", "I am writing to complain about the faulty kettle I bought on Monday.", "Hey, your kettle broke lol.", "Give me my money back now!"], a: 1 },
+    { t: "fib", q: "A formal email asking for leave should have a clear ___ line.", a: ["subject"] },
+    { t: "mcq", q: "Which closing fits a formal application?", o: ["Cheers,", "Yours sincerely,", "See ya,", "Bye!"], a: 1 },
+    { t: "mcq", q: "The first paragraph of an application letter should:", o: ["tell a joke", "state the purpose of writing", "list your hobbies", "ask about salary"], a: 1 },
+    { t: "tf", q: "Short forms like \u201Cdon't\u201D and \u201Ccan't\u201D are fine in formal letters.", a: false },
+    { t: "mcq", q: "Which is the correct order in a formal letter?", o: ["greeting \u2192 date \u2192 address", "sender's address \u2192 date \u2192 greeting \u2192 body \u2192 closing", "body \u2192 address \u2192 date", "closing \u2192 body \u2192 greeting"], a: 1 },
+    { t: "fib", q: "When you don't know the name, begin with \u201CDear ___.\u201D", a: ["Sir", "Madam", "Sir/Madam"] }
+  ]
+},
+{
+  id: "past-tense", title: "Simple Past Tense",
+  expl: "The simple past tells what already happened: regular verbs add -ed (walked), irregular verbs change form (went, ate, saw, bought).",
+  questions: [
+    { t: "mcq", q: "They ___ football yesterday.", o: ["play", "played", "plays", "playing"], a: 1 },
+    { t: "mcq", q: "She ___ to school late this morning.", o: ["go", "goes", "went", "gone"], a: 2 },
+    { t: "fib", q: "I ___ my homework last night. (do)", a: ["did"] },
+    { t: "mcq", q: "Which sentence is in the simple past?", o: ["He eats rice.", "He ate rice.", "He is eating rice.", "He will eat rice."], a: 1 },
+    { t: "tf", q: "\u201CThey goed to the park\u201D is correct.", a: false },
+    { t: "mcq", q: "The past form of \u201Cbuy\u201D is:", o: ["buyed", "bought", "buys", "buying"], a: 1 },
+    { t: "reorder", q: "Arrange the words into a correct sentence.", w: ["We", "watched", "a", "film", "yesterday"], a: "We watched a film yesterday" },
+    { t: "fib", q: "She ___ a beautiful song at the party. (sing)", a: ["sang"] },
+    { t: "mcq", q: "Choose the correct negative: \u201CHe ___ come yesterday.\u201D", o: ["didn't", "doesn't", "don't", "not"], a: 0 },
+    { t: "mcq", q: "The past form of \u201Cteach\u201D is:", o: ["teached", "taught", "teaches", "teaching"], a: 1 }
+  ]
+},
+{
+  id: "skimming", title: "Skimming for Main Ideas",
+  expl: "AK SLO E-07-B3-05: skim a text for its general idea — use the title, first lines and key words to grasp the writer's purpose and audience without reading every word.",
+  questions: [
+    { t: "mcq", q: "When you skim a text, you read to find:", o: ["every detail", "the general idea", "difficult words", "the author's name"], a: 1 },
+    { t: "mcq", q: "Which part helps you skim first?", o: ["the middle paragraph", "the title and first sentences", "the last word", "the page number"], a: 1 },
+    { t: "tf", q: "Skimming means reading every word slowly and carefully.", a: false },
+    { t: "mcq", q: "To find the writer's purpose quickly, you should:", o: ["read the whole book", "skim the introduction and conclusion", "count the pages", "memorize the title"], a: 1 },
+    { t: "fib", q: "Reading quickly for the main idea is called ___.", a: ["skimming"] },
+    { t: "mcq", q: "Which question does skimming answer best?", o: ["What does this text mainly discuss?", "What is the 5th word in line 3?", "How many commas are there?", "When was the author born?"], a: 0 },
+    { t: "tf", q: "Topic sentences often carry the main idea of a paragraph.", a: true },
+    { t: "mcq", q: "Before a test, skimming your notes helps you:", o: ["learn nothing new", "recall the main points fast", "sleep better", "write neatly"], a: 1 },
+    { t: "reorder", q: "Arrange the words into good skimming advice.", w: ["Read", "the", "title", "first"], a: "Read the title first" },
+    { t: "mcq", q: "Skimming is most useful when you:", o: ["have plenty of time", "need a quick overview", "want to memorize", "read poetry aloud"], a: 1 }
+  ]
+},
+{
+  id: "poetry", title: "Poetry: Rhyme, Rhythm & Imagery",
+  expl: "AK SLOs E-07-B3-15 / E-07-B3-07: read poems (rhymes, cinquains, haiku) — hear rhyme and rhythm, spot repetition, simile, metaphor, personification and sensory images.",
+  questions: [
+    { t: "mcq", q: "Which pair rhymes?", o: ["cat / dog", "light / night", "pen / book", "run / jump"], a: 1 },
+    { t: "mcq", q: "\u201CThe moon smiled at me\u201D is an example of:", o: ["simile", "metaphor", "personification", "rhyme"], a: 2 },
+    { t: "mcq", q: "\u201CBrave as a lion\u201D is a:", o: ["metaphor", "simile", "haiku", "stanza"], a: 1 },
+    { t: "fib", q: "A comparison saying one thing IS another (e.g. \u201CHe is a rock\u201D) is a ___.", a: ["metaphor"] },
+    { t: "mcq", q: "A haiku has:", o: ["4 lines", "3 lines", "14 lines", "2 lines"], a: 1 },
+    { t: "tf", q: "A stanza is a group of lines in a poem, like a paragraph in prose.", a: true },
+    { t: "mcq", q: "Which line uses repetition for rhythm?", o: ["Run, run, run to the sun!", "The table is brown.", "I like tea.", "Dogs bark loudly."], a: 0 },
+    { t: "reorder", q: "Arrange the words into a poetic line.", w: ["The", "wind", "whispered", "softly"], a: "The wind whispered softly" },
+    { t: "mcq", q: "\u201CThe classroom was a zoo\u201D is a:", o: ["simile", "metaphor", "personification", "alliteration"], a: 1 },
+    { t: "fib", q: "Words that appeal to the senses (sight, sound, smell) create ___.", a: ["imagery"] }
+  ]
+},
+{
+  id: "connotation", title: "Connotations & Shades of Meaning",
+  expl: "AK SLO E-07-C1-05: words with similar meanings feel different — \u2018slim\u2019 vs \u2018skinny\u2019, \u2018confident\u2019 vs \u2018arrogant\u2019. Connotation is the feeling a word carries.",
+  questions: [
+    { t: "mcq", q: "Which word has a positive connotation?", o: ["skinny", "slim", "bony", "thin"], a: 1 },
+    { t: "mcq", q: "\u201CChildlike\u201D vs \u201Cchildish\u201D — which feels more positive?", o: ["childish", "childlike", "both feel the same", "neither"], a: 1 },
+    { t: "tf", q: "\u201CEconomical\u201D and \u201Cstingy\u201D have the same connotation.", a: false },
+    { t: "mcq", q: "He is ___ about his work. (pick the negative one)", o: ["confident", "proud", "arrogant", "sure"], a: 2 },
+    { t: "fib", q: "The feeling a word suggests beyond its dictionary meaning is its ___.", a: ["connotation"] },
+    { t: "mcq", q: "Which pair shows a difference in intensity?", o: ["big / large", "happy / glad", "cold / freezing", "run / walk"], a: 2 },
+    { t: "mcq", q: "\u201CShe glared at the picture\u201D — \u201Cglared\u201D (not \u201Cglanced\u201D) suggests:", o: ["love", "anger", "joy", "fear"], a: 1 },
+    { t: "tf", q: "\u201CStubborn\u201D and \u201Cdetermined\u201D feel exactly the same to most readers.", a: false },
+    { t: "reorder", q: "Arrange the words into a true sentence.", w: ["Words", "carry", "feelings", "too"], a: "Words carry feelings too" },
+    { t: "mcq", q: "Calling a plan \u201Ca crazy scheme\u201D instead of \u201Ca bold plan\u201D makes you feel:", o: ["excited", "suspicious", "happy", "calm"], a: 1 }
+  ]
+},
+{
+  id: "figurative", title: "Figurative Language",
+  expl: "AK SLO E-07-B3-01: words don't always mean exactly what they say — tell literal meaning from figurative meaning, and see how word choice shapes tone.",
+  questions: [
+    { t: "mcq", q: "In \u201CIt's raining cats and dogs\u201D, the phrase means:", o: ["animals are falling", "it is raining heavily", "a pet shop", "a cloudy sky"], a: 1 },
+    { t: "mcq", q: "The LITERAL meaning of \u201Cbreak the ice\u201D is:", o: ["start a conversation", "smash frozen water", "be rude", "feel cold"], a: 1 },
+    { t: "tf", q: "Figurative language means exactly what the words say.", a: false },
+    { t: "mcq", q: "\u201CShe has a heart of gold\u201D is figurative because:", o: ["hearts are red", "it means she is kind, not made of metal", "gold is expensive", "she is rich"], a: 1 },
+    { t: "fib", q: "When \u201Ccold\u201D describes an unfriendly person, its meaning is ___. (literal / figurative)", a: ["figurative"] },
+    { t: "mcq", q: "Which sentence uses \u201Cbright\u201D figuratively?", o: ["The bright sun hurt my eyes.", "She is a bright student.", "The bright lamp lit the room.", "Bright colors faded fast."], a: 1 },
+    { t: "tf", q: "A dictionary always gives the contextual meaning of a word.", a: false },
+    { t: "mcq", q: "An author's word choice affects the text's:", o: ["length", "tone and meaning", "page count", "font size"], a: 1 },
+    { t: "mcq", q: "\u201CTime is money\u201D suggests time is:", o: ["coins", "valuable", "slow", "free"], a: 1 },
+    { t: "fib", q: "The dictionary meaning of a word is its ___ meaning.", a: ["literal", "denotation"] }
+  ]
+},
+{
+  id: "descriptive-writing", title: "Descriptive Writing",
+  expl: "AK SLO E-07-D4-04: write a descriptive composition — move from general to specific, use senses and precise adjectives, plan with brainstorming and drafts.",
+  questions: [
+    { t: "mcq", q: "A good description moves from:", o: ["specific to general", "general to specific", "end to start", "random order"], a: 1 },
+    { t: "mcq", q: "Which sentence is most descriptive?", o: ["The garden was nice.", "The garden burst with red roses and the sweet smell of jasmine.", "I saw a garden.", "Gardens are green."], a: 1 },
+    { t: "tf", q: "Using the five senses makes descriptions vivid.", a: true },
+    { t: "mcq", q: "Before writing a description, you should:", o: ["start immediately", "brainstorm and mind-map ideas", "copy a friend", "skip planning"], a: 1 },
+    { t: "fib", q: "A rough copy written before the final version is the ___ draft.", a: ["first", "rough"] },
+    { t: "mcq", q: "Which adjective is most precise?", o: ["nice", "big", "enormous", "good"], a: 2 },
+    { t: "tf", q: "A description should only list facts, never feelings.", a: false },
+    { t: "mcq", q: "Describing a person, you might include:", o: ["only their name", "appearance, habits and traits", "their phone number", "nothing personal"], a: 1 },
+    { t: "reorder", q: "Arrange into good writing advice.", w: ["Don't", "just", "tell,", "show"], a: "Don't just tell, show" },
+    { t: "fib", q: "Precise ___ (describing words) make a description vivid.", a: ["adjectives"] }
+  ]
+},
+{
+  id: "paraphrasing", title: "Paraphrasing",
+  expl: "AK SLOs E-07-B3-12 / E-07-D4-09: restate ideas — even poem stanzas — in your own simple, correct words. Keep the meaning, change the wording.",
+  questions: [
+    { t: "mcq", q: "Which is the best paraphrase of \u201CThe boy was very tired\u201D?", o: ["The boy was very tired.", "The exhausted lad needed rest.", "Boys get tired.", "Tired boy."], a: 1 },
+    { t: "mcq", q: "When paraphrasing, you must:", o: ["copy word for word", "keep the meaning, change the words", "make it longer", "change the meaning"], a: 1 },
+    { t: "tf", q: "Paraphrasing means translating into another language.", a: false },
+    { t: "mcq", q: "Paraphrase: \u201CShe speaks quickly.\u201D \u2192", o: ["She talks fast.", "She speaks quickly.", "Quick speak she.", "She is quick."], a: 0 },
+    { t: "fib", q: "Restating a poem's stanza in your own words is ___.", a: ["paraphrasing"] },
+    { t: "mcq", q: "Which is NOT paraphrasing?", o: ["using synonyms", "changing sentence structure", "copying the sentence exactly", "simplifying the language"], a: 2 },
+    { t: "tf", q: "A good paraphrase keeps the original meaning.", a: true },
+    { t: "mcq", q: "Paraphrase: \u201CIt is raining heavily.\u201D \u2192", o: ["Rain, rain, go away.", "It is pouring down.", "I like rain.", "Heavy is the rain."], a: 1 },
+    { t: "reorder", q: "Arrange into good paraphrasing advice.", w: ["Use", "your", "own", "words"], a: "Use your own words" },
+    { t: "fib", q: "Paraphrasing shows you ___ the text.", a: ["understand", "understood"] }
   ]
 },
 {
