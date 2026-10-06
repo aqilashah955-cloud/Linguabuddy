@@ -209,7 +209,7 @@ export function startDaily(kind) {
   if (tasks.length) { showSchoolTasks(kind, st, items); return; }
 }
 
-/* ================= monthly test ================= */
+/* ================= month helpers (grouping lessons by calendar month) ================= */
 
 // "September · Week 3" -> "September"
 export function monthOfLesson(scheme, n) {
@@ -228,7 +228,10 @@ export function monthLessons(scheme, month) {
     });
 }
 
-function monthKey() {
+// Monthly test: 20-question formal test drawn from ALL of the current
+// month's mapped lessons (mixed SLOs), once per month per student.
+// Mirrors the live deployment so a working-copy push never drops it.
+export function monthKey() {
   const d = new Date();
   return d.getFullYear() + "-" + (d.getMonth() + 1);
 }
@@ -307,7 +310,8 @@ export function akWorksheetHTML(scheme, n) {
       seed: todayKey() + "|worksheet|" + scheme.id + "|L" + n
     });
     html += items.map(function (it, i) { return wsQuestionHTML(i, it); }).join("");
-    if (slos.indexOf("writing") >= 0) {
+    var writingFamily = ["writing", "formal-letters", "descriptive-writing", "paraphrasing"];
+    if (slos.some(function (id) { return writingFamily.indexOf(id) >= 0; })) {
       html += '<h3 style="font-size:16px;">✍️ Writing space</h3>';
       for (let i = 0; i < 8; i++) html += '<div style="border-bottom:2px dotted #999;height:34px;"></div>';
     }
@@ -485,12 +489,13 @@ export function renderAKHub() {
     '<p class="fine">' + esc(st.term ? st.term.name : "") +
     (e.code ? " · SLO " + esc(e.code) : "") + (e.week ? " · " + esc(e.week) : "") + "</p>" +
     (mapped
-      ? '<div class="row-flex"><button class="btn-primary" id="akPractice">📝 Daily Practice</button>' +
+      ? '<p class="fine">✅ This lesson\'s test & worksheet cover its specific SLO only.</p>' +
+        '<div class="row-flex"><button class="btn-primary" id="akPractice">📝 Daily Practice</button>' +
         '<button class="btn-secondary" id="akTest">🎯 Daily Test</button></div>' +
         '<div class="row-flex">' +
-        (monthlyReady ? '<button class="btn-secondary" id="akMonthly">📋 ' + esc(month) + ' Test</button>' : "") +
         '<button class="btn-ghost" id="akWorksheet">🖨️ Worksheet</button>' +
-        '<button class="btn-ghost" id="akMarks">📊 My Marks</button></div>'
+        '<button class="btn-ghost" id="akMarks">📊 My Marks</button></div>' +
+        (monthlyReady ? '<div class="row-flex"><button class="btn-ghost" id="akMonthly">📋 Monthly Test — ' + esc(month) + '</button></div>' : "")
       : '<p class="fine">📋 This lesson\'s SLOs are being added from the scheme of work — check back soon.</p>') +
     '<div class="row-flex"><button class="btn-ghost" id="akPrev">‹ Prev lesson</button>' +
     '<button class="btn-ghost" id="akNext">Next lesson ›</button>' +

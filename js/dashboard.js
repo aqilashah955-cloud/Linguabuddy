@@ -18,10 +18,10 @@ let go = null;
 export function setGo(fn) { go = fn; }
 
 export const SKILLS = {
-  grammar: ["tenses", "sva", "voice", "speech", "articles", "prepositions", "punct", "clauses", "pronouns", "adverbs", "adjectives"],
-  vocab: ["synant", "vocab"],
-  reading: ["reading"],
-  writing: ["writing"]
+  grammar: ["tenses", "past-tense", "sva", "voice", "speech", "articles", "prepositions", "punct", "clauses", "sentence-patterns", "pronouns", "adverbs", "adjectives"],
+  vocab: ["synant", "vocab", "syllables", "connotation", "figurative"],
+  reading: ["reading", "skimming", "poetry"],
+  writing: ["writing", "formal-letters", "descriptive-writing", "paraphrasing"]
 };
 const SKILL_LABEL = { grammar: "Grammar", vocab: "Vocabulary", reading: "Reading", writing: "Writing" };
 

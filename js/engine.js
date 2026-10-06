@@ -237,7 +237,10 @@ const SLO_SKILL = {
   tenses: "grammar", sva: "grammar", voice: "grammar", speech: "grammar",
   articles: "grammar", prepositions: "grammar", punct: "grammar", clauses: "grammar",
   pronouns: "grammar", adverbs: "grammar", adjectives: "grammar",
-  synant: "vocab", vocab: "vocab", reading: "reading", writing: "writing"
+  "sentence-patterns": "grammar", "past-tense": "grammar",
+  synant: "vocab", vocab: "vocab", syllables: "vocab", connotation: "vocab", figurative: "vocab",
+  reading: "reading", skimming: "reading", poetry: "reading",
+  writing: "writing", "formal-letters": "writing", "descriptive-writing": "writing", paraphrasing: "writing"
 };
 
 function freshRefsFor(sloId, used) {
