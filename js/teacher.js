@@ -397,30 +397,88 @@ async function loadInboxSubs() {
     }
     return out.sort(function (a, b) { return (b.date || 0) - (a.date || 0); });
   }
-  // offline: this device's graded attempts
-  return S.attempts.filter(function (a) { return a.mode === "assessment" || a.mode === "reassessment"; })
-    .map(function (a) { return Object.assign({ studentId: a.student, _className: "This device" }, a); })
-    .sort(function (a, b) { return b.date - a.date; });
+  // offline: this device's attempts (all types) + My Work uploads
+  const attempts = (S.attempts || []).map(function (a) {
+    return Object.assign({ studentId: a.student, _className: "This device", _type: "attempt" }, a);
+  });
+  const mywork = (S.mywork || []).map(function (w) {
+    return Object.assign({
+      studentId: (S.profile && S.profile.name) || "Student",
+      _className: "This device", _type: "mywork",
+      title: w.title, date: w.createdAt, _mwId: w.id,
+      _thumb: w.thumbDataUrl || w.photoDataUrl, _photo: w.photoDataUrl || w.photoUrl,
+      _text: w.text, _feedback: w.feedback || []
+    }, w);
+  });
+  return attempts.concat(mywork).sort(function (a, b) { return (b.date || b.createdAt || 0) - (a.date || a.createdAt || 0); });
 }
 
 async function drawInbox(box) {
   box.innerHTML = '<p class="fine">Loading…</p>';
-  const subs = await loadInboxSubs();
-  if (!subs.length) { box.innerHTML = '<p class="empty-msg">No submissions yet. When students complete assigned work, their answers appear here.</p>'; return; }
-  box.innerHTML = subs.map(function (s, i) {
-    const nm = s.student || s._rosterName || subKey(s);
-    return '<div class="inbox-row" data-sub="' + i + '"><div><strong>' + esc(nm) + "</strong> — " + esc(s.title || "Assessment") +
-      '<br><span class="fine">' + esc(s._className || "") + " · " + fmtDate(s.date) +
-      (s.tabs ? " · tab switches: " + s.tabs : "") + "</span></div>" +
-      '<div class="score-pct">' + (s.pct != null ? s.pct + "%" : "—") + "</div></div>" +
-      '<div class="inbox-detail hidden" id="subdet_' + i + '"></div>';
-  }).join("");
-  box.querySelectorAll("[data-sub]").forEach(function (row) {
-    row.addEventListener("click", function () {
-      const i = parseInt(row.getAttribute("data-sub"), 10);
-      const det = $("subdet_" + i);
-      const s = subs[i];
-      if (det.classList.contains("hidden")) {
+  const allSubs = await loadInboxSubs();
+  if (!allSubs.length) { box.innerHTML = '<p class="empty-msg">No submissions yet. When students complete assigned work, their answers appear here.</p>'; return; }
+
+  // Filter tabs: All / Tests / AKS / My Work
+  let filter = "all";
+  function filtered() {
+    return allSubs.filter(function (s) {
+      if (filter === "all") return true;
+      if (filter === "mywork") return s._type === "mywork";
+      if (filter === "aks") return s._type === "attempt" && (s.kind || "").indexOf("scheme-") === 0;
+      if (filter === "tests") return s._type === "attempt" && (s.kind || "").indexOf("scheme-") !== 0;
+      return true;
+    });
+  }
+
+  function render() {
+    const subs = filtered();
+    const counts = {
+      all: allSubs.length,
+      tests: allSubs.filter(function (s) { return s._type === "attempt" && (s.kind || "").indexOf("scheme-") !== 0; }).length,
+      aks: allSubs.filter(function (s) { return s._type === "attempt" && (s.kind || "").indexOf("scheme-") === 0; }).length,
+      mywork: allSubs.filter(function (s) { return s._type === "mywork"; }).length
+    };
+    let html = '<div class="inbox-filters" style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">' +
+      [["all", "📥 All"], ["tests", "📝 Tests"], ["aks", "🏫 AKS"], ["mywork", "📸 My Work"]].map(function (t) {
+        return '<button class="chipbtn' + (filter === t[0] ? " on" : "") + '" data-filter="' + t[0] + '">' +
+          t[1] + " (" + counts[t[0]] + ")</button>";
+      }).join("") + "</div>";
+    if (!subs.length) {
+      html += '<p class="empty-msg">Nothing here yet.</p>';
+    } else {
+      html += subs.map(function (s, i) {
+        const nm = s.student || s._rosterName || subKey(s);
+        const isMW = s._type === "mywork";
+        const icon = isMW ? "📸" : ((s.kind || "").indexOf("scheme-") === 0 ? "🏫" : "📝");
+        return '<div class="inbox-row" data-sub="' + i + '"><div><strong>' + icon + " " + esc(nm) + "</strong> — " + esc(s.title || "Assessment") +
+          '<br><span class="fine">' + esc(s._className || "") + " · " + fmtDate(s.date || s.createdAt) +
+          (s.tabs ? " · tab switches: " + s.tabs : "") +
+          (isMW && s._feedback && s._feedback.length ? " · 💬 " + s._feedback.length + " feedback" : "") +
+          "</span></div>" +
+          (isMW && s._thumb ? '<img src="' + s._thumb + '" style="width:56px;height:56px;object-fit:cover;border-radius:8px;" />' : "") +
+          '<div class="score-pct">' + (s.pct != null ? s.pct + "%" : "—") + "</div></div>" +
+          '<div class="inbox-detail hidden" id="subdet_' + i + '"></div>';
+      }).join("");
+    }
+    box.innerHTML = html;
+    box.querySelectorAll("[data-filter]").forEach(function (b) {
+      b.addEventListener("click", function () { filter = b.getAttribute("data-filter"); render(); });
+    });
+    box.querySelectorAll("[data-sub]").forEach(function (row) {
+      row.addEventListener("click", function () { toggleDetail(parseInt(row.getAttribute("data-sub"), 10)); });
+    });
+  }
+
+  function toggleDetail(i) {
+    const subs = filtered();
+    const det = document.getElementById("subdet_" + i);
+    const s = subs[i];
+    if (!det || !s) return;
+    if (det.classList.contains("hidden")) {
+      if (s._type === "mywork") {
+        det.innerHTML = renderMyWorkDetail(s);
+        wireMyWorkFeedback(det, s);
+      } else {
         det.innerHTML = (s.answers || []).map(function (a, k) {
           const cls = a.score === 1 ? "correct" : (a.score > 0 ? "partial" : "wrong");
           return '<div class="review-card ' + cls + '"><div class="rev-q">Q' + (k + 1) + ". " + esc(a.q) +
@@ -428,10 +486,50 @@ async function drawInbox(box) {
             '<div class="rev-line">Student answer: ' + esc(a.given) + "</div>" +
             '<div class="rev-line">Correct: ' + esc(a.correct) + "</div></div>";
         }).join("") || '<p class="fine">No per-question detail saved for this submission.</p>';
-        det.classList.remove("hidden");
-      } else det.classList.add("hidden");
+      }
+      det.classList.remove("hidden");
+    } else det.classList.add("hidden");
+  }
+
+  function renderMyWorkDetail(s) {
+    let html = "";
+    if (s._photo) {
+      html += '<div style="text-align:center;margin:8px 0;"><img src="' + s._photo + '" style="max-width:100%;max-height:400px;border-radius:8px;border:1px solid #ddd;" /></div>';
+    }
+    if (s._text) {
+      html += '<div class="review-card"><div class="rev-q">Extracted text:</div><div class="rev-line">' + esc(s._text) + "</div></div>";
+    }
+    html += '<div style="margin:12px 0;"><strong>💬 Teacher feedback:</strong><div id="mwFeedbackList">' +
+      (s._feedback || []).map(function (f) {
+        return '<div class="review-card" style="margin:6px 0;"><div class="rev-line">' + esc(f.text || f) + '</div>' +
+          '<div class="fine">' + fmtDate(f.ts || Date.now()) + "</div></div>";
+      }).join("") + "</div>" +
+      '<div style="display:flex;gap:6px;margin-top:8px;"><input id="mwFeedbackInput" type="text" placeholder="Write feedback…" style="flex:1;padding:8px;border:1px solid #ccc;border-radius:8px;" />' +
+      '<button class="btn-primary" id="mwFeedbackBtn">Send</button></div></div>';
+    return html || '<p class="fine">No detail available.</p>';
+  }
+
+  function wireMyWorkFeedback(det, s) {
+    const btn = det.querySelector("#mwFeedbackBtn");
+    const input = det.querySelector("#mwFeedbackInput");
+    if (!btn || !input) return;
+    btn.addEventListener("click", function () {
+      const text = input.value.trim();
+      if (!text) return;
+      // Save to the student's My Work item (offline: this device)
+      const list = (typeof S !== "undefined" && S.mywork) || [];
+      const item = list.find(function (w) { return w.id === s._mwId; });
+      if (item) {
+        (item.feedback || (item.feedback = [])).push({ text: text, ts: Date.now(), by: "teacher" });
+        if (typeof save === "function") save();
+        s._feedback = item.feedback;
+        det.innerHTML = renderMyWorkDetail(s);
+        wireMyWorkFeedback(det, s);
+      }
     });
-  });
+  }
+
+  render();
 }
 
 /* ----- analytics ----- */
