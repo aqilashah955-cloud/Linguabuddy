@@ -9,8 +9,10 @@
 // Lessons with oral-only SLOs carry `tasks` (speaking/listening practice)
 // instead of question banks.
 
-function L(n, title, skill, code, week, slos, tasks) {
-  return { n: n, title: title, skill: skill, code: code, week: week, slos: slos || [], tasks: tasks || [] };
+function L(n, title, skill, code, week, slos, tasks, audio) {
+  const o = { n: n, title: title, skill: skill, code: code, week: week, slos: slos || [], tasks: tasks || [] };
+  if (audio) o.audio = audio;
+  return o;
 }
 
 const P9_T2 = [
@@ -19,9 +21,9 @@ const P9_T2 = [
     "Pair discussion — “Should schools limit mobile phone use during school hours?” Take turns, ask follow-up questions (Why do you think so? Can you give an example?), and build on your partner's ideas."
   ]),
   L(67, "Listen & respond for discussion", "Listening", "E-07-A1-03", "September · Week 4", [], [
-    "Listen to an English news bulletin (TV, radio or YouTube). Note down 3 headlines, then retell the news to a family member in your own words.",
-    "With a partner: one reads a short paragraph aloud while the other listens and puts 5 events from it in the correct order."
-  ]),
+    "🎧 Press play and listen to the discussion: “Should schools limit mobile phone use?” Note down 3 arguments you hear for limiting phones and 2 against.",
+    "With a partner: discuss the same question. Use at least 2 arguments you heard in the audio, then add your own opinion with one reason."
+  ], "assets/audio/l67-discussion.mp3"),
   L(68, "Syllables, silent letters, prefixes & suffixes", "Vocabulary", "E-07-B1-01", "September · Week 4", ["syllables"]),
   L(69, "Guess word meanings; literal vs contextual", "Reading", "E-07-B2-03 · E-08-B2-03", "September · Week 5", ["reading", "vocab"]),
   L(70, "Sentence patterns: SVOO & SVOC", "Grammar", "E-07-C5-02", "October · Week 1", ["sentence-patterns"]),
@@ -44,9 +46,9 @@ const P9_T2 = [
   L(87, "Figurative & connotative meanings", "Reading & Vocabulary", "E-07-B3-01", "November · Week 4", ["figurative"]),
   L(88, "Descriptive composition", "Writing", "E-06-D4-04 · E-07-D4-04", "November · Week 5", ["descriptive-writing"]),
   L(89, "Listen & respond to texts", "Listening", "E-06-A2-01 · E-07-A2-01", "December · Week 1", [], [
-    "Listen to a short English audio or announcement. Write down 5 key words you hear, then summarize what it was about in 3 sentences.",
-    "Listen to a classmate read a paragraph. Ask them 3 questions about it and answer 3 of theirs."
-  ]),
+    "🎧 Press play and listen to the informational text about the markhor. Write down 5 key words you hear, then summarize what it was about in 3 sentences.",
+    "Ask a partner 3 questions about the markhor (e.g. Where does it live? What does it eat?) and answer 3 of theirs."
+  ], "assets/audio/l89-markhor.mp3"),
   L(90, "Speak confidently; ask & answer", "Speaking", "E-06-A3-01 · E-07-A3-01 · E-07-A2-03", "December · Week 2", [], [
     "Role-play an interview: ask a friend 5 questions about their daily routine, and answer 5 questions about yours — in full sentences.",
     "Speak for 1 minute without stopping: describe your best friend's personality and habits."
@@ -56,9 +58,9 @@ const P9_T2 = [
   L(93, "Skim for the writer's purpose", "Reading", "E-07-B3-05", "December · Week 3", ["skimming"]),
   L(94, "Comprehension strategies", "Reading", "E-07-B2-06", "December · Week 3", ["reading"]),
   L(95, "Listening for arguments & discussions", "Listening", "E-07-A1-03", "December · Week 3", [], [
-    "Listen to a short talk or story. List the speaker's 3 main points, then say whether you agree or disagree — with one reason.",
-    "Play 'keyword bingo' with a friend: each picks 5 words, listens to an audio clip, and ticks the words they hear."
-  ]),
+    "🎧 Press play and listen to the persuasive talk: “Three reasons to read 20 minutes daily.” List the speaker's 3 main points, then say whether you agree or disagree — with one reason.",
+    "Play 'keyword bingo' with a friend: each picks 5 words (e.g. brain, focus, vocabulary, imagination, habit), listens to the talk, and ticks the words they hear."
+  ], "assets/audio/l95-arguments.mp3"),
   L(96, "Formal letters & emails", "Writing", "E-07-D4-07", "December · Week 4", ["formal-letters"])
 ];
 
