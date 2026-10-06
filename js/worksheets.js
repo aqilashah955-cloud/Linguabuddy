@@ -433,11 +433,14 @@ export function buildPack(config) {
 /* ================= certificates ================= */
 
 /** Printable Certificate of Achievement. Pure. */
-export function certificate(name, achievement, dateStr) {
+export function certificate(name, achievement, dateStr, opts) {
+  opts = opts || {};
   name = String(name == null || name === "" ? "________________" : name);
   achievement = String(achievement || "great effort in learning English");
   dateStr = String(dateStr || new Date().toLocaleDateString("en-PK",
     { day: "numeric", month: "long", year: "numeric" }));
+  const studentId = String(opts.studentId || "").trim();
+  const lacking = (opts.lackingAreas || []).filter(Boolean);
   const html =
     '<div style="font-family:Georgia,serif;color:#111;max-width:720px;text-align:center;' +
     'border:8px double #b8860b;padding:48px 32px;margin:8px;">' +
@@ -446,8 +449,17 @@ export function certificate(name, achievement, dateStr) {
     '<p style="font-size:16px;color:#555;">This certificate is proudly presented to</p>' +
     '<div style="font-size:32px;font-weight:bold;border-bottom:2px solid #333;' +
     'display:inline-block;padding:4px 32px;margin:8px 0;">' + esc(name) + "</div>" +
+    (studentId ? '<p style="font-size:15px;color:#555;margin:4px 0;">Student ID: <strong>' + esc(studentId) + "</strong></p>" : "") +
     "<p>for</p>" +
     '<div style="font-size:20px;font-style:italic;margin:8px 0;">' + esc(achievement) + "</div>" +
+    (lacking.length
+      ? '<div style="margin:16px auto;max-width:520px;text-align:left;background:#fff8e1;' +
+        'border:1px solid #e0c36a;border-radius:8px;padding:12px 16px;">' +
+        '<p style="margin:0 0 6px;font-weight:bold;font-size:15px;">📋 Areas to keep working on:</p>' +
+        '<ul style="margin:0;padding-left:20px;font-size:14px;">' +
+        lacking.map(function (a) { return "<li>" + esc(a) + "</li>"; }).join("") +
+        "</ul></div>"
+      : "") +
     '<p style="color:#555;">' + esc(dateStr) + "</p>" +
     '<div style="display:flex;justify-content:space-around;margin-top:56px;">' +
     '<div style="border-top:2px solid #333;width:200px;padding-top:6px;font-size:14px;">Teacher</div>' +
@@ -645,7 +657,9 @@ function wireCertificates() {
   } catch (e) { /* store unavailable (shouldn't happen) */ }
   if (name && !$("wsCertName").value) $("wsCertName").value = name;
   btn.addEventListener("click", function () {
-    const cert = certificate($("wsCertName").value, $("wsCertFor").value, $("wsCertDate").value);
+    const cert = certificate($("wsCertName").value, $("wsCertFor").value, $("wsCertDate").value, {
+      studentId: $("wsCertId") ? $("wsCertId").value : ""
+    });
     $("wsCertPreview").innerHTML = cert.html +
       '<div style="text-align:center;margin-top:12px;"><button style="' + btnPri + '" id="wsCertPrint">🖨️ Print certificate</button></div>';
     $("wsCertPrint").addEventListener("click", function () { printHTML(cert.html); });
@@ -677,6 +691,7 @@ export function showWorksheets() {
     '<h3 style="margin:22px 0 8px;">🏆 Certificates</h3>' +
     '<div style="border:2px solid #e5d9c3;border-radius:14px;background:#fffdf7;padding:14px;">' +
     '<label>Student name:<br><input id="wsCertName" placeholder="e.g. Amina Khan" style="width:100%;max-width:320px;padding:10px;margin:4px 0;font-size:15px;"></label><br>' +
+    '<label>Student ID:<br><input id="wsCertId" placeholder="e.g. Roll no. / ID (optional)" style="width:100%;max-width:320px;padding:10px;margin:4px 0;font-size:15px;"></label><br>' +
     '<label>Achievement:<br><input id="wsCertFor" placeholder="e.g. Reading Star — finished 5 stories" style="width:100%;max-width:320px;padding:10px;margin:4px 0;font-size:15px;"></label><br>' +
     '<label>Date:<br><input id="wsCertDate" type="date" style="padding:10px;margin:4px 0;font-size:15px;"></label><br>' +
     '<button id="wsCertBtn" style="' + btnPri + '">✨ Make certificate</button>' +
