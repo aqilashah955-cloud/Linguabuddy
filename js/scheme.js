@@ -696,7 +696,8 @@ export function renderAKHub() {
         '<button class="btn-secondary" id="akTest">🎯 Daily Test</button></div>' +
         '<div class="row-flex">' +
         '<button class="btn-ghost" id="akWorksheet">🖨️ Worksheet</button>' +
-        '<button class="btn-ghost" id="akMarks">📊 My Marks</button></div>' +
+        '<button class="btn-ghost" id="akMarks">📊 My Marks</button>' +
+        '<button class="btn-ghost" id="akTutors">🎓 Find a Tutor</button></div>' +
         (monthlyReady ? '<div class="row-flex"><button class="btn-ghost" id="akMonthly">📋 Monthly Test — ' + esc(month) + '</button></div>' : "")
       : '<p class="fine">📋 This lesson\'s SLOs are being added from the scheme of work — check back soon.</p>') +
     '<div class="row-flex"><button class="btn-ghost" id="akPrev">‹ Prev lesson</button>' +
@@ -735,6 +736,7 @@ export function renderAKHub() {
     if (monthlyReady) $("akMonthly").addEventListener("click", startMonthlyTest);
     $("akWorksheet").addEventListener("click", printAKWorksheet);
     $("akMarks").addEventListener("click", function () { go("marks"); });
+    if ($("akTutors")) $("akTutors").addEventListener("click", function () { go("tutors"); });
   }
   $("akPrev").addEventListener("click", function () {
     S.profile.schemeLesson = clampLesson(st.scheme, st.lesson - 1); save(); renderAKHub(); renderSchoolBox();
