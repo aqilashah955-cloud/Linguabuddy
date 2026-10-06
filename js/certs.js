@@ -42,8 +42,8 @@ export const CERT_TYPES = [
     achievement: "playing 3 game rounds in the Game Arcade",
     hint: "Play 3 rounds in the 🎮 Game Arcade." },
   { id: "course-complete", for: "student", emoji: "🎓", title: "Course Completion",
-    achievement: "mastering all 15 English skills of the LinguaBuddy course",
-    hint: "Master all 15 SLOs to complete the whole course." },
+    achievement: "mastering all 25 English skills of the LinguaBuddy course",
+    hint: "Master all 25 SLOs to complete the whole course." },
   // ---- teachers ----
   { id: "educator", for: "teacher", emoji: "🍎", title: "Dedicated Educator",
     achievement: "guiding a class of 3 or more learners on LinguaBuddy",
@@ -153,7 +153,8 @@ function prettyDate(iso) {
 export function certPrintHTML(rec) {
   const def = certById(rec.id) || {};
   const name = rec.name || (S.profile && S.profile.name) || "";
-  return certificate(name, def.achievement || rec.title, prettyDate(rec.awardedAt)).html;
+  const studentId = (S.profile && S.profile.studentId) || "";
+  return certificate(name, def.achievement || rec.title, prettyDate(rec.awardedAt), { studentId: studentId }).html;
 }
 
 /* ================= gallery UI ================= */
