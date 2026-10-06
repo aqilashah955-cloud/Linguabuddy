@@ -66,10 +66,10 @@ export function analyzeWriting(text, prompt) {
     if (typeof at !== "number" || at < 0 || at >= t.length) return;
     marks.push({ at: at, len: Math.max(1, len | 0), cat: cat });
   }
-  function add(category, found, explain, hint, ats, len) {
-    if (issues.length >= 8) return;
+  function add(category, found, explain, hint, ats, len, suggest) {
+    if (issues.length >= 15) return;
     if (issues.some(function (x) { return x.category === category && x.found === found; })) return;
-    issues.push({ category: category, found: found, explain: explain, hint: hint });
+    issues.push({ category: category, found: found, explain: explain, hint: hint, suggest: suggest });
     if (ats != null) {
       (Array.isArray(ats) ? ats : [ats]).forEach(function (a) { mark(a, len, category); });
     }
@@ -246,6 +246,51 @@ export function analyzeWriting(text, prompt) {
       "Where could you break this into a new paragraph?");
   }
 
+  // ---- sentence variety: all sentences similar length ----
+  if (sents.length >= 4) {
+    const lens = sents.map(function (s) { return wordsOf(s).length; });
+    const avg = lens.reduce(function (a, b) { return a + b; }, 0) / lens.length;
+    const varied = lens.some(function (l) { return Math.abs(l - avg) > 6; });
+    if (!varied && avg > 5) add("organization", "",
+      "All your sentences are about the same length (" + Math.round(avg) + " words). Varied sentences sound more natural.",
+      "Try joining two short sentences with 'and'/'because', or split a long one into two.",
+      null, null,
+      "Example: 'I went to the park. It was sunny.' → 'I went to the park because it was sunny.'");
+  }
+
+  // ---- weak verbs: overuse of is/was/are/were ----
+  const weakVerbs = allIdx(/\b(is|are|was|were)\b/gi, 20);
+  if (weakVerbs.length >= 5 && words.length > 20) add("vocabulary", "is/are/was/were",
+    "You used weak 'be' verbs " + weakVerbs.length + " times. Strong verbs make writing vivid.",
+    "Replace one: 'The food was good' → 'The food tasted delicious.'",
+    weakVerbs.slice(0, 5).map(function (h) { return h.i; }), 3,
+    "'was happy' → 'smiled', 'is big' → 'towers', 'were running' → 'sprinted'");
+
+  // ---- run-on sentences ----
+  sents.forEach(function (s, idx) {
+    const wc = wordsOf(s).length;
+    if (wc > 30) add("grammar", s.slice(0, 40) + "…",
+      "This sentence has " + wc + " words — it may be a run-on. Long sentences confuse readers.",
+      "Split it at 'and'/'but'/'because' into two shorter sentences.",
+      null, null,
+      "Example: 'I woke up and I brushed my teeth and I ate breakfast and I went to school.' → 'I woke up. After brushing my teeth and eating breakfast, I went to school.'");
+  });
+
+  // ---- repetitive sentence starters ----
+  if (sents.length >= 3) {
+    const starters = {};
+    sents.forEach(function (s) {
+      const w = (wordsOf(s)[0] || "").toLowerCase();
+      if (w) starters[w] = (starters[w] || 0) + 1;
+    });
+    Object.keys(starters).forEach(function (w) {
+      if (starters[w] >= 3 && ["i", "the", "it", "he", "she", "they", "we"].indexOf(w) >= 0)
+        add("organization", "“" + w + "”",
+          "You started " + starters[w] + " sentences with “" + w + "”. Repetitive openings sound dull.",
+          "Start one sentence differently: with a place ('In the morning,…'), a time ('After lunch,…'), or 'Because…'.");
+    });
+  }
+
   return { issues: issues, marks: marks };
 }
 
@@ -348,7 +393,8 @@ function checkWriting() {
       const meta = CAT_META[g.cat] || { icon: "•", name: g.cat };
       const lis = g.items.map(function (is) {
         return "<li>" + (is.found ? '<code>"' + esc(is.found) + '"</code> — ' : "") +
-          esc(is.explain) + '<br><span class="fb-hint">💡 Hint: ' + esc(is.hint) + "</span></li>";
+          esc(is.explain) + '<br><span class="fb-hint">💡 Hint: ' + esc(is.hint) + "</span>" +
+          (is.suggest ? '<br><span class="fb-suggest" style="display:block;margin-top:4px;padding:6px 8px;background:#e8f5e9;border-radius:6px;font-size:13px;">✨ ' + esc(is.suggest) + "</span>" : "") + "</li>";
       }).join("");
       return '<div class="fb-card"><div class="fb-head">' + meta.icon + " <strong>" + meta.name + "</strong>" +
         ' <span class="fine">· ' + g.items.length + (g.items.length === 1 ? " issue" : " issues") + "</span></div>" +
