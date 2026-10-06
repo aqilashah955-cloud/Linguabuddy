@@ -78,6 +78,19 @@ function emptyRange(from, to) {
 
 export const SCHEMES = [
   {
+    id: "ak-g7-english",
+    board: "Aga Khan",
+    grade: "Grade 7",
+    subject: "English",
+    source: "AKES,P GB & Chitral — English, 2nd Term Instructional Plans 2026-27",
+    terms: [
+      { id: "t1", name: "First Term", from: 1, to: 65 },
+      { id: "t2", name: "Second Term", from: 66, to: 96 }
+    ],
+    // Term 1 mapping arrives with the Term 1 scheme document.
+    lessons: Object.assign(emptyRange(1, 65), lessonMap(P9_T2))
+  },
+  {
     id: "ak-prep9-english",
     board: "Aga Khan",
     grade: "Prep 9",
