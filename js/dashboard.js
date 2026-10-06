@@ -2,7 +2,7 @@
 // "Welcome back, [Name]!", Continue Learning (weakest SLO), Today's English,
 // progress bars, streak, and counts.
 
-import { S, touchStreak } from "./store.js";
+import { S, save, touchStreak } from "./store.js";
 import { SLOS, STORIES, WORDS, calculateSLOMastery, masteryLabel, weakestSlo, buildItems, buildProgressReport } from "./engine.js";
 import { esc, dayOfYear } from "./utils.js";
 import { runAttempt, showResult } from "./assess.js";
@@ -60,6 +60,7 @@ function pickGreeting(name) {
 
 export function renderDashboard() {
   touchStreak();
+  wireProfileModal();
   const name = S.profile.name || "Learner";
   $("dashHello").textContent = "Welcome back, " + name + "! 👋";
   $("dashStreak").textContent = "🔥 " + (S.profile.streak || 0) + "-day streak";
@@ -224,5 +225,53 @@ export function renderProgress() {
   function fmtDateX(ts) {
     const d = new Date(ts);
     return d.toLocaleDateString("en-PK", { day: "numeric", month: "short" });
+  }
+}
+
+/* ================= edit profile (name + student ID) ================= */
+
+function openProfileModal() {
+  const m = document.getElementById("profileModal");
+  if (!m) return;
+  document.getElementById("profName").value = (S.profile && S.profile.name) || "";
+  document.getElementById("profId").value = (S.profile && S.profile.studentId) || "";
+  m.classList.remove("hidden");
+}
+
+function closeProfileModal() {
+  const m = document.getElementById("profileModal");
+  if (m) m.classList.add("hidden");
+}
+
+export function wireProfileModal() {
+  const openBtn = document.getElementById("editProfileBtn");
+  if (openBtn && !openBtn.dataset.wired) {
+    openBtn.dataset.wired = "1";
+    openBtn.addEventListener("click", openProfileModal);
+  }
+  const cancel = document.getElementById("profCancel");
+  if (cancel && !cancel.dataset.wired) {
+    cancel.dataset.wired = "1";
+    cancel.addEventListener("click", closeProfileModal);
+  }
+  const saveBtn = document.getElementById("profSave");
+  if (saveBtn && !saveBtn.dataset.wired) {
+    saveBtn.dataset.wired = "1";
+    saveBtn.addEventListener("click", function () {
+      const n = document.getElementById("profName").value.trim();
+      if (!n) { document.getElementById("profName").focus(); return; }
+      S.profile.name = n;
+      S.profile.studentId = document.getElementById("profId").value.trim();
+      save();
+      closeProfileModal();
+      renderDashboard();
+    });
+  }
+  const modal = document.getElementById("profileModal");
+  if (modal && !modal.dataset.wired) {
+    modal.dataset.wired = "1";
+    modal.addEventListener("click", function (e) {
+      if (e.target === modal) closeProfileModal();
+    });
   }
 }
