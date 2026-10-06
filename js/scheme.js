@@ -142,6 +142,11 @@ function finishSchoolAttempt(kind, st, out, lockKey, refOverride) {
     const pc = Math.round(p.score / p.total * 100);
     S.sloLevel[id] = adjustLevel(S.sloLevel[id] || 1, pc);
   });
+  // Auto-generate remedial plan for SLOs below benchmark (not for remedial attempts themselves)
+  let remedialPlan = null;
+  if (!refOverride && (kind === "practice" || kind === "test")) {
+    remedialPlan = createRemedialPlan(st, out);
+  }
   save();
   // Results screen: score, per-question mistakes with guidance + correct
   // answers, SLO-based feedback, appreciation, and a printable certificate.
@@ -152,6 +157,13 @@ function finishSchoolAttempt(kind, st, out, lockKey, refOverride) {
     { label: "🏫 Aga Khan Schools", primary: true, fn: function () { go("ak"); } },
     { label: "📊 My Marks", primary: false, fn: function () { go("marks"); } }
   ];
+  // Remedial plan button (if auto-generated for weak SLOs)
+  if (remedialPlan) {
+    actions.push({
+      label: "🆘 Start Remedial Practice", primary: true,
+      fn: function () { startRemedialPlan(remedialPlan.id); }
+    });
+  }
   if (out.pct >= 60) {
     // Lacking areas: SLOs scoring below 60% — shown on the certificate so the
     // teacher and student know exactly what to work on next.
@@ -258,6 +270,125 @@ function showSchoolTasks(kind, st, items) {
       showScreen("screen-home", "home");
     });
   }
+}
+
+/* ================= automatic remedial plans ================= */
+// Benchmark: 60%. Students scoring below on any SLO get an auto-generated
+// remedial plan with targeted practice. Low scorers get extra attention.
+
+export const REMEDIAL_BENCHMARK = 60;
+
+export function getRemedialPlans() {
+  return (S.remedialPlans || []).slice().sort(function (a, b) { return b.created - a.created; });
+}
+
+export function getActiveRemedialPlans() {
+  return getRemedialPlans().filter(function (p) { return p.status === "active"; });
+}
+
+// Count of lessons where the student is struggling (for "needs attention" flag)
+export function strugglingLessonCount() {
+  const active = getActiveRemedialPlans();
+  const lessons = {};
+  active.forEach(function (p) { lessons[p.schemeId + ":L" + p.lesson] = 1; });
+  return Object.keys(lessons).length;
+}
+
+function createRemedialPlan(st, out) {
+  const weak = Object.keys(out.perSlo || {}).map(function (id) {
+    const p = out.perSlo[id];
+    const pc = p.total ? Math.round(p.score / p.total * 100) : 0;
+    return pc < REMEDIAL_BENCHMARK ? { id: id, title: p.title || id, pct: pc } : null;
+  }).filter(Boolean);
+  if (!weak.length) return null;
+
+  // Don't duplicate an active plan for the same lesson
+  const key = st.scheme.id + ":L" + st.lesson;
+  const existing = getActiveRemedialPlans().filter(function (p) {
+    return p.schemeId === st.scheme.id && p.lesson === st.lesson;
+  });
+  if (existing.length) {
+    // Update the existing plan with fresh scores
+    existing[0].slos = weak;
+    existing[0].created = Date.now();
+    save();
+    return existing[0];
+  }
+
+  const plan = {
+    id: "rem_" + Date.now() + "_" + Math.floor(Math.random() * 1e4),
+    schemeId: st.scheme.id,
+    schemeGrade: st.scheme.grade,
+    lesson: st.lesson,
+    lessonTitle: (st.entry || {}).title || ("Lesson " + st.lesson),
+    slos: weak,
+    created: Date.now(),
+    status: "active",
+    attempts: 0,
+    bestPct: 0
+  };
+  (S.remedialPlans || (S.remedialPlans = [])).push(plan);
+  save();
+  return plan;
+}
+
+export function startRemedialPlan(planId) {
+  const plan = getRemedialPlans().filter(function (p) { return p.id === planId; })[0];
+  if (!plan || plan.status !== "active") return;
+  const st = schoolState(S.profile);
+  // Build fresh questions from the weak SLOs, excluding already-seen
+  const seen = new Set();
+  (S.attempts || []).forEach(function (a) {
+    (a.usedKeys || []).forEach(function (k) { seen.add(k); });
+  });
+  let items = buildItems({
+    kind: "mixed",
+    sloIds: plan.slos.map(function (s) { return s.id; }),
+    count: 10,
+    exclude: seen,
+    seed: "remedial|" + plan.id + "|" + Date.now()
+  });
+  if (!items.length) {
+    // All seen — allow repeats rather than dead button
+    items = buildItems({
+      kind: "mixed",
+      sloIds: plan.slos.map(function (s) { return s.id; }),
+      count: 10,
+      exclude: new Set(),
+      seed: "remedial|" + plan.id + "|" + Date.now()
+    });
+  }
+  if (!items.length) { alert("📋 No remedial questions available right now."); return; }
+
+  const lockKey = (S.profile.uid || S.profile.name || "s").toLowerCase() +
+    "|remedial|" + plan.id + "|" + todayKey();
+  runAttempt({
+    title: "🆘 Remedial Practice — " + plan.schemeGrade + " · Lesson " + plan.lesson +
+      " (" + plan.slos.map(function (s) { return s.title; }).join(", ") + ")",
+    items: items,
+    timePerQ: 0,
+    antiCopy: false,
+    hints: true,
+    lockKey: lockKey,
+    lockLabel: "remedial practice",
+    onDone: function (out) {
+      plan.attempts++;
+      plan.bestPct = Math.max(plan.bestPct, out.pct);
+      // Check if all SLOs now above benchmark
+      const stillWeak = Object.keys(out.perSlo || {}).filter(function (id) {
+        const p = out.perSlo[id];
+        const pc = p.total ? Math.round(p.score / p.total * 100) : 0;
+        return pc < REMEDIAL_BENCHMARK;
+      });
+      if (!stillWeak.length) {
+        plan.status = "completed";
+        plan.completedAt = Date.now();
+      }
+      save();
+      // Record as a practice attempt too
+      finishSchoolAttempt("practice", st || { scheme: { id: plan.schemeId, grade: plan.schemeGrade }, lesson: plan.lesson, entry: { title: plan.lessonTitle } }, out, lockKey);
+    }
+  });
 }
 
 export function startDaily(kind) {
@@ -571,6 +702,21 @@ export function renderAKHub() {
     '<div class="row-flex"><button class="btn-ghost" id="akPrev">‹ Prev lesson</button>' +
     '<button class="btn-ghost" id="akNext">Next lesson ›</button>' +
     '<button class="linklike" id="akChange">⚙️ Change class</button></div></div>';
+  // remedial plans — auto-generated for SLOs below benchmark
+  const activePlans = getActiveRemedialPlans();
+  const struggleCount = strugglingLessonCount();
+  if (activePlans.length) {
+    html += '<div class="card" style="border:2px solid #e0a800;background:#fffdf5;"><h3>🆘 Remedial Practice' +
+      (struggleCount >= 3 ? ' <span style="background:#d32f2f;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">⚠️ Needs attention</span>' : "") +
+      '</h3><p class="fine">Targeted practice for SLOs below ' + REMEDIAL_BENCHMARK + '% — fresh questions, hints on.</p>' +
+      activePlans.map(function (p) {
+        return '<div style="margin:8px 0;padding:10px;background:#fff;border:1px solid #e0c36a;border-radius:8px;">' +
+          '<strong>' + esc(p.schemeGrade) + ' · Lesson ' + p.lesson + ": " + esc(p.lessonTitle) + "</strong><br>" +
+          '<span class="fine">' + p.slos.map(function (s) { return esc(s.title) + " (" + s.pct + "%)"; }).join(", ") + "</span><br>" +
+          '<span class="fine">Attempts: ' + p.attempts + (p.bestPct ? " · Best: " + p.bestPct + "%" : "") + "</span> " +
+          '<button class="btn-primary btn-sm" data-remedial="' + p.id + '" style="margin-top:6px;">Start remedial →</button></div>';
+      }).join("") + "</div>";
+  }
   // scheme browser — the scheme of work info, right in the app
   const lessons = mappedLessons(st.scheme);
   html += '<div class="card"><h3>📋 Scheme of work</h3>' +
@@ -603,6 +749,11 @@ export function renderAKHub() {
     b.addEventListener("click", function () {
       S.profile.schemeLesson = clampLesson(st.scheme, Number(b.getAttribute("data-lesson")));
       save(); renderAKHub(); renderSchoolBox();
+    });
+  });
+  box.querySelectorAll("[data-remedial]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      startRemedialPlan(b.getAttribute("data-remedial"));
     });
   });
 }
