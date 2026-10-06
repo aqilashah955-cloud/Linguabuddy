@@ -149,6 +149,7 @@
       <div class="dash-top">
         <h2 id="dashHello">Welcome back! 👋</h2>
         <span id="dashStreak" class="streak"></span>
+        <button id="editProfileBtn" class="btn-ghost" style="margin-left:auto;" title="Edit your name and student ID">⚙️ Profile</button>
       </div>
       <button id="continueCard" class="home-card wide"></button>
       <h3 class="sec-title">🏫 Aga Khan Schools</h3>
@@ -476,5 +477,23 @@
 
   <script src="firebase-config.js"></script>
   <script type="module" src="js/app.js"></script>
+
+  <!-- Edit profile modal -->
+  <div id="profileModal" class="modal hidden" style="position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:999;">
+    <div style="background:#fff;border-radius:14px;padding:24px;max-width:360px;width:92%;box-shadow:0 8px 32px rgba(0,0,0,.2);">
+      <h3 style="margin:0 0 12px;">⚙️ Edit profile</h3>
+      <label style="display:block;margin-bottom:10px;">Your name:<br>
+        <input id="profName" type="text" maxlength="40" style="width:100%;padding:10px;margin-top:4px;font-size:15px;border:1px solid #ccc;border-radius:8px;" />
+      </label>
+      <label style="display:block;margin-bottom:14px;">Student ID / Roll number:<br>
+        <input id="profId" type="text" maxlength="30" placeholder="(optional)" style="width:100%;padding:10px;margin-top:4px;font-size:15px;border:1px solid #ccc;border-radius:8px;" />
+      </label>
+      <p class="fine" style="font-size:13px;color:#666;">Your ID appears on worksheets and certificates so your teacher can match your work to you.</p>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button id="profCancel" class="btn-ghost">Cancel</button>
+        <button id="profSave" class="btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
