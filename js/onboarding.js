@@ -20,6 +20,7 @@ function done() { if (onDone) onDone(); }
 
 export function startOnboarding() {
   $("obName").value = S.profile.name || "";
+  $("obStudentId").value = S.profile.studentId || "";
   renderGoalChips();
   renderLevelOpts();
   renderAgeOpts();
@@ -87,7 +88,9 @@ export function initOnboarding() {
   $("obNameNext").addEventListener("click", function () {
     const v = $("obName").value.trim();
     if (!v) { $("obNameErr").textContent = "What should we call you?"; return; }
-    S.profile.name = v; save();
+    S.profile.name = v;
+    S.profile.studentId = $("obStudentId").value.trim();
+    save();
     show("screen-ob-goals");
   });
   $("obGoalsBack").addEventListener("click", function () { show("screen-ob-name"); });
