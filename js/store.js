@@ -23,6 +23,7 @@ function blankState() {
       schemeId: "", schemeLesson: 0,
     },
     attempts: [],   // {id, lockKey, student, kind, ref, title, mode, score, total, pct, perSlo, tabs, secs, date, usedKeys[], answers[]}
+    remedialPlans: [], // AKS auto-remedial: {id, schemeId, lesson, slos:[{id,title,pct}], created, status, attempts}
     locks: {},
     masteryEv: {},  // sloId -> [{pct, n, ts}]
     sloLevel: {},   // sloId -> 1..5
