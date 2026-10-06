@@ -11,6 +11,7 @@ import { reportHTML, renderStudentAssignments } from "./teacher.js";
 import { todayContent } from "./engage.js";
 import { mascotSVG } from "./mascot.js";
 import { renderSchoolBox } from "./scheme.js";
+import { tutorsForWeakSlos } from "./tutors.js";
 
 function $(id) { return document.getElementById(id); }
 
@@ -141,6 +142,21 @@ export function renderDashboard() {
   renderStudentAssignments().catch(function () {});
   // school scheme: daily practice + test on taught lessons
   renderSchoolBox();
+
+  // tutor marketplace card (guard: home screen may lack the container)
+  var tutorBox = $("tutorBox");
+  if (tutorBox) {
+    var matches = [];
+    try { matches = tutorsForWeakSlos(); } catch (e) {}
+    var teaser = matches && matches.length
+      ? '<p class="fine">🎯 ' + matches.length + ' tutors match ' + esc(name) + '\u2019s weak areas</p>'
+      : "";
+    tutorBox.innerHTML = '<div class="card"><h3>🎓 Find a Tutor</h3>' +
+      '<p class="fine">AKS-curriculum tutors for Grade 7 &amp; Prep 9</p>' +
+      teaser +
+      '<button class="btn-secondary btn-big" id="tutorBrowseBtn">Browse tutors →</button></div>';
+    $("tutorBrowseBtn").addEventListener("click", function () { if (go) go("tutors"); });
+  }
 }
 
 function quickPractice(sloId, title) {

@@ -96,7 +96,8 @@ res.issues.forEach(function (is, i) {
 });
 var keys = new Set();
 res.issues.forEach(function (is) { Object.keys(is).forEach(function (k) { keys.add(k); }); });
-ok("issue shape is only category/found/explain/hint",
+ok("issue shape is category/found/explain/hint (+optional suggest)",
+  JSON.stringify(Array.from(keys).sort()) === JSON.stringify(["category", "explain", "found", "hint", "suggest"]) ||
   JSON.stringify(Array.from(keys).sort()) === JSON.stringify(["category", "explain", "found", "hint"]));
 
 console.log("\n" + pass + " passed, " + fail + " failed");

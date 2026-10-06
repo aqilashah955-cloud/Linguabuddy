@@ -149,8 +149,10 @@ ok(precise.issues.some(function (x) { return x.category === "spelling" && x.foun
 ok(precise.issues.some(function (x) { return x.category === "spelling" && x.found === "coutries"; }), "misspelling 'coutries' flagged");
 ok(precise.issues.some(function (x) { return x.category === "punctuation" && x.found === "english"; }), "lowercase proper noun 'english' flagged");
 ok(precise.issues.every(function (x) {
-  return JSON.stringify(Object.keys(x).sort()) === JSON.stringify(["category", "explain", "found", "hint"]);
-}), "issue shape unchanged (category/found/explain/hint only)");
+  var k = JSON.stringify(Object.keys(x).sort());
+  return k === JSON.stringify(["category", "explain", "found", "hint"]) ||
+         k === JSON.stringify(["category", "explain", "found", "hint", "suggest"]);
+}), "issue shape is category/found/explain/hint (+optional suggest)");
 
 console.log("\n" + pass + " passed, " + fail + " failed");
 process.exit(fail ? 1 : 0);

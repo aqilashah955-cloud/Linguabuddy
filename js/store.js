@@ -31,6 +31,7 @@ function blankState() {
     reading: {},    // storyId -> {done, quizPct, date}
     writing: [],    // {id, promptId, title, words, issues, date}
     mywork: [],     // {id, title, type, photoDataUrl, thumbDataUrl, photoUrl, text, feedback[], createdAt}
+    tutoring: { bookings: [], threads: {}, reviews: {}, reports: [], notes: [], verif: [] },
     teacher: { classes: [], assignments: [] }, // offline-mode classes/assignments
     placement: null // {pct, level, date}
   };

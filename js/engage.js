@@ -12,6 +12,7 @@ import { calculateSLOMastery } from "./engine.js";
 import { mascotSVG, confettiBurst } from "./mascot.js";
 import { esc, todayKey } from "./utils.js";
 import { openMarksStudent } from "./marks.js";
+import { renderTutors } from "./tutors-ui.js";
 
 function $(id) { return (typeof document !== "undefined") ? document.getElementById(id) : null; }
 
@@ -383,6 +384,7 @@ export function renderParents() {
     '</div>' +
     '<div class="dg-card"><div class="dg-tag">💡 How to help</div><ul class="pd-tips">' + tips + '</ul></div>' +
     '<button id="pdPrint" class="btn-primary btn-big">🖨️ Printable report</button>' +
+    '<button id="pdTutors" class="btn-secondary btn-big">🎓 Find a Tutor</button>' +
     '<button id="pdMarks" class="btn-secondary btn-big">📊 Scheme test marks</button>' +
     '<p class="fine">Tip: in the print dialog choose “Save as PDF” to keep a copy.</p>' +
     '</div>';
@@ -391,5 +393,8 @@ export function renderParents() {
   });
   $("pdMarks").addEventListener("click", function () {
     openMarksStudent(S.profile.name, S.attempts, { dest: "parents" });
+  });
+  $("pdTutors").addEventListener("click", function () {
+    renderTutors({ via: "parents" });
   });
 }
