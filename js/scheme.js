@@ -153,13 +153,23 @@ function finishSchoolAttempt(kind, st, out, lockKey, refOverride) {
     { label: "📊 My Marks", primary: false, fn: function () { go("marks"); } }
   ];
   if (out.pct >= 60) {
+    // Lacking areas: SLOs scoring below 60% — shown on the certificate so the
+    // teacher and student know exactly what to work on next.
+    const lacking = Object.keys(out.perSlo || {}).map(function (id) {
+      const p = out.perSlo[id];
+      const pc = p.total ? Math.round(p.score / p.total * 100) : 0;
+      return pc < 60 ? { title: p.title || id, pc: pc } : null;
+    }).filter(Boolean);
     actions.push({
       label: "🏆 Print Certificate", primary: false,
       fn: function () {
         const ach = "scoring " + out.pct + "% on " + st.scheme.grade + " English " + lessonName +
           (e.code ? " (SLO " + e.code + ")" : "") +
           (sloNames.length ? " — " + sloNames.join(", ") : "");
-        printHTML(certificate(S.profile.name, ach).html);
+        printHTML(certificate(S.profile.name, ach, null, {
+          studentId: S.profile.studentId,
+          lackingAreas: lacking.map(function (l) { return l.title + " (" + l.pc + "%)"; })
+        }).html);
       }
     });
   }
@@ -359,7 +369,7 @@ export function akWorksheetHTML(scheme, n) {
     '<h2 style="font-size:18px;margin:0 0 4px;">Lesson ' + n + ": " + esc(title) + "</h2>" +
     '<p style="color:#444;margin:0 0 12px;font-size:14px;">' +
     esc([l.code ? "SLO " + l.code : "", l.week || "", l.skill || ""].filter(Boolean).join(" · ")) + "</p>" +
-    '<p style="margin:0 0 16px;font-size:14px;">Name: ________________________&nbsp;&nbsp;Date: ____________&nbsp;&nbsp;Score: ______ / 10</p>';
+    '<p style="margin:0 0 16px;font-size:14px;">Name: ________________________&nbsp;&nbsp;ID: ______________&nbsp;&nbsp;Date: ____________&nbsp;&nbsp;Score: ______ / 10</p>';
   const slos = (l.slos || []);
   if (slos.length) {
     const seen = new Set();
