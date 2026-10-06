@@ -16,7 +16,7 @@ function blankState() {
   return {
     v: 2,
     profile: {
-      name: "", loginId: "", email: "", uid: "", role: "student",
+      name: "", studentId: "", loginId: "", email: "", uid: "", role: "student",
       ageGroup: "", level: "", goals: [], onboarded: false,
       streak: 0, lastActive: "", xp: 0, badges: [], lessonXp: {},
       trialStart: 0, subUntil: 0, subPlan: "",
