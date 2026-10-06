@@ -6,10 +6,10 @@
 import { SCHEMES } from "../data/schemes.js";
 import { buildItems, adjustLevel } from "./engine.js";import { todayKey, esc } from "./utils.js";
 import { S, save, recordAttempt } from "./store.js";
-import { runAttempt, summarizeResults } from "./assess.js";
-import { xpForAttempt, checkBadges } from "./gamify.js";
+import { runAttempt, summarizeResults, showResult } from "./assess.js";
+import { xpForAttempt, awardXP, checkBadges } from "./gamify.js";
 import { showScreen } from "./ui.js";
-import { printHTML } from "./worksheets.js";
+import { certificate, printHTML } from "./worksheets.js";
 
 export { SCHEMES }; // re-exported for teacher.js class scheme picker
 
@@ -104,6 +104,26 @@ export function mappedLessons(scheme) {
 
 // ---------- session launch (DOM) ----------
 
+function appreciationFor(pct) {
+  if (pct >= 90) return "🌟 Outstanding! You have truly mastered this lesson.";
+  if (pct >= 80) return "🎉 Excellent work! This lesson's SLO is yours.";
+  if (pct >= 60) return "👍 Good effort! A little more practice and you'll master it.";
+  if (pct >= 40) return "💪 Keep going! Review the corrections below and try again tomorrow.";
+  return "🌱 Every expert was once a beginner. Study the corrections below, then try the practice again.";
+}
+
+function sloFeedbackHTML(perSlo) {
+  const ids = Object.keys(perSlo || {});
+  if (!ids.length) return "";
+  return '<div style="margin-top:8px;text-align:left;">' + ids.map(function (id) {
+    const p = perSlo[id];
+    const pc = Math.round(p.score / Math.max(1, p.total) * 100);
+    const verdict = pc >= 80 ? "mastered 🌟" : pc >= 60 ? "good — keep practicing 👍" : "needs more practice 💪";
+    return "<div>📊 <b>" + esc(p.title) + ":</b> " +
+      (Math.round(p.score * 10) / 10) + "/" + p.total + " (" + pc + "%) — " + verdict + "</div>";
+  }).join("") + "</div>";
+}
+
 function finishSchoolAttempt(kind, st, out, lockKey, refOverride) {
   const att = {
     lockKey: lockKey, student: S.profile.name, kind: "scheme-" + kind,
@@ -123,7 +143,35 @@ function finishSchoolAttempt(kind, st, out, lockKey, refOverride) {
     S.sloLevel[id] = adjustLevel(S.sloLevel[id] || 1, pc);
   });
   save();
-  showScreen("screen-home", "home");
+  // Results screen: score, per-question mistakes with guidance + correct
+  // answers, SLO-based feedback, appreciation, and a printable certificate.
+  const e = st.entry || {};
+  const lessonName = "Lesson " + st.lesson + (e.title && !/^Lesson \d+$/.test(e.title) ? ": " + e.title : "");
+  const sloNames = Object.keys(out.perSlo).map(function (id) { return out.perSlo[id].title; }).filter(Boolean);
+  const actions = [
+    { label: "🏫 Aga Khan Schools", primary: true, fn: function () { go("ak"); } },
+    { label: "📊 My Marks", primary: false, fn: function () { go("marks"); } }
+  ];
+  if (out.pct >= 60) {
+    actions.push({
+      label: "🏆 Print Certificate", primary: false,
+      fn: function () {
+        const ach = "scoring " + out.pct + "% on " + st.scheme.grade + " English " + lessonName +
+          (e.code ? " (SLO " + e.code + ")" : "") +
+          (sloNames.length ? " — " + sloNames.join(", ") : "");
+        printHTML(certificate(S.profile.name, ach).html);
+      }
+    });
+  }
+  showResult({
+    title: out.title,
+    scoreLine: out.totalScore + "/" + out.items.length + " (" + out.pct + "%)",
+    metaLine: [e.code ? "SLO " + e.code : "", e.week || "", e.skill || ""].filter(Boolean).join(" · "),
+    bannerHTML: '<div style="font-size:18px;margin-bottom:4px;">' + appreciationFor(out.pct) + "</div>" + sloFeedbackHTML(out.perSlo),
+    perSlo: out.perSlo,
+    results: out.results,
+    actions: actions
+  });
 }
 
 function launchQuestions(kind, st, items) {
@@ -202,11 +250,17 @@ export function startDaily(kind) {
     alert("📋 Lesson " + st.lesson + "'s SLOs aren't mapped yet — the scheme of work is being added. Check back soon!");
     return;
   }
-  const items = dailyItems(S.profile, kind, S.attempts);
+  let items = dailyItems(S.profile, kind, S.attempts);
   const tasks = lessonTasks(st.scheme, st.lesson);
   if (tasks.length && kind === "practice") { showSchoolTasks(kind, st, items); return; }
+  if (!items.length && !tasks.length) {
+    // Every question was already seen (e.g. test after practice on a small
+    // bank) — allow repeats rather than leaving the button dead.
+    items = dailyItems(S.profile, kind, []);
+  }
   if (items.length) { launchQuestions(kind, st, items); return; }
   if (tasks.length) { showSchoolTasks(kind, st, items); return; }
+  alert("📋 No questions are available for this lesson right now. Please try again later.");
 }
 
 /* ================= month helpers (grouping lessons by calendar month) ================= */
