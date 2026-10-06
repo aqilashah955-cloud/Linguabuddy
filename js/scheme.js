@@ -201,6 +201,13 @@ function showSchoolTasks(kind, st, items) {
     '<div class="card"><p class="fine">' + esc(st.scheme.grade) + " · " + esc(st.term ? st.term.name : "") +
     " · <b>Lesson " + st.lesson + ": " + esc(entry.title || "") + "</b></p>" +
     (entry.code ? '<p class="fine">SLO ' + esc(entry.code) + (entry.week ? " · " + esc(entry.week) : "") + "</p>" : "") +
+    (entry.audio
+      ? '<div class="audio-player" style="margin:12px 0;padding:12px;background:#f0f4ff;border-radius:8px;text-align:center;">' +
+        '<p style="margin:0 0 8px;font-weight:bold;">🎧 Listen to the audio</p>' +
+        '<audio controls preload="metadata" style="width:100%;max-width:400px;" src="' + esc(entry.audio) + '">' +
+        'Your browser does not support audio playback.' +
+        '</audio></div>'
+      : "") +
     "<p>" + (practice
       ? "This lesson is speaking & listening — do each task aloud, then tick it off."
       : "This lesson is speaking & listening — perform each task, then tick it off as your test.") + "</p>";
