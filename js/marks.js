@@ -56,7 +56,7 @@ export function isSchemeMark(att) {
     att.mode === "assessment" && typeof att.pct === "number";
 }
 
-// ref shapes: "ak-g7-english:L68" | "ak-g7-english:M:September"
+// ref shapes: "ak-prep9-english:L68" | "ak-prep9-english:M:September"
 export function parseSchemeRef(ref) {
   if (typeof ref !== "string") return null;
   const m = ref.match(/^([^:]+):L(\d+)$/);
@@ -155,7 +155,7 @@ export function studentMarks(name, attempts, period) {
     return {
       ts: a.date, pct: a.pct, score: a.score, total: a.total,
       title: a.title, lesson: lessonLabelFor(a.ref), ref: a.ref,
-      key: periodKey(a.date, period, a.ref)
+      key: periodKey(a.date, period, a.ref), attId: a.id
     };
   }).sort(function (a, b) { return b.ts - a.ts; });
   const gmap = {};
@@ -218,9 +218,61 @@ function groupsHTML(entry) {
         const d = new Date(m.ts);
         return '<div class="mark-row"><span>' + esc(m.lesson || m.title) + "</span>" +
           '<span class="fine">' + d.getDate() + " " + MONTHS[d.getMonth()] + "</span>" +
-          '<strong class="' + (m.pct >= 70 ? "good" : m.pct >= 40 ? "mid" : "low") + '">' + m.pct + "%</strong></div>";
+          '<strong class="' + (m.pct >= 70 ? "good" : m.pct >= 40 ? "mid" : "low") + '">' + m.pct + "%</strong>" +
+          (m.attId ? ' <button class="btn-ghost btn-sm" data-review="' + m.attId + '">🔍 Review</button>' : "") + "</div>";
       }).join("") + "</div>";
   }).join("");
+}
+
+// Detailed test review: questions, student answers, correct answers, weak areas
+export function openAttemptReview(attId, back) {
+  back = back || { dest: "marks" };
+  const att = (S.attempts || []).filter(function (a) { return a.id === attId; })[0];
+  const body = ensureMarksScreen();
+  if (!body || !att) return;
+  
+  const answers = att.answers || [];
+  const perSlo = att.perSlo || {};
+  
+  // Identify weak SLOs
+  const weakSlos = Object.keys(perSlo).map(function (id) {
+    const p = perSlo[id];
+    const pc = p.total ? Math.round(p.score / p.total * 100) : 0;
+    return { id: id, title: p.title || id, pc: pc };
+  }).filter(function (s) { return s.pc < 60; });
+  
+  let html = '<div class="screen-head"><button class="back-btn" id="reviewBack">← Back</button>' +
+    "<h2>🔍 Test Review</h2></div>" +
+    '<div class="card"><h3>' + esc(att.title || "Test") + "</h3>" +
+    '<p class="fine">' + esc(att.lesson || "") + " · Score: <strong>" + att.score + "/" + att.total + " (" + att.pct + "%)</strong></p>";
+  
+  if (weakSlos.length) {
+    html += '<div style="margin:12px 0;padding:12px;background:#fff8e1;border:1px solid #e0c36a;border-radius:8px;">' +
+      '<strong>📋 Your weak areas (below 60%):</strong><ul style="margin:6px 0;padding-left:20px;">' +
+      weakSlos.map(function (s) { return "<li>" + esc(s.title) + " — " + s.pc + "%</li>"; }).join("") +
+      "</ul><p class='fine'>Focus your revision on these topics.</p></div>";
+  } else {
+    html += '<div class="notice ok">🎉 No weak areas! You scored 60%+ on all SLOs.</div>';
+  }
+  
+  html += "<h4>Question-by-question review:</h4>";
+  html += answers.map(function (a, i) {
+    const correct = a.score === 1;
+    const partial = a.score > 0 && a.score < 1;
+    const cls = correct ? "correct" : (partial ? "partial" : "wrong");
+    const icon = correct ? "✅" : (partial ? "⚠️" : "❌");
+    return '<div class="review-card ' + cls + '" style="margin:10px 0;">' +
+      '<div class="rev-q">' + icon + " Q" + (i + 1) + ". " + esc(a.q) +
+      (a.sloTitle ? ' <em>(' + esc(a.sloTitle) + ")</em>" : "") + "</div>" +
+      '<div class="rev-line"><strong>Your answer:</strong> ' + esc(a.given || "(not answered)") + "</div>" +
+      '<div class="rev-line"><strong>Correct answer:</strong> ' + esc(a.correct) + "</div>" +
+      "</div>";
+  }).join("");
+  
+  html += "</div>";
+  body.innerHTML = html;
+  showScreen("screen-marks");
+  body.querySelector("#reviewBack").addEventListener("click", function () { go(back.dest, back.arg); });
 }
 
 function bindPeriodTabs(rerender) {
@@ -253,6 +305,12 @@ export function openMarksStudent(name, attempts, back) {
     bindPeriodTabs(render);
     body.querySelector("#marksShare").addEventListener("click", function () {
       window.open(waLink(marksWhatsAppText(entry, "Aga Khan Schools")), "_blank");
+    });
+    body.querySelectorAll("[data-review]").forEach(function (b) {
+      b.addEventListener("click", function (e) {
+        e.stopPropagation();
+        openAttemptReview(b.getAttribute("data-review"), back);
+      });
     });
   };
   render();
