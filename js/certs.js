@@ -75,9 +75,14 @@ export function earnedCertIds(state) {
   if (has("slo-master")) out.push("slo-master");
   if (has("game-night")) out.push("game-champ");
   const ev = state.masteryEv || {};
-  const allMastered = SLOS.every(function (s) {
-    return calculateSLOMastery(s.id, ev[s.id]).status === "mastered";
-  });
+  // Course completion covers the 25 core SLOs; the 7 advanced grammar
+  // topics are extension material for advanced learners, not required.
+  const ADVANCED_SLO_IDS = ["conditionals", "modal-perfects", "subjunctive",
+    "inversion", "cleft-sentences", "participles", "determiners"];
+  const allMastered = SLOS.filter(function (s) { return ADVANCED_SLO_IDS.indexOf(s.id) < 0; })
+    .every(function (s) {
+      return calculateSLOMastery(s.id, ev[s.id]).status === "mastered";
+    });
   if (allMastered) out.push("course-complete");
   const classes = state.teacherClasses || [];
   if (classes.some(function (c) { return (c.students || []).length >= 3; })) out.push("educator");

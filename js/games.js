@@ -24,7 +24,7 @@ export function setGamesGo(fn) { go = fn; }
 export const ROUND_SECS = 60;
 
 export const GAME_META = [
-  { id: "scramble", emoji: "🔀", title: "Word Scramble", desc: "Unscramble vocabulary words. Tap 💡 for an Urdu hint." },
+  { id: "scramble", emoji: "🔀", title: "Word Scramble", desc: "Unscramble vocabulary words. Tap 💡 for a meaning hint." },
   { id: "hangman", emoji: "🪢", title: "Hangman", desc: "Guess the word from its definition. 6 wrong guesses and it's over!" },
   { id: "match", emoji: "⚡", title: "Speed Match", desc: "Tap a word, then its definition. Streaks earn bonus points!" },
   { id: "detective", emoji: "🕵️", title: "Error Detective", desc: "Spot the grammar mistake in the sentence, then fix it." },
@@ -325,7 +325,7 @@ function nextScramble() {
     '<p class="fine"><strong>' + esc(w.pos) + "</strong> · " + esc(w.def) + "</p>" +
     '<div class="row-flex"><input id="gmInput" type="text" placeholder="Type the unscrambled word…" autocomplete="off" autocapitalize="off" />' +
     '<button class="btn-primary" id="gmCheck">Check</button></div>' +
-    '<div class="row-btns"><button class="btn-ghost btn-sm" id="gmHint">💡 Urdu hint</button>' +
+    '<div class="row-btns"><button class="btn-ghost btn-sm" id="gmHint">💡 Meaning hint</button>' +
     '<button class="btn-ghost btn-sm" id="gmSkip">Skip →</button></div>' +
     '<p class="gm-msg" id="gmMsg"></p></div>';
   const check = function () {
@@ -341,7 +341,7 @@ function nextScramble() {
   };
   $("gmCheck").addEventListener("click", check);
   $("gmInput").addEventListener("keydown", function (e) { if (e.key === "Enter") check(); });
-  $("gmHint").addEventListener("click", function () { sayMsg("Urdu: " + w.urdu); });
+  $("gmHint").addEventListener("click", function () { sayMsg("Meaning: " + w.def); });
   $("gmSkip").addEventListener("click", function () { sayMsg("It was “" + w.word + "”.", null); setTimeout(nextScramble, 800); });
   $("gmInput").focus();
 }

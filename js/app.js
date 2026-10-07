@@ -20,6 +20,7 @@ import { renderWriting, setWritingGo } from "./writing.js";
 import { renderConvo, setConvoGo } from "./convo.js";
 import { renderAsk, setAskGo } from "./ask.js";
 import { renderGames, setGamesGo } from "./games.js";
+import { renderCreative, setCreativeGo } from "./creative.js";
 import { renderMywork, setMyworkGo } from "./mywork.js";
 import { showKidsHome, setKidsGo } from "./kids.js";
 import { showWorksheets, setWorksheetsGo } from "./worksheets.js";
@@ -70,6 +71,7 @@ export function go(dest, arg) {
     case "convo": renderConvo(); showScreen("screen-convo", "convo"); break;
     case "ask": renderAsk(); showScreen("screen-ask", "ask"); break;
     case "games": renderGames(); showScreen("screen-games", "games"); break;
+    case "creative": renderCreative(); showScreen("screen-creative", "creative"); break;
     case "mywork": renderMywork(); break;
     case "kids": showKidsHome(); break;
     case "worksheets": showWorksheets(); break;
@@ -210,7 +212,7 @@ async function boot() {
   // wire go() into modules
   [setDashGo, setLearnGo, setReadGo, setVocabGo,
    setTeacherGo, setAdminGo, setGrammarGo, setWritingGo, setConvoGo, setAskGo, setGamesGo, setMyworkGo,
-   setKidsGo, setWorksheetsGo, setCertsGo,
+   setKidsGo, setWorksheetsGo, setCertsGo, setCreativeGo,
    setTestprepGo, setProGo, setMoreTestsGo, setBuddiesGo, setBillingGo, setAkGo, setMarksGo, setTutGo]
     .forEach(function (fn) { fn(go); });
   warmVoices();

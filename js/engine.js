@@ -3,11 +3,17 @@
 // reassessment, adaptive difficulty, placement scoring, recommendations.
 
 import { SLOS } from "../data/slos.js";
-import { STORIES } from "../data/stories.js";
+import { STORIES as CORE_STORIES } from "../data/stories.js";
+import { LIBRARY } from "../data/library.js";
 import { LESSONS } from "../data/lessons.js";
-import { STORYMETA } from "../data/storymeta.js";
+import { STORYMETA as CORE_STORYMETA } from "../data/storymeta.js";
+import { LIBRARYMETA } from "../data/librarymeta.js";
 import { WORDS } from "../data/words.js";
 import { shuffle, sample, norm, mulberry32, hashStr, clamp } from "./utils.js";
+
+// Digital library: core stories + multi-genre library merged into one catalog.
+const STORIES = CORE_STORIES.concat(LIBRARY);
+const STORYMETA = Object.assign({}, CORE_STORYMETA, LIBRARYMETA);
 
 export function sloById(id) { return SLOS.find(function (s) { return s.id === id; }); }
 export function storyById(id) { return STORIES.find(function (s) { return s.id === id; }); }

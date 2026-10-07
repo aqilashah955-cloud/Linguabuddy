@@ -1,6 +1,6 @@
 // LinguaBuddy — reading library.
 // Filters (difficulty, genre, length); story view with Before Reading
-// (prediction), During Reading (vocab support with Urdu glosses), After
+// During Reading (vocab support with English definitions), After
 // Reading (comprehension quiz + inference + writing extension); automatic
 // next-reading recommendations.
 
@@ -31,7 +31,7 @@ function genres() {
 export function renderLibrary() {
   const gs = genres();
   $("libFilters").innerHTML =
-    filterSel("fDiff", "Level", ["all", "Easy", "Medium"]) +
+    filterSel("fDiff", "Level", ["all", "Easy", "Medium", "Advanced"]) +
     filterSel("fGenre", "Genre", ["all"].concat(gs)) +
     filterSel("fLen", "Length", ["all", "Short (<3 min)", "Long (3+ min)"]);
   function filterSel(id, label, opts) {
@@ -114,10 +114,9 @@ export function openStory(id) {
       const box = $("vMean");
       box.classList.remove("hidden");
       box.innerHTML = "<strong>" + esc(v.word) + "</strong> — " + esc(v.def) +
-        ' <em class="urdu">' + esc(v.urdu) + "</em> " +
-        '<button class="btn-ghost btn-sm" id="vSaveBtn">+ Save to Vocabulary</button>';
+        ' <button class="btn-ghost btn-sm" id="vSaveBtn">+ Save to Vocabulary</button>';
       $("vSaveBtn").addEventListener("click", function () {
-        addVocabWord({ word: v.word, definition: v.def, pos: "", synonyms: [], antonyms: [], example: "", urdu: v.urdu });
+        addVocabWord({ word: v.word, definition: v.def, pos: "", synonyms: [], antonyms: [], example: "" });
         $("vSaveBtn").textContent = "Saved ✓";
         $("vSaveBtn").disabled = true;
       });

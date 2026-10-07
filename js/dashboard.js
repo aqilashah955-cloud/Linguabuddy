@@ -133,9 +133,9 @@ export function renderDashboard() {
     return '<span class="count-chip">' + e + " " + esc(t) + "</span>";
   }
 
-  // vocab preview words with Urdu
+  // vocab preview words
   $("todayWords").innerHTML = words.map(function (w) {
-    return '<span class="word-chip">' + esc(w.word) + ' <em>' + esc(w.urdu) + "</em></span>";
+    return '<span class="word-chip">' + esc(w.word) + "</span>";
   }).join("");
 
   // teacher assignments (renders into #assignBox; hidden if none)
