@@ -27,7 +27,7 @@ function blankState() {
     locks: {},
     masteryEv: {},  // sloId -> [{pct, n, ts}]
     sloLevel: {},   // sloId -> 1..5
-    vocab: [],      // {word, definition, pos, synonyms[], antonyms[], example, urdu, correct, total, addedAt}
+    vocab: [],      // {word, definition, pos, synonyms[], antonyms[], example, correct, total, addedAt}
     reading: {},    // storyId -> {done, quizPct, date}
     writing: [],    // {id, promptId, title, words, issues, date}
     mywork: [],     // {id, title, type, photoDataUrl, thumbDataUrl, photoUrl, text, feedback[], createdAt}

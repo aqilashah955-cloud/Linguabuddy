@@ -31,7 +31,7 @@ export function renderVocab() {
       addVocabWord({
         word: w.word, definition: w.def, pos: w.pos,
         synonyms: w.syn.slice(), antonyms: w.ant.slice(),
-        example: w.example, urdu: w.urdu
+        example: w.example
       });
       awardXP(XP_TABLE.wordAdded, "word saved");
       checkBadges();
@@ -55,7 +55,7 @@ function drawList() {
   }
   box.innerHTML = S.vocab.map(function (w, i) {
     return '<button class="word-card" data-wi="' + i + '"><strong>' + esc(w.word) + "</strong> " + masteryChip(w) +
-      "<br><span class='fine'>" + esc(w.definition || "") + (w.urdu ? ' <em class="urdu">' + esc(w.urdu) + "</em>" : "") + "</span></button>";
+      "<br><span class='fine'>" + esc(w.definition || "") + "</span></button>";
   }).join("");
   box.querySelectorAll("[data-wi]").forEach(function (b) {
     b.addEventListener("click", function () { openWord(parseInt(b.getAttribute("data-wi"), 10)); });
@@ -69,7 +69,6 @@ function openWord(i) {
   $("wordBody").innerHTML =
     (w.pos ? '<p><strong>Part of speech:</strong> ' + esc(w.pos) + "</p>" : "") +
     "<p><strong>Meaning:</strong> " + esc(w.definition || "—") + "</p>" +
-    (w.urdu ? '<p><strong>Urdu:</strong> <span class="urdu">' + esc(w.urdu) + "</span></p>" : "") +
     (w.synonyms && w.synonyms.length ? "<p><strong>Synonyms:</strong> " + esc(w.synonyms.join(", ")) + "</p>" : "") +
     (w.antonyms && w.antonyms.length ? "<p><strong>Antonyms:</strong> " + esc(w.antonyms.join(", ")) + "</p>" : "") +
     (w.example ? "<p><strong>Example:</strong> <em>" + esc(w.example) + "</em></p>" : "") +
@@ -92,10 +91,9 @@ export function initVocab() {
       pos: $("vwPos").value.trim(),
       synonyms: $("vwSyn").value.split(",").map(function (s) { return s.trim(); }).filter(Boolean),
       antonyms: $("vwAnt").value.split(",").map(function (s) { return s.trim(); }).filter(Boolean),
-      example: $("vwEx").value.trim(),
-      urdu: $("vwUrdu").value.trim()
+      example: $("vwEx").value.trim()
     });
-    ["vwWord", "vwDef", "vwPos", "vwSyn", "vwAnt", "vwEx", "vwUrdu"].forEach(function (id) { $(id).value = ""; });
+    ["vwWord", "vwDef", "vwPos", "vwSyn", "vwAnt", "vwEx"].forEach(function (id) { $(id).value = ""; });
     $("vwMsg").textContent = "Saved ✓";
     awardXP(XP_TABLE.wordAdded, "word saved");
     checkBadges();
@@ -125,7 +123,6 @@ function drawFlash() {
   $("flashCard").innerHTML = '<div class="flash-front"><strong>' + esc(w.word) + "</strong><br><span class='fine'>Tap to flip</span></div>";
   $("flashCard").onclick = function () {
     $("flashCard").innerHTML = '<div class="flash-back">' + esc(w.definition || "—") +
-      (w.urdu ? '<br><span class="urdu">' + esc(w.urdu) + "</span>" : "") +
       (w.example ? "<br><em>" + esc(w.example) + "</em>" : "") + "</div>";
   };
   $("flashKnow").onclick = function () { w.correct++; w.total++; save(); nextFlash(); };

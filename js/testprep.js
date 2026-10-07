@@ -297,6 +297,9 @@ function renderIeltsHub() {
   clearTimer();
   stage().innerHTML = '<div class="tp-wrap">' + backBar("Test Prep", showTestprep) +
     "<h2>🇬🇧 IELTS Practice</h2><p class='fine'>Academic module. Real test: 2h 45m + speaking.</p>" +
+    "<p class='fine'>🆕 <strong>Writing on Paper:</strong> since 26 Sep 2026, IELTS on Computer lets you handwrite " +
+    "the Writing section — tasks shown on screen, answers written in pen on an answer sheet. Check your test centre " +
+    "when booking.</p>" +
     '<div class="tp-grid">' +
     hubCard("📖", "Reading", "3 passages · 20-min practice timer · band estimate", "r-reading") +
     hubCard("🎧", "Listening", "Play-once audio · 3 scripts · band estimate", "r-listening") +
