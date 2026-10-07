@@ -139,7 +139,7 @@ synant: {
     "Synonyms = same meaning: happy → glad, joyful, cheerful.",
     "Antonyms = opposite meaning: brave → cowardly, ancient → modern.",
     "Learn words in pairs or families — they stick better together.",
-    "Use the Urdu hint, then try to use the English word in your own sentence."
+    "Use the English meaning, then try to use the word in your own sentence."
   ],
   examples: [
     { en: "rapid = fast", note: "Synonym pair." },
@@ -195,5 +195,127 @@ writing: {
   ],
   tip: "Say it aloud before you write it — if it sounds clear when spoken, it will read clearly.",
   applyPrompt: "Write a paragraph about your favourite festival. Then check it against the 4 key points above."
-}
+},
+conditionals: {
+  warmup: { q: "What is the difference between 'If it rains, we stay home' and 'If it rained, we would stay home'?", a: "The first is a real possibility; the second imagines an unreal situation — different conditional types." },
+  objective: "Use zero, first, second and third conditionals to talk about facts, real futures, imaginary situations and past regrets.",
+  keyPoints: [
+    "Zero conditional = facts: If + present simple, present simple — 'If you heat water, it boils.'",
+    "First conditional = real future: If + present simple, will + verb — 'If it rains, we will stay home.'",
+    "Second conditional = unreal present: If + past simple, would + verb — 'If I were rich, I would travel.' (Use 'were' for every person.)",
+    "Third conditional = unreal past: If + past perfect, would have + past participle — 'If I had studied, I would have passed.'",
+    "'Unless' means 'if not': 'Unless you hurry, you will be late.' 'Had I known' is an inverted third conditional."
+  ],
+  examples: [
+    { en: "If you mix red and yellow, you get orange.", note: "Zero — a fact." },
+    { en: "If she calls, I will answer.", note: "First — a real future possibility." },
+    { en: "If I won the lottery, I would build a school.", note: "Second — imaginary." },
+    { en: "If he had left earlier, he would have caught the bus.", note: "Third — a past regret." }
+  ],
+  tip: "Match the 'if' clause to the main clause: present → will, past → would, past perfect → would have.",
+  applyPrompt: "Write 4 sentences: one fact (zero), one plan (first), one dream (second), one regret (third)."
+},
+"modal-perfects": {
+  warmup: { q: "What does 'You should have called' tell us — did the person call?", a: "No — it expresses regret or criticism about a past action that was not done." },
+  objective: "Use modal + have + past participle to express regret, certainty and possibility about the past.",
+  keyPoints: [
+    "'Should/ought to have' + past participle = regret or unheeded advice: 'I should have studied.'",
+    "'Must have' + past participle = strong certainty: 'She must have left early.'",
+    "'Could/might/may have' + past participle = past possibility or a guess: 'He might have forgotten.'",
+    "'Can't/couldn't have' + past participle = impossibility: 'He can't have said that!'",
+    "'Needn't have' + past participle = an unnecessary past action: 'You needn't have cooked so much.'"
+  ],
+  examples: [
+    { en: "You should have told me earlier.", note: "Regret — but you did not tell me." },
+    { en: "The streets are wet; it must have rained.", note: "Strong certainty about the past." },
+    { en: "He could have won if he had tried.", note: "A past possibility that never happened." }
+  ],
+  tip: "The structure never changes: modal + have + past participle — only the modal changes the meaning.",
+  applyPrompt: "Write 3 sentences about yesterday: one regret (should have), one certainty (must have), one guess (might have)."
+},
+subjunctive: {
+  warmup: { q: "Which is correct: 'I suggest he goes' or 'I suggest he go'?", a: "'I suggest he go' — after verbs of suggestion we use the base verb (the subjunctive)." },
+  objective: "Use the subjunctive after verbs of suggestion, demand and necessity, and in wishes and unreal conditions.",
+  keyPoints: [
+    "After suggest, demand, insist, request, recommend: use the base verb — 'I suggest he go', not 'he goes'.",
+    "After 'it is important/vital/necessary that': 'It is vital that she be here.'",
+    "In unreal conditions and wishes, use 'were' for every person: 'If I were you...', 'I wish I were taller.'",
+    "Fixed expressions keep the subjunctive: 'Long live the king!', 'God save us.'"
+  ],
+  examples: [
+    { en: "The teacher demanded that he leave at once.", note: "Base verb 'leave' after 'demanded'." },
+    { en: "If I were a bird, I would fly to the mountains.", note: "'Were' for unreal situations." },
+    { en: "I wish I knew the answer.", note: "Past simple after 'wish' for present wishes." }
+  ],
+  tip: "If you see suggest/demand/insist/important + 'that', drop the -s: 'he go', 'she be'.",
+  applyPrompt: "Write 3 recommendations for your school starting with 'I suggest that...' and 'It is important that...'."
+},
+inversion: {
+  warmup: { q: "Which sounds more dramatic: 'I have never seen this' or 'Never have I seen this'?", a: "The second — inversion adds emphasis and formality." },
+  objective: "Invert subject and verb after negative adverbials for emphasis in formal English.",
+  keyPoints: [
+    "After never, rarely, seldom, hardly, scarcely: auxiliary + subject — 'Never have I seen', 'Rarely does she complain.'",
+    "'Not only... but also' inverts the first clause: 'Not only did he arrive late, but he also forgot his books.'",
+    "'No sooner... than' and 'hardly/scarcely... when': 'No sooner had we sat down than the lights went out.'",
+    "'Only' phrases invert too: 'Only after the rain stopped could we leave.'"
+  ],
+  examples: [
+    { en: "Never have I tasted such delicious mangoes.", note: "Inversion after 'never'." },
+    { en: "Hardly had I slept when the alarm rang.", note: "Inversion after 'hardly'." },
+    { en: "Not only is she intelligent, but she is also kind.", note: "Paired inversion." }
+  ],
+  tip: "Inversion needs an auxiliary verb (do/have/had/was) before the subject — never invert with the main verb alone.",
+  applyPrompt: "Rewrite with inversion: 'I have rarely met...', 'She seldom complains...', 'We had no sooner left...'."
+},
+"cleft-sentences": {
+  warmup: { q: "In 'Ali broke the window', how would you stress that it was ALI and no one else?", a: "'It was Ali who broke the window.' — a cleft sentence puts the spotlight on Ali." },
+  objective: "Use it-clefts and wh-clefts to emphasise exactly which part of a sentence matters.",
+  keyPoints: [
+    "It-cleft: It + be + emphasised part + who/that-clause — 'It was Sara who won.'",
+    "The spotlight can fall on a person, thing, place or time: 'It was in Lahore that we met.'",
+    "Wh-cleft (pseudo-cleft): What-clause + be + emphasis — 'What I need is more time.'",
+    "'All' works like 'what': 'All I want is a little rest.'"
+  ],
+  examples: [
+    { en: "It was the dog that broke the vase.", note: "Emphasis on 'the dog'." },
+    { en: "What surprised me was his honesty.", note: "Wh-cleft emphasising 'his honesty'." },
+    { en: "It was yesterday that the results came out.", note: "Emphasis on time." }
+  ],
+  tip: "Ask 'who?' or 'what?' about your sentence — the answer goes into the spotlight position.",
+  applyPrompt: "Take 3 plain sentences and rewrite each as a cleft, emphasising a different word each time."
+},
+participles: {
+  warmup: { q: "What is the difference between 'a boring book' and 'a bored reader'?", a: "'Boring' (-ing) describes the cause; 'bored' (-ed) describes the feeling." },
+  objective: "Use -ing and -ed participles correctly and build participial phrases for richer sentences.",
+  keyPoints: [
+    "Present participle (-ing) = the CAUSE of a feeling: 'an exciting match', 'a tiring journey'.",
+    "Past participle (-ed) = the one who FEELS: 'excited fans', 'tired travellers'.",
+    "Perfect participle 'having + past participle' shows a finished action: 'Having finished his work, Ali went out.'",
+    "Past participles work as adjectives too: 'a broken window', 'a worried mother'."
+  ],
+  examples: [
+    { en: "The news was surprising; we were surprised.", note: "-ing for cause, -ed for feeling." },
+    { en: "Having lived in Lahore, she knows the city well.", note: "Perfect participle phrase." },
+    { en: "Frightened by the thunder, the child hid under the bed.", note: "Past participle phrase." }
+  ],
+  tip: "-ing describes the thing; -ed describes the person. 'I am bored' (feeling) — 'the movie is boring' (cause).",
+  applyPrompt: "Describe your last trip using 3 -ing adjectives and 3 -ed adjectives correctly."
+},
+determiners: {
+  warmup: { q: "What is the difference between 'few friends' and 'a few friends'?", a: "'Few' is negative (hardly any); 'a few' is positive (some). One tiny word changes everything." },
+  objective: "Choose exact determiners and quantifiers — each/every, few/a few, much/many, all/both — before nouns.",
+  keyPoints: [
+    "'Each' stresses individuals, 'every' the whole group — both take singular verbs: 'Each student has a book.'",
+    "'Few' = hardly any (negative); 'a few' = some (positive). Same with 'little' vs 'a little' for uncountables.",
+    "'Much' + uncountable ('much water'); 'many' + countable ('many books').",
+    "'Both' = two, 'all' = three or more; 'either/neither' for two, 'any/none' for larger groups."
+  ],
+  examples: [
+    { en: "Each of the players received a medal.", note: "'Each' + singular verb." },
+    { en: "I have a few close friends.", note: "'A few' = some (positive)." },
+    { en: "Both brothers are engineers.", note: "'Both' for two people." }
+  ],
+  tip: "Countable or not? Countable → many/few; uncountable → much/little. That one test solves most errors.",
+  applyPrompt: "Write 5 sentences about your classroom using: each, a few, much, both, every."
+},
 };

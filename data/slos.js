@@ -341,34 +341,34 @@ export const SLOS = [
 },
 {
   id: "synant", title: "Synonyms & Antonyms",
-  expl: "Synonyms are words with the SAME meaning; antonyms have OPPOSITE meanings. A rich vocabulary makes your speaking and writing stronger. Urdu hints are given to help you.",
+  expl: "Synonyms are words with the SAME meaning; antonyms have OPPOSITE meanings. A rich vocabulary makes your speaking and writing stronger.",
   questions: [
-    { t: "mcq", q: "Synonym of \u201Cbrave\u201D:", o: ["cowardly", "courageous", "weak", "afraid"], a: 1, hint: "Urdu: \u0628\u06C1\u0627\u062F\u0631" },
-    { t: "mcq", q: "Antonym of \u201Cancient\u201D:", o: ["old", "modern", "historic", "aged"], a: 1, hint: "Urdu: \u0642\u062F\u06CC\u0645" },
-    { t: "fib", q: "Write any synonym of \u201Chappy\u201D. (Urdu: \u062E\u0648\u0634)", a: ["glad", "joyful", "cheerful", "delighted", "pleased", "merry"] },
-    { t: "tf", q: "\u201CGenerous\u201D and \u201Cselfish\u201D are antonyms. (Urdu: \u0633\u062E\u06CC / \u062E\u0648\u062F\u063A\u0631\u0636)", a: true },
+    { t: "mcq", q: "Synonym of \u201Cbrave\u201D:", o: ["cowardly", "courageous", "weak", "afraid"], a: 1, hint: "Think: not afraid, showing courage." },
+    { t: "mcq", q: "Antonym of \u201Cancient\u201D:", o: ["old", "modern", "historic", "aged"], a: 1, hint: "Think: very old, from long ago." },
+    { t: "fib", q: "Write any synonym of \u201Chappy\u201D.", a: ["glad", "joyful", "cheerful", "delighted", "pleased", "merry"] },
+    { t: "tf", q: "\u201CGenerous\u201D and \u201Cselfish\u201D are antonyms.", a: true },
     { t: "match", q: "Match each word with its synonym.", pairs: [["rapid", "fast"], ["tiny", "small"], ["wealthy", "rich"], ["begin", "start"]] },
-    { t: "mcq", q: "Antonym of \u201Cvictory\u201D:", o: ["success", "defeat", "prize", "glory"], a: 1, hint: "Urdu: \u0641\u062A\u062D" },
-    { t: "fib", q: "Write the antonym of \u201Chonest\u201D. (Urdu: \u0627\u06CC\u0645\u0627\u0646\u062F\u0627\u0631)", a: ["dishonest"] },
-    { t: "mcq", q: "Synonym of \u201Cenormous\u201D:", o: ["tiny", "huge", "small", "little"], a: 1, hint: "Urdu: \u0628\u06C1\u062A \u0628\u0691\u0627" },
-    { t: "tf", q: "\u201CExpand\u201D and \u201Ccontract\u201D are synonyms. (Urdu: \u067E\u06BE\u06CC\u0644\u0627\u0646\u0627 / \u0633\u06A9\u06CC\u0691\u0646\u0627)", a: false },
-    { t: "fib", q: "The antonym of \u201Cpolite\u201D (Urdu: \u0634\u0627\u0626\u0633\u062A\u06C1) is ___.", a: ["rude", "impolite"] }
+    { t: "mcq", q: "Antonym of \u201Cvictory\u201D:", o: ["success", "defeat", "prize", "glory"], a: 1, hint: "Think: winning; the opposite of defeat." },
+    { t: "fib", q: "Write the antonym of \u201Chonest\u201D.", a: ["dishonest"] },
+    { t: "mcq", q: "Synonym of \u201Cenormous\u201D:", o: ["tiny", "huge", "small", "little"], a: 1, hint: "Think: extremely large, like an elephant." },
+    { t: "tf", q: "\u201CExpand\u201D and \u201Ccontract\u201D are synonyms.", a: false },
+    { t: "fib", q: "The antonym of \u201Cpolite\u201D is ___.", a: ["rude", "impolite"] }
   ]
 },
 {
   id: "vocab", title: "Prefixes, Suffixes & Vocabulary",
-  expl: "Prefixes attach to the FRONT of words (un-happy) and suffixes to the END (hope-ful). Learning them helps you decode hundreds of new words. Urdu hints are given to help you.",
+  expl: "Prefixes attach to the FRONT of words (un-happy) and suffixes to the END (hope-ful). Learning them helps you decode hundreds of new words.",
   questions: [
-    { t: "mcq", q: "The prefix in \u201Cunhappy\u201D (Urdu: \u0646\u0627\u062E\u0648\u0634) means:", o: ["again", "not", "before", "very"], a: 1 },
+    { t: "mcq", q: "The prefix in \u201Cunhappy\u201D means:", o: ["again", "not", "before", "very"], a: 1 },
     { t: "mcq", q: "Add a prefix to \u201Cpossible\u201D to mean \u201Cnot possible\u201D:", o: ["impossible", "dispossible", "unpossible", "nonpossible"], a: 0 },
-    { t: "fib", q: "The suffix in \u201Ccareless\u201D (Urdu: \u0628\u06D2 \u067E\u0631\u0648\u0627) is ___.", a: ["less", "-less"] },
+    { t: "fib", q: "The suffix in \u201Ccareless\u201D is ___.", a: ["less", "-less"] },
     { t: "tf", q: "The suffix \u201C-ful\u201D in \u201Chopeful\u201D means \u201Cfull of\u201D.", a: true },
     { t: "mcq", q: "Choose the correct word: \u201CThe ___ boy shared his lunch.\u201D (kind)", o: ["kindness", "kindly", "kind", "unkind"], a: 2 },
     { t: "fib", q: "Make a noun from \u201Cdecide\u201D using a suffix: ___.", a: ["decision"] },
     { t: "mcq", q: "\u201CThe exam was difficult, but she remained ___.\u201D (calm)", o: ["calm", "calmly", "calmness", "calmed"], a: 0 },
     { t: "match", q: "Match each affix with its meaning.", pairs: [["re-", "again"], ["un-", "not"], ["-ness", "state of being"], ["-ful", "full of"]] },
     { t: "fib", q: "Add the correct prefix: ___behave (to behave badly)", a: ["mis"] },
-    { t: "mcq", q: "In \u201Cpreview\u201D (Urdu: \u067E\u06CC\u0634 \u0646\u0638\u0627\u0631\u06C1), the prefix \u201Cpre-\u201D means:", o: ["after", "before", "again", "not"], a: 1 }
+    { t: "mcq", q: "In \u201Cpreview\u201D, the prefix \u201Cpre-\u201D means:", o: ["after", "before", "again", "not"], a: 1 }
   ]
 },
 {
@@ -401,6 +401,118 @@ export const SLOS = [
     { t: "short", q: "Write a short paragraph about Pakistan.", keys: ["pakistan", "country", "people", "beautiful", "live"], model: "Pakistan is my beautiful country. I live here with my family. The people of Pakistan are kind and brave. Our country has tall mountains, green fields and long rivers. I love Pakistan very much." },
     { t: "short", q: "Describe the happiest day of your life.", keys: ["happy", "day", "enjoyed", "family", "remember"], model: "The happiest day of my life was last Eid. My whole family gathered at our house. We enjoyed delicious food and wore new clothes. I received Eidi from my elders. I will remember that happy day forever." },
     { t: "short", q: "Write 4\u20135 sentences about what you want to become in life.", keys: ["want", "become", "doctor", "study", "help"], model: "I want to become a doctor when I grow up. I will study hard to achieve my goal. Doctors help sick people and save lives. I want to serve my country. My parents support my dream fully." }
+  ]
+},
+{
+  id: "conditionals", title: "Conditionals",
+  expl: "Conditionals are 'if' sentences. The zero conditional states facts (If you heat water, it boils); the first predicts real futures (If it rains, we will stay home); the second imagines unreal presents (If I were rich, I would travel); the third regrets unreal pasts (If I had studied, I would have passed).",
+  questions: [
+    { t: "mcq", q: "If you heat ice, it ___.", o: ["melts", "will melt", "would melt", "would have melted"], a: 0, hint: "A scientific fact — which conditional states facts?" },
+    { t: "mcq", q: "If it rains tomorrow, we ___ at home.", o: ["stay", "will stay", "would stay", "stayed"], a: 1 },
+    { t: "mcq", q: "If I ___ rich, I would travel the world.", o: ["am", "will be", "were", "had been"], a: 2, hint: "Unreal present — 'were' works for every person." },
+    { t: "mcq", q: "If she had studied harder, she ___ the exam.", o: ["would pass", "will pass", "passes", "would have passed"], a: 3 },
+    { t: "fib", q: "If I ___ you, I would apologise at once. (be — unreal present)", a: ["were"] },
+    { t: "tf", q: "In formal English, \u201CIf I was you\u201D is the correct second-conditional form.", a: false },
+    { t: "mcq", q: "___ you hurry, you will miss the bus.", o: ["Unless", "If", "If only", "Had"], a: 1 },
+    { t: "reorder", q: "Arrange the words into a correct third-conditional sentence.", w: ["we", "If", "left", "earlier", "had", "would", "caught", "the", "have", "bus"], a: "If we had left earlier we would have caught the bus" },
+    { t: "match", q: "Match each conditional type with its example.", pairs: [["Zero conditional", "If you mix red and blue, you get purple"], ["First conditional", "If she calls, I will answer"], ["Second conditional", "If I won, I would share it"], ["Third conditional", "If he had run, he would have won"]] },
+    { t: "fib", q: "Had I known the answer, I ___ told you. (would)", a: ["would have"] }
+  ]
+},
+{
+  id: "modal-perfects", title: "Modals in the Past",
+  expl: "Modal + have + past participle talks about the past: 'should have studied' (regret), 'must have been' (strong certainty), 'could have won' (past possibility), 'might have forgotten' (a guess), 'needn't have hurried' (an unnecessary action).",
+  questions: [
+    { t: "mcq", q: "You look exhausted. You ___ to bed earlier.", o: ["should go", "must go", "should have gone", "will go"], a: 2, hint: "Regret about last night — which form looks back?" },
+    { t: "mcq", q: "The lights were on when I passed. They ___ at home.", o: ["must have been", "must be", "should have been", "could be"], a: 0 },
+    { t: "mcq", q: "He ___ the match if he had trained harder.", o: ["could win", "must win", "should win", "could have won"], a: 3 },
+    { t: "fib", q: "I ___ locked the door, but I cannot remember. (might)", a: ["might have locked"] },
+    { t: "tf", q: "\u201CShe needn't have cooked so much\u201D means she cooked a lot, but it was unnecessary.", a: true },
+    { t: "mcq", q: "The road was wet this morning. It ___ during the night.", o: ["must rain", "must have rained", "should rain", "can rain"], a: 1 },
+    { t: "reorder", q: "Arrange the words into a correct sentence.", w: ["You", "have", "told", "should", "me", "earlier"], a: "You should have told me earlier" },
+    { t: "mcq", q: "He was lucky \u2014 he ___ badly hurt.", o: ["could have been", "must have been", "should have been", "would have been"], a: 0 },
+    { t: "match", q: "Match each modal-perfect with its meaning.", pairs: [["should have studied", "regret / advice not followed"], ["must have left", "strong certainty about the past"], ["could have helped", "past possibility not used"], ["might have forgotten", "uncertain guess about the past"]] },
+    { t: "fib", q: "You ___ worried \u2014 everything turned out fine. (needn't)", a: ["needn't have worried"] }
+  ]
+},
+{
+  id: "subjunctive", title: "Subjunctive Mood",
+  expl: "The subjunctive uses the base verb after verbs of suggestion, demand or necessity: 'I suggest he go', 'It is vital that she be on time'. It also appears in wishes and unreal situations: 'If I were you', 'I wish I knew'.",
+  questions: [
+    { t: "mcq", q: "The teacher suggested that he ___ harder.", o: ["studies", "study", "studied", "studying"], a: 1, hint: "After 'suggest that', drop the -s." },
+    { t: "mcq", q: "It is important that she ___ on time.", o: ["be", "is", "was", "being"], a: 0 },
+    { t: "mcq", q: "If I ___ you, I would accept the offer.", o: ["am", "was", "were", "be"], a: 2 },
+    { t: "fib", q: "I demand that he ___ this room at once. (leave)", a: ["leave"] },
+    { t: "tf", q: "\u201CThe doctor insisted that the patient rests\u201D uses the subjunctive correctly.", a: false },
+    { t: "mcq", q: "She requested that the meeting ___ postponed.", o: ["is", "was", "being", "be"], a: 3 },
+    { t: "reorder", q: "Arrange the words into a correct sentence.", w: ["He", "that", "insisted", "quiet", "we", "stay"], a: "He insisted that we stay quiet" },
+    { t: "mcq", q: "I wish I ___ how to swim.", o: ["know", "knew", "known", "knowing"], a: 1 },
+    { t: "match", q: "Match each sentence with its subjunctive use.", pairs: [["I suggest he go", "after a verb of suggestion"], ["If I were rich", "in an unreal condition"], ["Long live the king!", "fixed expression"], ["It is vital that she be here", "after necessity"]] },
+    { t: "fib", q: "The committee recommended that the plan ___ approved. (be)", a: ["be"] }
+  ]
+},
+{
+  id: "inversion", title: "Inversion",
+  expl: "Inversion flips the normal word order for emphasis, usually after negative adverbials: 'Never have I seen such beauty', 'Not only did he arrive late, but he also forgot his books'. It follows 'hardly', 'scarcely', 'no sooner' and 'only' too.",
+  questions: [
+    { t: "mcq", q: "___ have I seen such a beautiful sunset.", o: ["Ever", "Never", "Always", "Often"], a: 1, hint: "Only a negative opener triggers inversion." },
+    { t: "mcq", q: "Not only did she sing, ___ she danced.", o: ["and also", "but too", "but also", "and too"], a: 2 },
+    { t: "mcq", q: "Hardly ___ down when the phone rang.", o: ["I had sat", "had I sat", "did I sat", "have I sat"], a: 1 },
+    { t: "fib", q: "___ had the match started when it began to rain. (scarcely)", a: ["Scarcely"] },
+    { t: "tf", q: "\u201CNo sooner he arrived than it started raining\u201D is correct.", a: false },
+    { t: "mcq", q: "Only after the rain stopped ___ go outside.", o: ["we could", "we can", "did we could", "could we"], a: 3 },
+    { t: "reorder", q: "Arrange the words into a correct inverted sentence.", w: ["have", "Never", "seen", "I", "such", "courage"], a: "Never have I seen such courage" },
+    { t: "mcq", q: "Choose the correctly inverted sentence.", o: ["Rarely she comes late.", "Rarely she does come late.", "Rarely does she come late.", "Rarely comes she late."], a: 2 },
+    { t: "match", q: "Match each opener with its inversion pattern.", pairs: [["Never have I...", "after 'never'"], ["Not only... but also", "paired inversion structure"], ["Hardly had I...", "after 'hardly'"], ["Only then did...", "after 'only'"]] },
+    { t: "fib", q: "___ did they reach home than the lights went out. (no sooner)", a: ["No sooner"] }
+  ]
+},
+{
+  id: "cleft-sentences", title: "Cleft Sentences",
+  expl: "Cleft sentences split one idea into two parts to emphasise a word: 'It was Ali who broke the window' (not someone else). Wh-clefts do the same job: 'What I need is more time'. They answer the silent question 'who?' or 'what?' with stress.",
+  questions: [
+    { t: "mcq", q: "___ was Sara who won the prize.", o: ["That", "It", "This", "There"], a: 1, hint: "It-clefts always begin with the same word." },
+    { t: "mcq", q: "What I need ___ a good night's sleep.", o: ["is", "are", "were", "be"], a: 0 },
+    { t: "mcq", q: "\u201CAli broke the window.\u201D Now emphasise ALI:", o: ["It was the window that Ali broke.", "What broke was Ali.", "It was Ali who broke the window.", "It broke Ali the window."], a: 2 },
+    { t: "fib", q: "It was ___ that we first met. (emphasise the place: in Lahore)", a: ["in Lahore"] },
+    { t: "tf", q: "\u201CWhat broke the window was Ali\u201D is a correct pseudo-cleft sentence.", a: true },
+    { t: "mcq", q: "\u201CShe bought a car.\u201D Now emphasise the CAR:", o: ["It was she who bought a car.", "What she bought was car.", "It bought she a car.", "It was a car that she bought."], a: 3 },
+    { t: "reorder", q: "Arrange the words into a correct cleft sentence.", w: ["What", "is", "want", "I", "peace", "quiet", "and"], a: "What I want is peace and quiet" },
+    { t: "mcq", q: "Which sentence is a cleft sentence?", o: ["The dog barked loudly.", "It was the dog that barked loudly.", "Dogs bark loudly.", "The loud dog barked."], a: 1 },
+    { t: "match", q: "Match each cleft with its type.", pairs: [["It was Ali who...", "it-cleft emphasising the person"], ["What I need is time", "wh-cleft (pseudo-cleft)"], ["It was yesterday that...", "it-cleft emphasising time"], ["All I want is rest", "pseudo-cleft with 'all'"]] },
+    { t: "fib", q: "___ I dislike is his rude behaviour. (what)", a: ["What"] }
+  ]
+},
+{
+  id: "participles", title: "Participles & Participial Phrases",
+  expl: "Present participles (-ing) describe what CAUSES a feeling: 'a boring lecture'. Past participles (-ed) describe who FEELS it: 'bored students'. Participial phrases add detail: 'Having finished his work, Ali went out to play.'",
+  questions: [
+    { t: "mcq", q: "The lecture was ___, so the students felt ___.", o: ["bored / boring", "boring / bored", "bored / bored", "boring / boring"], a: 1, hint: "-ing is the cause, -ed is the feeling." },
+    { t: "mcq", q: "___ his homework, Daniyal went out to play.", o: ["Having finished", "Having been finished", "Finished", "Finishing by"], a: 0 },
+    { t: "mcq", q: "The ___ news made everyone happy.", o: ["excited", "excite", "exciting", "excitement"], a: 2 },
+    { t: "fib", q: "___ in Lahore, she knows the city well. (Having lived)", a: ["Having lived"] },
+    { t: "tf", q: "\u201CThe tired players\u201D and \u201Cthe tiring players\u201D mean the same thing.", a: false },
+    { t: "mcq", q: "___ by the thunder, the child hid under the bed.", o: ["Frightening", "Frighten", "Fright", "Frightened"], a: 3 },
+    { t: "reorder", q: "Arrange the words into a correct sentence.", w: ["in", "Walking", "saw", "the", "I", "an", "old", "park", "friend"], a: "Walking in the park I saw an old friend" },
+    { t: "mcq", q: "Choose the correct sentence.", o: ["I was interested in the story.", "I was interesting in the story.", "The story was interested.", "I was interest in the story."], a: 0 },
+    { t: "match", q: "Match each participle with its role.", pairs: [["boring", "-ing: describes the cause"], ["bored", "-ed: describes the feeling"], ["Having eaten", "perfect participle phrase"], ["broken window", "past participle as adjective"]] },
+    { t: "fib", q: "The ___ parents waited anxiously outside the school. (worry)", a: ["worried"] }
+  ]
+},
+{
+  id: "determiners", title: "Determiners & Quantifiers",
+  expl: "Determiners come before nouns and tell us WHICH or HOW MANY: articles, demonstratives, possessives, and quantifiers like 'each', 'every', 'few', 'a few', 'much', 'many', 'all' and 'both'. The right one makes your meaning exact.",
+  questions: [
+    { t: "mcq", q: "___ student must bring their own pen.", o: ["Every students", "Each", "All", "Both"], a: 1, hint: "Only one option takes a singular noun correctly." },
+    { t: "mcq", q: "There are ___ books on the shelf; borrow any one.", o: ["a few", "few", "little", "much"], a: 0 },
+    { t: "mcq", q: "___ of the two brothers is a doctor.", o: ["Every", "All", "Each", "None"], a: 2 },
+    { t: "fib", q: "She has ___ friends in the new city, so she feels lonely. (few \u2014 hardly any)", a: ["few"] },
+    { t: "tf", q: "\u201CMuch students attended the seminar\u201D is correct.", a: false },
+    { t: "mcq", q: "___ the players were tired after the match.", o: ["Every", "Each", "Much", "All"], a: 3 },
+    { t: "reorder", q: "Arrange the words into a correct sentence.", w: ["Both", "parents", "my", "teachers", "are"], a: "Both my parents are teachers" },
+    { t: "mcq", q: "I don't have ___ money left.", o: ["many", "much", "few", "several"], a: 1 },
+    { t: "match", q: "Match each quantifier with its rule.", pairs: [["few", "hardly any (negative)"], ["a few", "some (positive)"], ["much", "with uncountable nouns"], ["many", "with countable nouns"]] },
+    { t: "fib", q: "___ child deserves love and care. (every)", a: ["Every"] }
   ]
 }
 ];
