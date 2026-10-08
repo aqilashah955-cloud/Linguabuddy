@@ -1,6 +1,6 @@
 // LinguaBuddy curated content — SLO question banks (Middle, grades 6-8)
 // Versioned data module. Works offline; zero Firestore read costs.
-export const DATA_VERSION_SLOS = "1.2.0";
+export const DATA_VERSION_SLOS = "1.3.0";
 
 export const SLOS = [
 {
@@ -513,6 +513,87 @@ export const SLOS = [
     { t: "mcq", q: "I don't have ___ money left.", o: ["many", "much", "few", "several"], a: 1 },
     { t: "match", q: "Match each quantifier with its rule.", pairs: [["few", "hardly any (negative)"], ["a few", "some (positive)"], ["much", "with uncountable nouns"], ["many", "with countable nouns"]] },
     { t: "fib", q: "___ child deserves love and care. (every)", a: ["Every"] }
+  ]
+}
+,
+{
+  id: "modals", title: "Modal Verbs",
+  expl: "Modal verbs are special helper verbs like can, may, must and should. They add meanings such as ability, permission, obligation, prohibition, requests and possibility to the main verb.",
+  questions: [
+    { t: "mcq", q: "She ___ swim very well.", o: ["can", "must", "should", "might"], a: 0 },
+    { t: "mcq", q: "___ I go to the playground, mother?", o: ["Must", "May", "Should", "Will"], a: 1 },
+    { t: "fib", q: "You ___ wear a seatbelt in the car. (obligation)", a: ["must"] },
+    { t: "tf", q: "\u201CYou must not run in the corridor\u201D is a prohibition.", a: true },
+    { t: "mcq", q: "___ you open the window, please?", o: ["Will", "Shall", "Must", "May"], a: 0 },
+    { t: "fib", q: "It is cloudy. It ___ rain today. (possibility)", a: ["might", "may"] },
+    { t: "mcq", q: "___ I help you carry your bag?", o: ["Shall", "Must", "May", "Should"], a: 0 },
+    { t: "reorder", q: "Arrange the words into a correct sentence.", w: ["You", "must", "finish", "your", "homework"], a: "You must finish your homework" },
+    { t: "tf", q: "\u201CShe can sing beautifully\u201D shows ability.", a: true },
+    { t: "mcq", q: "He ___ be at home; the lights are off.", o: ["might not", "must", "should", "can"], a: 0 }
+  ]
+},
+{
+  id: "nouns", title: "Nouns",
+  expl: "Nouns name people, places, things and ideas. Some nouns are countable, some are uncountable, and some change their spelling \u2014 or even their meaning \u2014 in the plural.",
+  questions: [
+    { t: "mcq", q: "A ___ of birds flew across the sky.", o: ["flock", "herd", "pack", "team"], a: 0 },
+    { t: "mcq", q: "How ___ water is left in the bottle?", o: ["many", "much", "few", "a"], a: 1 },
+    { t: "fib", q: "___ is the best policy. (honest \u2192 noun form)", a: ["Honesty", "honesty"] },
+    { t: "tf", q: "\u201CFurniture\u201D is an uncountable noun, so we say \u201Cmuch furniture\u201D.", a: true },
+    { t: "mcq", q: "The plural of \u201Cchild\u201D is ___.", o: ["childs", "children", "childes", "childrens"], a: 1 },
+    { t: "fib", q: "The ___ are grazing in the field. (ox \u2192 plural)", a: ["oxen"] },
+    { t: "mcq", q: "\u201CArm\u201D means a part of the body, but \u201Carms\u201D can mean ___.", o: ["sleeves", "weapons", "hands", "gloves"], a: 1 },
+    { t: "reorder", q: "Arrange the words into a correct sentence.", w: ["A", "team", "of", "players", "won", "the", "match"], a: "A team of players won the match" },
+    { t: "tf", q: "\u201CSheeps\u201D is the correct plural of \u201Csheep\u201D.", a: false },
+    { t: "mcq", q: "Which noun is COUNTABLE?", o: ["milk", "rice", "book", "sugar"], a: 2 }
+  ]
+},
+{
+  id: "questions", title: "Asking Questions",
+  expl: "Wh-words like who, what, where, when, why and how help us ask questions. In English questions, the helping verb (do, does, did) usually comes before the subject.",
+  questions: [
+    { t: "mcq", q: "___ is your best friend?", o: ["What", "Who", "Where", "When"], a: 1 },
+    { t: "mcq", q: "___ did you go after school?", o: ["Who", "What", "Where", "Whose"], a: 2 },
+    { t: "fib", q: "___ do birds fly to warm places? (why)", a: ["why"] },
+    { t: "tf", q: "\u201CWhose bag is this?\u201D asks about the owner of the bag.", a: true },
+    { t: "mcq", q: "___ she like apples?", o: ["Does", "Do", "Is", "Are"], a: 0 },
+    { t: "mcq", q: "___ they play cricket yesterday?", o: ["Do", "Does", "Did", "Are"], a: 2 },
+    { t: "fib", q: "___ old are you? (how)", a: ["how"] },
+    { t: "tf", q: "\u201CWhere you live?\u201D is a correctly formed question.", a: false },
+    { t: "reorder", q: "Arrange the words into a correct question.", w: ["When", "does", "the", "school", "open"], a: "When does the school open" },
+    { t: "mcq", q: "___ of these two shirts do you like?", o: ["What", "Which", "Who", "Whose"], a: 1 }
+  ]
+},
+{
+  id: "sentence-types", title: "Sentence Types",
+  expl: "Sentences have jobs: statements declare, questions ask, orders command, and exclamations show strong feeling. They also have shapes: simple (one idea), compound (two ideas joined), and complex (one main idea with a supporting part).",
+  questions: [
+    { t: "mcq", q: "Which sentence is declarative?", o: ["Close the door.", "She reads every night.", "What a lovely garden!", "Did you call me?"], a: 1 },
+    { t: "mcq", q: "Which sentence is imperative?", o: ["Please sit down.", "She sat down.", "Did she sit down?", "How quietly she sat!"], a: 0 },
+    { t: "tf", q: "\u201CWhat a beautiful rainbow!\u201D is an exclamatory sentence.", a: true },
+    { t: "mcq", q: "Which sentence is complex?", o: ["I ran fast.", "I ran fast, and I won the race.", "Although I was tired, I finished the race.", "Run fast!"], a: 2 },
+    { t: "fib", q: "A ___ sentence has two independent clauses joined by \u2018and\u2019, \u2018but\u2019 or \u2018or\u2019. (compound)", a: ["compound"] },
+    { t: "tf", q: "\u201CShe opened the window and the fresh air came in\u201D is a simple sentence.", a: false },
+    { t: "mcq", q: "Interrogative form of \u201CShe can swim.\u201D", o: ["Can she swim?", "She can swim?", "Does she can swim?", "Swim she can?"], a: 0 },
+    { t: "reorder", q: "Arrange the words into a correct sentence.", w: ["This", "is", "a", "simple", "sentence"], a: "This is a simple sentence" },
+    { t: "fib", q: "He likes tea. \u2192 He ___ like tea. (negative)", a: ["does not", "doesn't", "doesnt"] },
+    { t: "mcq", q: "Which is a compound sentence?", o: ["The baby slept.", "The baby slept, and the mother cooked.", "When the baby slept, the mother cooked.", "Sleep, baby!"], a: 1 }
+  ]
+},
+{
+  id: "verbals", title: "Transitive Verbs, Infinitives & Gerunds",
+  expl: "A transitive verb needs an object (She kicked the ball). An infinitive is \u2018to\u2019 + verb (to learn). A gerund is verb-ing used as a noun (Swimming is fun). Some verbs take only one of them, so learn which goes with which.",
+  questions: [
+    { t: "mcq", q: "Which verb is transitive in its sentence?", o: ["She laughed loudly.", "He bought a pen.", "The baby slept.", "Birds fly."], a: 1 },
+    { t: "tf", q: "In \u201CShe gave him a gift\u201D, the verb \u2018gave\u2019 takes an object.", a: true },
+    { t: "mcq", q: "Choose the sentence with a gerund:", o: ["I want to swim.", "Swimming is good exercise.", "She swims well.", "They will swim."], a: 1 },
+    { t: "mcq", q: "Choose the sentence with an infinitive:", o: ["He enjoys reading.", "Reading is fun.", "She decided to leave.", "Leaving early helped."], a: 2 },
+    { t: "fib", q: "She wants ___ abroad. (to study)", a: ["to study"] },
+    { t: "tf", q: "In \u201CThey enjoy playing cricket\u201D, \u2018playing\u2019 is a gerund.", a: true },
+    { t: "mcq", q: "He promised ___ on time.", o: ["coming", "to come", "come", "comes"], a: 1 },
+    { t: "fib", q: "___ early is a good habit. (wake)", a: ["waking"] },
+    { t: "reorder", q: "Arrange the words into a correct sentence.", w: ["I", "want", "to", "learn", "English"], a: "I want to learn English" },
+    { t: "tf", q: "An infinitive is formed with \u2018to\u2019 + the base verb.", a: true }
   ]
 }
 ];
