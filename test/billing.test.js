@@ -2,7 +2,7 @@
 import {
   TRIAL_DAYS, PLANS, planById, isStaff, ensureTrial, trialDaysLeft,
   subActive, subDaysLeft, accessState, needsGate, grantSubscription,
-  waSubscribeLink, statusLine
+  waSubscribeLink, statusLine, BILLING_ENABLED, setBillingEnabled
 } from "../js/billing.js";
 
 let pass = 0, fail = 0;
@@ -37,9 +37,16 @@ ok(accessState(student({ trialStart: NOW }), NOW) === "trial", "fresh student on
 ok(accessState(student({ trialStart: NOW - 4 * DAY }), NOW) === "expired", "student expired after 3 days");
 ok(accessState(student({ trialStart: NOW - 4 * DAY, subUntil: NOW + 10 * DAY }), NOW) === "subscribed",
   "active subscription beats expired trial");
+// billing is OFF by default (until launch): nobody is gated
+ok(BILLING_ENABLED === false, "billing off by default");
+ok(needsGate(student({ trialStart: NOW - 40 * DAY }), NOW) === false, "expired student NOT gated while billing off");
+ok(statusLine(student(), NOW).indexOf("Free access") >= 0, "status line shows free access while off");
+// with billing enabled, the gate behaves as before
+setBillingEnabled(true);
 ok(needsGate(student({ trialStart: NOW - 4 * DAY }), NOW) === true, "expired student is gated");
 ok(needsGate(student({ trialStart: NOW }), NOW) === false, "trial student passes");
 ok(needsGate({ role: "admin" }, NOW) === false, "admin never gated");
+setBillingEnabled(false);
 
 section("subscriptions");
 const p2 = student({ trialStart: NOW - 10 * DAY });
@@ -61,11 +68,13 @@ ok(decodeURIComponent(link).indexOf("ali_123") >= 0, "message carries the login 
 ok(decodeURIComponent(link).indexOf("1 Year") >= 0, "message names the plan");
 
 section("status line");
+setBillingEnabled(true); // status lines describe the billing-on states
 ok(statusLine({ role: "teacher" }, NOW).indexOf("Staff") === 0, "staff line");
 ok(statusLine(student({ trialStart: NOW }), NOW).indexOf("Free trial") >= 0, "trial line");
 ok(statusLine(student({ trialStart: NOW - 9 * DAY }), NOW).indexOf("ended") >= 0, "expired line");
 ok(statusLine(student({ subUntil: NOW + 5 * DAY, subPlan: "monthly" }), NOW).indexOf("Subscribed") >= 0,
   "subscribed line");
+setBillingEnabled(false);
 
 console.log("\n" + pass + " passed, " + fail + " failed");
 process.exit(fail ? 1 : 0);

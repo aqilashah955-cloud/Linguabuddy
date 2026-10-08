@@ -26,6 +26,12 @@ export const PLANS = [
 ];
 /* ================================================================== */
 
+/* Master switch: subscriptions are OFF until launch. While false, every
+   profile gets full access and the subscribe screen never appears.
+   Flip to true (and push) when subscriptions should go live. */
+export let BILLING_ENABLED = false;
+export function setBillingEnabled(on) { BILLING_ENABLED = !!on; }
+
 export function planById(id) {
   return PLANS.filter(function (p) { return p.id === id; })[0] || null;
 }
@@ -71,6 +77,7 @@ export function accessState(profile, now) {
 
 /* Should the app gate this profile to the subscribe screen? */
 export function needsGate(profile, now) {
+  if (!BILLING_ENABLED) return false; // subscriptions off until launch
   return accessState(profile, now) === "expired";
 }
 
@@ -93,6 +100,7 @@ export function waSubscribeLink(profile, plan) {
 }
 
 export function statusLine(profile, now) {
+  if (!BILLING_ENABLED) return "💛 Free access — subscriptions are currently off.";
   const st = accessState(profile, now);
   if (st === "staff") return "Staff — full access, always free.";
   if (st === "subscribed") {
