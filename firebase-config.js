@@ -1,15 +1,13 @@
 // LinguaBuddy — Firebase web config.
-// 1. Create a free Firebase project (Spark plan) at console.firebase.google.com.
-// 2. Enable Email/Password sign-in, create a Firestore database, publish firestore.rules.
-// 3. Project settings → Your apps → Web → copy the config values below.
-// Until the real values are pasted in, the app runs fully offline on localStorage.
+// Project: LinguaBuddy (linguabuddy-a21b9), asia-south1. Configured 2026-10-08.
+// Until real values are present, the app runs fully offline on localStorage.
 window.FB_CONFIG = {
-  apiKey: "PASTE_ME",
-  authDomain: "PASTE_ME",
-  projectId: "PASTE_ME",
-  storageBucket: "PASTE_ME",
-  messagingSenderId: "PASTE_ME",
-  appId: "PASTE_ME"
+  apiKey: "AIzaSyDc98tB3oIaxaYAUXvIhyrVhnMH3LE2Nok",
+  authDomain: "linguabuddy-a21b9.firebaseapp.com",
+  projectId: "linguabuddy-a21b9",
+  storageBucket: "linguabuddy-a21b9.firebasestorage.app",
+  messagingSenderId: "29097613062",
+  appId: "1:29097613062:web:760a73d624c92b1a177087"
 };
 // Owner's email — the admin role. Full read access in firestore.rules.
 window.OWNER_EMAIL = "REPLACE_WITH_OWNER_EMAIL";
