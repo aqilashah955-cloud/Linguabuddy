@@ -17,10 +17,12 @@ ok("rules: signed-in reads", /profile-photos[\s\S]*?allow read: if signedIn\(\)/
 ok("rules: admin email set", rules.indexOf("nizarsyed74@gmail.com") >= 0);
 ok("rules: no REPLACE_WITH_OWNER_EMAIL left", rules.indexOf("REPLACE_WITH_OWNER_EMAIL") < 0);
 
-/* ---- firebase.js exports the uploader ---- */
+/* ---- firebase.js exports the uploader (data URL, no Storage needed) ---- */
 const fbSrc = readFileSync(new URL("../js/firebase.js", import.meta.url), "utf8");
 ok("firebase: uploadProfilePhoto exported", fbSrc.indexOf("export async function uploadProfilePhoto") >= 0);
-ok("firebase: uploads to profile-photos/", fbSrc.indexOf('"profile-photos/" + uid + ".jpg"') >= 0);
+ok("firebase: returns a data URL", fbSrc.indexOf("readAsDataURL") >= 0);
+ok("firebase: no Storage import for photos", fbSrc.indexOf("profile-photos/") < 0);
+ok("firebase: guards the 1MB doc limit", fbSrc.indexOf("900000") >= 0);
 
 /* ---- dashboard wires the photo UI ---- */
 const dashSrc = readFileSync(new URL("../js/dashboard.js", import.meta.url), "utf8");

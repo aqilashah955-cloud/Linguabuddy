@@ -369,7 +369,7 @@ export function wireProfileModal() {
       try {
         if (pendingPhotoBlob && online()) {
           const note = document.getElementById("profPhotoNote");
-          if (note) note.textContent = "Uploading photo…";
+          if (note) note.textContent = "Saving photo…";
           const url = await uploadProfilePhoto(fb().user.uid, pendingPhotoBlob);
           if (url) {
             S.profile.photoURL = url;
