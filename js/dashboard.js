@@ -166,6 +166,7 @@ export function renderDashboard() {
 /* Big-tile feature grid on the student dashboard. Destinations mirror
    the bottom nav so tiles and nav always agree. */
 var EXPLORE_FEATURES = [
+  { e: "🏫", t: "Aga Khan Schools", d: "ak" },
   { e: "📚", t: "Learn", d: "learn" },
   { e: "📝", t: "Practice", d: "practice" },
   { e: "🎯", t: "Assess", d: "assess" },
