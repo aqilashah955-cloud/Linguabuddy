@@ -716,3 +716,14 @@ mark { border-radius: 4px; padding: 0 2px; }
 .explore-tile:active { transform: translateY(0); }
 .xt-emoji { font-size: 1.7rem; line-height: 1; }
 .xt-label { font-size: .8rem; font-weight: 600; color: var(--ink); text-align: center; }
+
+/* AI Teacher mini-lessons */
+.tch-block { line-height: 1.55; }
+.tch-block p { margin: 8px 0; }
+.tch-head { font-size: 1.12rem; margin-bottom: 4px; }
+.tch-list { margin: 4px 0 10px 20px; padding: 0; }
+.tch-list li { margin-bottom: 6px; }
+.tch-ans { color: var(--ink-soft, #5b5347); }
+.tch-try { background: #fdf6e3; border-left: 3px solid var(--marigold); padding: 8px 12px; border-radius: 0 8px 8px 0; }
+.row-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.btn-sm { padding: 8px 14px; font-size: .9rem; }
