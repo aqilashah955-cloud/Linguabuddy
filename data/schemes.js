@@ -78,41 +78,296 @@ function emptyRange(from, to) {
 
 
 const G4_T2 = [
-  L(66, "Unit 7 & 8: Why do we make art?", "Grammar", "E-05-C2-04 · E-03-C4-06 · E-04-C2-06 · E-04-C1-07 · E-04-D4-03", "Second Term", ["pronouns", "tenses", "articles", "vocab", "writing"], [
-    "With a partner, practise polite agreement and disagreement: one says \u2018Art is important in school\u2019 and gives a reason; the other replies \u2018I agree because...\u2019 or \u2018I disagree because...\u2019. Swap roles.",
-    "Speak for 1 minute: describe a painting or piece of art you like \u2014 what it shows and why you like it."
+  L(66, "Unit 7 & 8 — Pronouns: indefinite, relative & reciprocal", "Grammar", "E-05-C2-04", "Second Term", ["pronouns"]),
+  L(67, "Unit 7 & 8 — Prefixes & suffixes: word building", "Grammar", "E-04-C1-07", "Second Term", ["vocab"]),
+  L(68, "Unit 7 & 8 — Word building: new words in speech & writing", "Vocabulary", "", "Second Term", ["vocab"]),
+  L(69, "Unit 7 & 8 — Speaking: engage in conversation, take turns", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ Talk with a partner about art: take turns, about one minute each. Keep eye contact, speak loudly enough to be heard, and stay on the topic.",
+    "🎙️ On your own: speak for 1 minute about art. If you can, record yourself on a phone and listen back — did you stay on topic?"
   ]),
-  L(67, "Unit 9 & 10: What is a city?", "Grammar", "E-04-C4-01 · E-04-C4-02 · E-04-C2-12 · E-04-D4-03", "Second Term", ["tenses", "clauses", "writing", "reading"], [
-    "Dictation: ask a partner to read 3 sentences about your city aloud; write them down, then check together.",
-    "Speak: compare your city or village with another city in 5\u20136 sentences \u2014 what is the same, what is different?"
+  L(70, "Unit 7 & 8 — Future tense: will / shall / be going to", "Grammar", "E-03-C4-06", "Second Term", ["tenses"]),
+  L(71, "Unit 7 & 8 — Listening: audio CD, new words", "Speaking & Listening", "", "Second Term", [], [
+    "🎧 Listening: ask someone to read a short paragraph about art aloud. Listen for 3 important details, then say them back without looking.",
+    "🎧 Listen again and write down the key words you hear. Compare your list with a partner and discuss what you both caught."
   ]),
-  L(68, "Unit 11: How do our bodies work?", "Reading", "", "Second Term", ["reading", "writing"], [
-    "Listen and match: ask someone to read 5 body-part clues aloud (e.g. \u2018It pumps blood\u2019); point to each part as you hear it.",
-    "Pre-reading: look at the pictures in Unit 11, guess what the text is about, then read to check your guesses."
+  L(72, "Unit 7 & 8 — Reading: locate specific information", "Reading", "", "Second Term", ["reading"]),
+  L(73, "Unit 7 & 8 — Articles: a / an / the / zero article", "Grammar", "E-04-C2-06", "Second Term", ["articles"]),
+  L(74, "Unit 7 & 8 — Speaking: agree / disagree politely", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ With a partner, practise polite agreement and disagreement about art: one person gives an opinion with a reason; the other replies ‘I agree because...’ or ‘I disagree because...’. Then swap roles.",
+    "🎙️ Speak for 1 minute: give your own opinion about art and support it with two reasons."
   ]),
-  L(69, "Unit 12: How do our bodies work?", "Grammar", "E-05-C4-04 · E-04-C2-10 · E-04-C2-12 · E-04-C4-01 · E-04-D4-03", "Second Term", ["past-tense", "modals", "prepositions", "tenses", "writing"], [
-    "Speak: tell a partner about something you did yesterday \u2014 use 5 past-tense verbs.",
-    "Give directions: guide a partner from the classroom door to your desk using prepositions (next to, behind, between)."
-  ])
+  L(75, "Unit 7 & 8 — Dictation: Vocab Champ wordlist", "Speaking & Listening", "", "Second Term", [], [
+    "🎧 Dictation: ask a partner or family member to read 10 words aloud from your word list, one by one. Write each word, then check the spelling together.",
+    "🎧 Say-spell-say: pick 10 words. Read each word aloud, spell it letter by letter, then use it in a short sentence of your own."
+  ]),
+  L(76, "Unit 7 & 8 — Writing: organize ideas (mind maps etc.)", "Writing", "", "Second Term", ["writing"]),
+  L(77, "Unit 7 & 8 — Writing: guided paragraph", "Writing", "", "Second Term", ["writing"]),
+  L(78, "Unit 7 & 8 — Writing: revise (spelling, punctuation, agreement, layout)", "Writing", "", "Second Term", ["punct"]),
+  L(79, "Unit 7 & 8 — Writing: opinion pieces", "Writing", "E-04-D4-03", "Second Term", ["writing"]),
+  L(80, "Unit 9 & 10 — Listening & speaking: conversation, turns, lead & follow", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ Lead a short discussion about cities and city life: ask your group 3 questions, make sure everyone gets a turn to speak, then sum up what the group said.",
+    "🎙️ As a group member, answer with reasons and build on what others say (‘I agree with... and I would add...’)."
+  ]),
+  L(81, "Unit 9 & 10 — Word building: new words in speech & writing", "Vocabulary", "", "Second Term", ["vocab"]),
+  L(82, "Unit 9 & 10 — Reading: pre-reading strategies (guess meaning from context)", "Reading", "", "Second Term", ["skimming"]),
+  L(83, "Unit 9 & 10 — Reading: question-comprehension strategies", "Reading", "", "Second Term", ["reading"]),
+  L(84, "Unit 9 & 10 — Reading: locate specific information", "Reading", "", "Second Term", ["reading"]),
+  L(85, "Unit 9 & 10 — Simple present: habits, universal truths, facts", "Grammar", "E-04-C4-01", "Second Term", ["tenses"]),
+  L(86, "Unit 9 & 10 — Present continuous", "Grammar", "E-04-C4-02", "Second Term", ["tenses"]),
+  L(87, "Unit 9 & 10 — Listening & speaking: comprehend; express opinion with reasons", "Speaking & Listening", "", "Second Term", [], [
+    "🎧 Listening: ask someone to read a short paragraph about cities and city life aloud. Listen for 3 important details, then say them back without looking.",
+    "🎧 Listen again and write down the key words you hear. Compare your list with a partner and discuss what you both caught."
+  ]),
+  L(88, "Unit 9 & 10 — Speaking: agree / disagree politely", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ With a partner, practise polite agreement and disagreement about cities and city life: one person gives an opinion with a reason; the other replies ‘I agree because...’ or ‘I disagree because...’. Then swap roles.",
+    "🎙️ Speak for 1 minute: give your own opinion about cities and city life and support it with two reasons."
+  ]),
+  L(89, "Unit 9 & 10 — Grammar: indefinite pronouns", "Grammar", "", "Second Term", ["pronouns"]),
+  L(90, "Unit 9 & 10 — Word building: new words in speech & writing", "Vocabulary", "", "Second Term", ["vocab"]),
+  L(91, "Unit 9 & 10 — Dictation: paragraph/text; word wall, bank, journal", "Speaking & Listening", "", "Second Term", [], [
+    "🎧 Dictation: ask a partner or family member to read 10 words aloud from your word list, one by one. Write each word, then check the spelling together.",
+    "🎧 Say-spell-say: pick 10 words. Read each word aloud, spell it letter by letter, then use it in a short sentence of your own."
+  ]),
+  L(92, "Unit 9 & 10 — Reading & speaking: conversation, take turns", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ Talk with a partner about cities and city life: take turns, about one minute each. Keep eye contact, speak loudly enough to be heard, and stay on the topic.",
+    "🎙️ On your own: speak for 1 minute about cities and city life. If you can, record yourself on a phone and listen back — did you stay on topic?"
+  ]),
+  L(93, "Unit 9 & 10 — Listening: listen and match", "Speaking & Listening", "", "Second Term", [], [
+    "🎧 Listening: ask someone to read a short paragraph about cities and city life aloud. Listen for 3 important details, then say them back without looking.",
+    "🎧 Listen again and write down the key words you hear. Compare your list with a partner and discuss what you both caught."
+  ]),
+  L(94, "Unit 9 & 10 — Connectors: addition, reason, sequence", "Writing", "E-04-C2-12", "Second Term", ["clauses"]),
+  L(95, "Unit 9 & 10 — Writing: pre-writing - gather & organize ideas", "Writing", "", "Second Term", ["writing"]),
+  L(96, "Unit 9 & 10 — Writing: guided paragraph", "Writing", "", "Second Term", ["writing"]),
+  L(97, "Unit 9 & 10 — Writing: opinion pieces", "Writing", "E-04-D4-03", "Second Term", ["writing"]),
+  L(98, "Unit 11 — Word building: new words in speech & writing", "Vocabulary", "", "Second Term", ["vocab"]),
+  L(99, "Unit 11 — Reading: pre-reading, locate info, question strategies", "Reading", "", "Second Term", ["reading"]),
+  L(100, "Unit 11 — Reading: question-comprehension strategies", "Reading", "", "Second Term", ["reading"]),
+  L(101, "Unit 11 — Listening & speaking: listen and match", "Speaking & Listening", "", "Second Term", [], [
+    "🎧 Listening: ask someone to read a short paragraph about how our bodies work aloud. Listen for 3 important details, then say them back without looking.",
+    "🎧 Listen again and write down the key words you hear. Compare your list with a partner and discuss what you both caught."
+  ]),
+  L(102, "Unit 11 — Writing: expository paragraphs", "Writing", "", "Second Term", ["writing"]),
+  L(103, "Unit 11 — Writing: narrative paragraphs", "Writing", "", "Second Term", ["writing"]),
+  L(104, "Unit 11 — Writing: descriptive paragraphs", "Writing", "", "Second Term", ["descriptive-writing"]),
+  L(105, "Unit 12 — Word building: new words in speech & writing", "Vocabulary", "", "Second Term", ["vocab"]),
+  L(106, "Unit 12 — Reading: engage in conversation, take turns", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ Talk with a partner about how our bodies work: take turns, about one minute each. Keep eye contact, speak loudly enough to be heard, and stay on the topic.",
+    "🎙️ On your own: speak for 1 minute about how our bodies work. If you can, record yourself on a phone and listen back — did you stay on topic?"
+  ]),
+  L(107, "Unit 12 — Prepositions: position, time, movement, direction", "Grammar", "E-04-C2-12", "Second Term", ["prepositions"]),
+  L(108, "Unit 12 — Past simple: completed & regular past actions", "Grammar", "E-05-C4-04", "Second Term", ["past-tense"]),
+  L(109, "Unit 12 — Listening: listen and match", "Speaking & Listening", "", "Second Term", [], [
+    "🎧 Listening: ask someone to read a short paragraph about how our bodies work aloud. Listen for 3 important details, then say them back without looking.",
+    "🎧 Listen again and write down the key words you hear. Compare your list with a partner and discuss what you both caught."
+  ]),
+  L(110, "Unit 12 — Reading: question-comprehension strategies", "Reading", "", "Second Term", ["reading"]),
+  L(111, "Unit 12 — Writing: descriptive, narrative & expository paragraphs", "Writing", "", "Second Term", ["writing"]),
+  L(112, "Unit 12 — Modal verbs: can, could, may, might, must, shall, should, will, would", "Grammar", "E-04-C2-10", "Second Term", ["modals"]),
+  L(113, "Unit 12 — Simple present (revision): habits, truths, facts", "Grammar", "E-04-C4-01", "Second Term", ["tenses"]),
+  L(114, "Unit 12 — Writing: opinion pieces", "Writing", "E-04-D4-03", "Second Term", ["writing"]),
 ];
 
 const G5_T2 = [
-  L(66, "Unit 8: How do animals communicate?", "Grammar", "E-05-C2-09 · E-05-C2-11 · E-05-C2-ADD · E-05-C1-07 · E-05-D4-04", "Second Term", ["adverbs", "vocab", "writing"], [
-    "Speak: describe how two different animals communicate \u2014 use 3 adverbs of manner (loudly, quickly, softly).",
-    "Listen: ask a partner to read an animal description; raise your hand every time you hear an adverb."
+  L(66, "Unit 8: How do animals communicate? — Vocabulary Building", "Vocabulary", "", "Second Term", ["vocab"]),
+  L(67, "Unit 8: How do animals communicate? — Reading", "Reading", "", "Second Term", ["reading"]),
+  L(68, "Unit 8: How do animals communicate? — Speaking", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ Talk with a partner about how animals communicate: take turns, about one minute each. Keep eye contact, speak loudly enough to be heard, and stay on the topic.",
+    "🎙️ On your own: speak for 1 minute about how animals communicate. If you can, record yourself on a phone and listen back — did you stay on topic?"
   ]),
-  L(67, "Units 9 & 10: What do different cultures give to the world?", "Grammar", "E-05-C5-04 · E-05-C5-06", "Second Term", ["questions", "pronouns", "writing"], [
-    "Interview a partner: ask 5 wh-questions about their family culture or traditions; write down the answers.",
-    "Speak: name one thing your culture gives to the world; explain it in 4\u20135 sentences."
+  L(69, "Unit 8: How do animals communicate? — Listening & Dictation", "Speaking & Listening", "", "Second Term", [], [
+    "🎧 Dictation: ask a partner or family member to read 10 words aloud from your word list, one by one. Write each word, then check the spelling together.",
+    "🎧 Say-spell-say: pick 10 words. Read each word aloud, spell it letter by letter, then use it in a short sentence of your own."
   ]),
-  L(68, "Units 11 & 12: Why are mountains important?", "Grammar", "E-05-C2-06", "Second Term", ["articles", "writing", "reading"], [
-    "Speak: describe a mountain you know or have seen \u2014 use a, an and the correctly.",
-    "Discuss: why are mountains important? Give two reasons with examples."
+  L(70, "Unit 8: How do animals communicate? — Word Study: suffixes", "Vocabulary", "E-05-C1-07", "Second Term", ["vocab"]),
+  L(71, "Unit 8: How do animals communicate? — Grammar: adverbs", "Grammar", "E-05-C2-09", "Second Term", ["adverbs"]),
+  L(72, "Unit 8: How do animals communicate? — Grammar: adverbs connecting clauses/sentences", "Grammar", "E-05-C2-ADD", "Second Term", ["adverbs"]),
+  L(73, "Unit 8: How do animals communicate? — Grammar: adverb phrases", "Grammar", "E-05-C2-11", "Second Term", ["adverbs"]),
+  L(74, "Unit 8: How do animals communicate? — Writing: descriptive paragraphs", "Writing", "E-05-D4-04", "Second Term", ["descriptive-writing"]),
+  L(75, "Unit 8: How do animals communicate? — Grammar: reported speech", "Grammar", "E-05-C5-06", "Second Term", ["speech"]),
+  L(76, "Unit 9: What do different cultures give to the world? — Reading", "Reading", "", "Second Term", ["reading"]),
+  L(77, "Unit 9: What do different cultures give to the world? — Listening", "Speaking & Listening", "", "Second Term", [], [
+    "🎧 Listening: ask someone to read a short paragraph about what different cultures give to the world aloud. Listen for 3 important details, then say them back without looking.",
+    "🎧 Listen again and write down the key words you hear. Compare your list with a partner and discuss what you both caught."
   ]),
-  L(69, "Unit 13: Why do we use money?", "Writing", "E-05-D4-01", "Second Term", ["writing", "vocab"], [
-    "Tell a partner a short true story about money (saving, spending, sharing) \u2014 keep a clear event order.",
-    "Discuss: is money the most important thing? Give one reason for your opinion."
-  ])
+  L(78, "Unit 9: What do different cultures give to the world? — Speaking", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ Talk with a partner about what different cultures give to the world: take turns, about one minute each. Keep eye contact, speak loudly enough to be heard, and stay on the topic.",
+    "🎙️ On your own: speak for 1 minute about what different cultures give to the world. If you can, record yourself on a phone and listen back — did you stay on topic?"
+  ]),
+  L(79, "Unit 9: What do different cultures give to the world? — Grammar: wh-questions", "Grammar", "E-05-C5-04", "Second Term", ["questions"]),
+  L(80, "Unit 9: What do different cultures give to the world? — Writing: descriptive paragraphs", "Writing", "E-05-D4-04", "Second Term", ["descriptive-writing"]),
+  L(81, "Unit 10: What do different cultures give to the world? — Reading", "Reading", "", "Second Term", ["reading"]),
+  L(82, "Unit 10: What do different cultures give to the world? — Listening", "Speaking & Listening", "", "Second Term", [], [
+    "🎧 Listening: ask someone to read a short paragraph about what different cultures give to the world aloud. Listen for 3 important details, then say them back without looking.",
+    "🎧 Listen again and write down the key words you hear. Compare your list with a partner and discuss what you both caught."
+  ]),
+  L(83, "Unit 10: What do different cultures give to the world? — Speaking", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ Talk with a partner about what different cultures give to the world: take turns, about one minute each. Keep eye contact, speak loudly enough to be heard, and stay on the topic.",
+    "🎙️ On your own: speak for 1 minute about what different cultures give to the world. If you can, record yourself on a phone and listen back — did you stay on topic?"
+  ]),
+  L(84, "Unit 10: What do different cultures give to the world? — Word Study: suffixes", "Vocabulary", "E-05-C1-07", "Second Term", ["vocab"]),
+  L(85, "Unit 11: Why are mountains important? — Reading", "Reading", "", "Second Term", ["reading"]),
+  L(86, "Unit 11: Why are mountains important? — Listening for Facts", "Speaking & Listening", "", "Second Term", [], [
+    "🎧 Listening: ask someone to read a short paragraph about why mountains are important aloud. Listen for 3 important details, then say them back without looking.",
+    "🎧 Listen again and write down the key words you hear. Compare your list with a partner and discuss what you both caught."
+  ]),
+  L(87, "Unit 11: Why are mountains important? — Speaking", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ Talk with a partner about why mountains are important: take turns, about one minute each. Keep eye contact, speak loudly enough to be heard, and stay on the topic.",
+    "🎙️ On your own: speak for 1 minute about why mountains are important. If you can, record yourself on a phone and listen back — did you stay on topic?"
+  ]),
+  L(88, "Unit 11: Why are mountains important? — Grammar: articles", "Grammar", "E-05-C2-06", "Second Term", ["articles"]),
+  L(89, "Unit 12: Why are mountains important? — Vocabulary Building", "Vocabulary", "", "Second Term", ["vocab"]),
+  L(90, "Unit 12: Why are mountains important? — Reading", "Reading", "", "Second Term", ["reading"]),
+  L(91, "Unit 12: Why are mountains important? — Listening", "Speaking & Listening", "", "Second Term", [], [
+    "🎧 Listening: ask someone to read a short paragraph about why mountains are important aloud. Listen for 3 important details, then say them back without looking.",
+    "🎧 Listen again and write down the key words you hear. Compare your list with a partner and discuss what you both caught."
+  ]),
+  L(92, "Unit 12: Why are mountains important? — Speaking", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ Talk with a partner about why mountains are important: take turns, about one minute each. Keep eye contact, speak loudly enough to be heard, and stay on the topic.",
+    "🎙️ On your own: speak for 1 minute about why mountains are important. If you can, record yourself on a phone and listen back — did you stay on topic?"
+  ]),
+  L(93, "Unit 13: Why do we use money? — Vocabulary Building", "Vocabulary", "", "Second Term", ["vocab"]),
+  L(94, "Unit 13: Why do we use money? — Reading", "Reading", "", "Second Term", ["reading"]),
+  L(95, "Unit 13: Why do we use money? — Word Study", "Vocabulary", "", "Second Term", ["vocab"]),
+  L(96, "Unit 13: Why do we use money? — Speaking", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ Talk with a partner about why we use money: take turns, about one minute each. Keep eye contact, speak loudly enough to be heard, and stay on the topic.",
+    "🎙️ On your own: speak for 1 minute about why we use money. If you can, record yourself on a phone and listen back — did you stay on topic?"
+  ]),
+  L(97, "Unit 13: Why do we use money? — Writing: narratives", "Writing", "E-05-D4-01", "Second Term", ["writing"]),
+  L(98, "Unit 13: Why do we use money? — Writing: narratives (detailed)", "Writing", "E-05-D4-01", "Second Term", ["writing"]),
+  L(99, "Unit 5 — The wheel — describing its uses in daily life orally (5+ sentences)", "Reading", "", "Second Term", ["skimming"]),
+  L(100, "The wheel (contd.) — read; wheel & transport vocabulary; thinking questions on wheel invention", "Reading", "", "Second Term", ["reading"]),
+  L(101, "‘The London Eye’ — model reading & explanation,; homework: write about favourite vehicle", "Reading", "", "Second Term", ["reading"]),
+  L(102, "Early wheels and machines —", "Reading", "", "Second Term", ["reading"]),
+  L(103, "Pronunciation & syllables (obedient, fortunate, tedious, fragile, determined, daring, thrilling)", "Vocabulary", "", "Second Term", ["syllables"]),
+  L(104, "Story ‘Planet SinRota’ — pair reading , chart; syllable-breaking of mispronounced words", "Reading", "", "Second Term", ["reading"]),
+  L(105, "Planet SinRota (contd.) — read-aloud , picture questions; homework: read ‘Olivia’s Invention’", "Reading", "", "Second Term", ["reading"]),
+  L(106, "Planet SinRota (contd.) — read-aloud & circle reading; pair exercises", "Reading", "", "Second Term", ["reading"]),
+  L(107, "Read-aloud fluency — multi-syllable words with syllable blending (comfortable, remarkable, innovative…)", "Vocabulary", "", "Second Term", ["syllables"]),
+  L(108, "Making predictions —; predict theme from titles/pictures , 92-93", "Reading", "", "Second Term", ["reading"]),
+  L(109, "‘will’ vs ‘going to’ — future plans/predictions/facts", "Grammar", "", "Second Term", ["tenses"]),
+  L(110, "‘will’/‘going to’ practice —; writing future predictions", "Grammar", "", "Second Term", ["tenses"]),
+  L(111, "Modal auxiliaries can/may/should — permission, prohibition, doubt, obligation; oral sentence formation", "Grammar", "", "Second Term", ["modals"]),
+  L(112, "Modals practice —", "Grammar", "", "Second Term", ["modals"]),
+  L(113, "Present simple tense — usage & sentence formation (positive/negative/interrogative); daily-routine writing", "Grammar", "", "Second Term", ["tenses"]),
+  L(114, "Present continuous tense — usage & sentence formation; TV-programme description homework", "Grammar", "", "Second Term", ["tenses"]),
+  L(115, "Guided paragraph writing — brainstorming ‘A good friend’; , 137 exercise B; favourite personality", "Writing", "", "Second Term", ["writing"]),
+  L(116, "Listening dictation — paragraph about a tiger; MCQs on the lost-puppy listening story", "Speaking & Listening", "", "Second Term", [], [
+    "🎧 Listening: ask someone to read a short paragraph about the topic aloud. Listen for 3 important details, then say them back without looking.",
+    "🎧 Listen again and write down the key words you hear. Compare your list with a partner and discuss what you both caught."
+  ]),
+  L(117, "Listening for main idea —; scientific-method worksheet MCQs; main idea of", "Speaking & Listening", "", "Second Term", [], [
+    "🎧 Listening: ask someone to read a short paragraph about the topic aloud. Listen for 3 important details, then say them back without looking.",
+    "🎧 Listen again and write down the key words you hear. Compare your list with a partner and discuss what you both caught."
+  ]),
+  L(118, "Pronouncing 12 new words — read sentences aloud in context", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ Read 5 sentences aloud, slowly and clearly. Ask a partner to listen and raise a hand each time a word is mispronounced.",
+    "🎧 Pronunciation check: listen to each new word said aloud (by your teacher or a partner), repeat it, then use it in a sentence of your own."
+  ]),
+  L(119, "Group conversation with connectors (first, after that, then, finally) — plan a school trip", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ Talk with a partner about the topic: take turns, about one minute each. Keep eye contact, speak loudly enough to be heard, and stay on the topic.",
+    "🎙️ On your own: speak for 1 minute about the topic. If you can, record yourself on a phone and listen back — did you stay on topic?"
+  ]),
+  L(120, "Paragraph writing — brainstorm & outline ‘My school’; independent paragraph on ‘Computer’/‘My family’", "Writing", "", "Second Term", ["writing"]),
+  L(121, "Paragraph writing — brainstorm & outline ‘Facebook’; topic sentences (‘My father…’, ‘Trees are useful…’)", "Writing", "", "Second Term", ["writing"]),
+  L(122, "Informal invitations — conventions (purpose, date, time, venue); birthday party & wedding invitations; write own invitation", "Writing", "", "Second Term", ["formal-letters"]),
+  L(123, "Formal letter of application — conventions; model application for summer homework copy; sports-permission & wedding-leave applications", "Writing", "", "Second Term", ["formal-letters"]),
+  L(124, "Informal letter writing — reply to a friend’s letter; model invitation letter; write about attending sibling’s wedding", "Writing", "", "Second Term", ["formal-letters"]),
+  L(125, "Pronouncing new words — read sentences aloud in context; exercises B-C; dictionary meanings", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ Read 5 sentences aloud, slowly and clearly. Ask a partner to listen and raise a hand each time a word is mispronounced.",
+    "🎧 Pronunciation check: listen to each new word said aloud (by your teacher or a partner), repeat it, then use it in a sentence of your own."
+  ]),
+  L(126, "Speaking with ‘should’/‘why don’t’ — dialogue; group discussion on COVID SOPs", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ Talk with a partner about the topic: take turns, about one minute each. Keep eye contact, speak loudly enough to be heard, and stay on the topic.",
+    "🎙️ On your own: speak for 1 minute about the topic. If you can, record yourself on a phone and listen back — did you stay on topic?"
+  ]),
+  L(127, "Practicing a dialogue using agreement and disagreement; group discussion on how to enhance oral communication in English", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ Talk with a partner about the topic: take turns, about one minute each. Keep eye contact, speak loudly enough to be heard, and stay on the topic.",
+    "🎙️ On your own: speak for 1 minute about the topic. If you can, record yourself on a phone and listen back — did you stay on topic?"
+  ]),
+  L(128, "Practicing a childhood-memories dialogue in pairs; using should and why don't while talking about COVID SOPs", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ Talk with a partner about the topic: take turns, about one minute each. Keep eye contact, speak loudly enough to be heard, and stay on the topic.",
+    "🎙️ On your own: speak for 1 minute about the topic. If you can, record yourself on a phone and listen back — did you stay on topic?"
+  ]),
+  L(129, "Listening to a; using clarification questions in pairs", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ Talk with a partner about the topic: take turns, about one minute each. Keep eye contact, speak loudly enough to be heard, and stay on the topic.",
+    "🎙️ On your own: speak for 1 minute about the topic. If you can, record yourself on a phone and listen back — did you stay on topic?"
+  ]),
+  L(130, "Practicing WH-questions for oral communication through picture reading in groups", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ Talk with a partner about the topic: take turns, about one minute each. Keep eye contact, speak loudly enough to be heard, and stay on the topic.",
+    "🎙️ On your own: speak for 1 minute about the topic. If you can, record yourself on a phone and listen back — did you stay on topic?"
+  ]),
+  L(131, "Listening to a video (humpback whales) and sharing main points; dictation of sentences and words", "Speaking & Listening", "", "Second Term", [], [
+    "🎧 Listening: ask someone to read a short paragraph about the topic aloud. Listen for 3 important details, then say them back without looking.",
+    "🎧 Listen again and write down the key words you hear. Compare your list with a partner and discuss what you both caught."
+  ]),
+  L(132, "Unit 8 — Talking about animals in the unit — sharing facts about how animals communicate", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ Talk with a partner about the topic: take turns, about one minute each. Keep eye contact, speak loudly enough to be heard, and stay on the topic.",
+    "🎙️ On your own: speak for 1 minute about the topic. If you can, record yourself on a phone and listen back — did you stay on topic?"
+  ]),
+  L(133, "Demonstrating an interview using questions and expressions; listening to a", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ Talk with a partner about the topic: take turns, about one minute each. Keep eye contact, speak loudly enough to be heard, and stay on the topic.",
+    "🎙️ On your own: speak for 1 minute about the topic. If you can, record yourself on a phone and listen back — did you stay on topic?"
+  ]),
+  L(134, "Listening comprehension test: teacher reads a passage about a lost puppy; students answer 15 questions", "Speaking & Listening", "", "Second Term", [], [
+    "🎧 Listening: ask someone to read a short paragraph about the topic aloud. Listen for 3 important details, then say them back without looking.",
+    "🎧 Listen again and write down the key words you hear. Compare your list with a partner and discuss what you both caught."
+  ]),
+  L(135, "Pre-reading strategies: guessing word meaning from context and scanning a text for specific information", "Reading", "", "Second Term", ["vocab"]),
+  L(136, "Generating questions to understand a text; describing the characters in a short story", "Reading", "", "Second Term", ["reading"]),
+  L(137, "Skimming graphical features (pictures, tables, illustrations) to aid understanding; identifying story setting and characters", "Reading", "", "Second Term", ["skimming"]),
+  L(138, "Reading for comprehension; differentiating between character and setting; describing story characters", "Reading", "", "Second Term", ["reading"]),
+  L(139, "Silent reading for comprehension; guessing word meaning from context (animal communication text)", "Reading", "", "Second Term", ["reading"]),
+  L(140, "Answering factual, interpretive, inferential, personal-response and open-ended questions about animal communication", "Reading", "", "Second Term", ["reading"]),
+  L(141, "Skimming/scanning and answering varied question types about animal communication (continued)", "Reading", "", "Second Term", ["reading"]),
+  L(142, "Guessing meaning of difficult words from context; word-usage exercises (workbook pages 62-63)", "Reading", "", "Second Term", ["vocab"]),
+  L(143, "Answering varied question types about a narrative text (dolphins/fishing); skimming and scanning", "Reading", "", "Second Term", ["reading"]),
+  L(144, "Guessing word meaning from context; crossword puzzle and word-usage exercises (workbook pages 70-71)", "Reading", "", "Second Term", ["vocab"]),
+  L(145, "Answering varied question types after prediction, choral reading and read-aloud (workbook pages 72-73)", "Reading", "", "Second Term", ["reading"]),
+  L(146, "Dictation of a paragraph; listening to an audio script (page 116) to identify key words and fill in information", "Speaking & Listening", "", "Second Term", [], [
+    "🎧 Listening: ask someone to read a short paragraph about the topic aloud. Listen for 3 important details, then say them back without looking.",
+    "🎧 Listen again and write down the key words you hear. Compare your list with a partner and discuss what you both caught."
+  ]),
+  L(147, "Classifying adjectives of quantity, quality, size, shape, colour and origin; arranging adjective phrases in order", "Grammar", "", "Second Term", ["adjectives"]),
+  L(148, "Ordering adjectives correctly in sentences; degrees of regular adjectives", "Grammar", "", "Second Term", ["adjectives"]),
+  L(149, "Differentiating regular and irregular verbs; using past and past participle forms in sentences", "Grammar", "", "Second Term", ["past-tense"]),
+  L(150, "Writing past and past participle forms of verbs; using past forms in", "Grammar", "", "Second Term", ["past-tense"]),
+  L(151, "Guided paragraph writing: recognizing paragraph structure (topic sentence, supporting sentences) via brainstorming", "Writing", "", "Second Term", ["writing"]),
+  L(152, "Brainstorming and mind mapping to organize ideas; model writing to compose a coherent paragraph", "Writing", "", "Second Term", ["writing"]),
+  L(153, "Shared writing and guided writing process: brainstorming, organizing ideas, composing paragraphs", "Writing", "", "Second Term", ["writing"]),
+  L(154, "Interactive and independent paragraph writing: brainstorming on topics and developing coherent paragraphs", "Writing", "", "Second Term", ["writing"]),
+  L(155, "Analyzing paragraph components (topic sentence, supporting sentences and details); paragraph-writing wrap-up", "Writing", "", "Second Term", ["writing"]),
+  L(156, "Writing practice: write simple paragraphs and revise work for layout, grammar, vocabulary", "Writing", "", "Second Term", ["writing"]),
+  L(157, "Writing practice: paragraph writing; revise for spelling, punctuation, subject-verb agreement, tenses", "Writing", "", "Second Term", ["writing"]),
+  L(158, "Writing practice: paragraph writing with focus on subject-verb agreement", "Grammar", "", "Second Term", ["sva"]),
+  L(159, "Speaking: pair conversations asking for and giving advice , audio script)", "Speaking & Listening", "", "Second Term", [], [
+    "🎙️ Talk with a partner about the topic: take turns, about one minute each. Keep eye contact, speak loudly enough to be heard, and stay on the topic.",
+    "🎙️ On your own: speak for 1 minute about the topic. If you can, record yourself on a phone and listen back — did you stay on topic?"
+  ]),
+  L(160, "Speaking: practicing WH questions about classroom behaviour (homework: write 10 WH questions)", "Speaking & Listening", "", "Second Term", ["questions"]),
+  L(161, "Reading aloud with correct pronunciation and intonation", "Reading", "", "Second Term", ["reading"]),
+  L(162, "Using a dictionary: alphabetical order, multisyllabic words, word meanings", "Vocabulary", "", "Second Term", ["vocab"]),
+  L(163, "Silent reading for comprehension; story elements; guessing word meaning from context", "Reading", "", "Second Term", ["reading"]),
+  L(164, "Story elements: setting and characters; homework: 10 sentences about Akiko)", "Reading", "", "Second Term", ["reading"]),
+  L(165, "Story elements: setting and characters", "Reading", "", "Second Term", ["reading"]),
+  L(166, "Writing: compose a short story (fable) using story elements", "Writing", "", "Second Term", ["writing"]),
+  L(167, "Reading comprehension: factual/interpretive/inferential/personal-response questions; skimming", "Reading", "", "Second Term", ["reading"]),
+  L(168, "Reading comprehension: cause and effect", "Reading", "", "Second Term", ["reading"]),
+  L(169, "Grammar: prepositions of time and position (oral sentence practice)", "Grammar", "", "Second Term", ["prepositions"]),
+  L(170, "Grammar: prepositions of movement and direction (written sentences)", "Grammar", "", "Second Term", ["prepositions"]),
+  L(171, "Grammar: adverbs of manner, time and frequency (presentation + group work)", "Grammar", "", "Second Term", ["adverbs"]),
+  L(172, "Grammar: adverbs of manner, time and frequency (practice exercises + worksheet)", "Grammar", "", "Second Term", ["adverbs"]),
+  L(173, "Reading comprehension: question types; skimming", "Reading", "", "Second Term", ["reading"]),
+  L(174, "Reading comprehension: cause and effect", "Reading", "", "Second Term", ["reading"]),
+  L(175, "Reading: retell and summarize the story 'The Mystery of Castle'", "Reading", "", "Second Term", ["reading"]),
+  L(176, "Reading: retell and summarize the story", "Reading", "", "Second Term", ["reading"]),
+  L(177, "Grammar: articles a, an, the , exercise E)", "Grammar", "", "Second Term", ["articles"]),
+  L(178, "Grammar: definite vs indefinite articles", "Grammar", "", "Second Term", ["articles"]),
+  L(179, "Punctuation and capitalization in own sentences; descriptive passage writing", "Grammar", "", "Second Term", ["punct"]),
+  L(180, "Word study: compound words", "Vocabulary", "", "Second Term", ["vocab"]),
+  L(181, "Word study: prefixes, suffixes, affixes", "Vocabulary", "", "Second Term", ["vocab"]),
+  L(182, "Punctuation: using the colon before a series of items", "Grammar", "", "Second Term", ["punct"]),
+  L(183, "Revision: compound words", "Vocabulary", "", "Second Term", ["vocab"]),
 ];
 
 const G6_T2 = [
@@ -328,7 +583,7 @@ export const SCHEMES = [
     source: "AKES,P — Second Term Pacing Guide, AY 2026-27 · Class IV English (Oxford Discover)",
     terms: [
       { id: "t1", name: "First Term", from: 1, to: 65 },
-      { id: "t2", name: "Second Term", from: 66, to: 69 }
+      { id: "t2", name: "Second Term", from: 66, to: 114 }
     ],
     // Term 1 mapping arrives with the Term 1 scheme document.
     lessons: Object.assign(emptyRange(1, 65), lessonMap(G4_T2))
@@ -341,7 +596,7 @@ export const SCHEMES = [
     source: "AKES,P — Second Term Pacing Guide, AY 2025-26 · Class V English (Oxford Discover)",
     terms: [
       { id: "t1", name: "First Term", from: 1, to: 65 },
-      { id: "t2", name: "Second Term", from: 66, to: 69 }
+      { id: "t2", name: "Second Term", from: 66, to: 183 }
     ],
     // Term 1 mapping arrives with the Term 1 scheme document.
     lessons: Object.assign(emptyRange(1, 65), lessonMap(G5_T2))

@@ -162,19 +162,20 @@ ok(dailyItems(prof68, "practice", []).length === 10, "practice on L68 -> 10 ques
 // ---------- new schemes: Grades 4, 5, 6 (Aga Khan) and 9, 10 (BISEP) ----------
 var g4 = schemeById("ak-g4-english");
 ok(g4 && g4.board === "Aga Khan" && g4.grade === "Grade 4", "g4 scheme found");
-ok(mappedLessons(g4).length === 4, "g4 has 4 mapped lessons");
+ok(mappedLessons(g4).length === 49, "g4 has 49 mapped lessons (full Term II)");
 ok(termOf(g4, 66).name === "Second Term" && termOf(g4, 1).name === "First Term", "g4 terms");
+ok(termOf(g4, 114).name === "Second Term", "g4 L114 in Second Term");
 ok(lessonSlos(g4, 66).indexOf("pronouns") >= 0, "g4 L66 maps pronouns");
-ok(lessonSlos(g4, 69).indexOf("modals") >= 0 && lessonSlos(g4, 69).indexOf("past-tense") >= 0, "g4 L69 maps modals + past-tense");
-ok(lessonTasks(g4, 66).length === 2, "g4 L66 has oral tasks");
+ok(lessonTasks(g4, 69).length === 2, "g4 L69 (oral) has guided tasks");
 ok(monthOfLesson(g4, 66) === "Second Term", "g4 lessons group under Second Term");
 
 var g5 = schemeById("ak-g5-english");
 ok(g5 && g5.board === "Aga Khan" && g5.grade === "Grade 5", "g5 scheme found");
-ok(mappedLessons(g5).length === 4, "g5 has 4 mapped lessons");
-ok(lessonSlos(g5, 66).indexOf("adverbs") >= 0, "g5 L66 maps adverbs");
-ok(lessonSlos(g5, 67).indexOf("questions") >= 0, "g5 L67 maps questions bank");
-ok(lessonSlos(g5, 68).indexOf("articles") >= 0, "g5 L68 maps articles");
+ok(mappedLessons(g5).length === 118, "g5 has 118 mapped lessons (full Term II)");
+ok(termOf(g5, 183).name === "Second Term", "g5 L183 in Second Term");
+ok(lessonSlos(g5, 66).indexOf("vocab") >= 0, "g5 L66 maps vocab");
+ok(lessonSlos(g5, 67).indexOf("reading") >= 0, "g5 L67 maps reading bank");
+ok(lessonTasks(g5, 68).length === 2, "g5 L68 (oral) has guided tasks");
 
 var g6 = schemeById("ak-g6-english");
 ok(g6 && g6.board === "Aga Khan" && g6.grade === "Grade 6", "g6 scheme found");
