@@ -157,6 +157,51 @@ export function renderDashboard() {
       '<button class="btn-secondary btn-big" id="tutorBrowseBtn">Browse tutors →</button></div>';
     $("tutorBrowseBtn").addEventListener("click", function () { if (go) go("tutors"); });
   }
+
+  // Explore: every feature as a big tappable tile — easy one-tap access
+  // for students (the bottom nav hides most of these in a tiny scroll).
+  renderExploreGrid();
+}
+
+/* Big-tile feature grid on the student dashboard. Destinations mirror
+   the bottom nav so tiles and nav always agree. */
+var EXPLORE_FEATURES = [
+  { e: "📚", t: "Learn", d: "learn" },
+  { e: "📝", t: "Practice", d: "practice" },
+  { e: "🎯", t: "Assess", d: "assess" },
+  { e: "🔤", t: "Grammar", d: "grammar" },
+  { e: "🧠", t: "Words", d: "vocab" },
+  { e: "✍️", t: "Writing", d: "writing" },
+  { e: "📖", t: "Read", d: "read" },
+  { e: "🎮", t: "Games", d: "games" },
+  { e: "🎨", t: "Create", d: "creative" },
+  { e: "💭", t: "Buddies", d: "buddies" },
+  { e: "🤖", t: "Ask", d: "ask" },
+  { e: "💬", t: "Convo", d: "convo" },
+  { e: "📸", t: "My Work", d: "mywork" },
+  { e: "🧒", t: "Kids", d: "kids" },
+  { e: "📅", t: "Daily", d: "daily" },
+  { e: "🗣️", t: "Say It", d: "sayit" },
+  { e: "🎓", t: "Tests", d: "testprep" },
+  { e: "🌍", t: "More Tests", d: "moretests" },
+  { e: "🏆", t: "Awards", d: "certs" },
+  { e: "🖨️", t: "Print", d: "worksheets" },
+  { e: "💼", t: "Career", d: "pro" },
+  { e: "📊", t: "Progress", d: "progress" }
+];
+
+function renderExploreGrid() {
+  var grid = $("exploreGrid");
+  if (!grid) return;
+  grid.innerHTML = "";
+  EXPLORE_FEATURES.forEach(function (f) {
+    var b = document.createElement("button");
+    b.className = "explore-tile";
+    b.innerHTML = '<span class="xt-emoji">' + f.e + '</span><span class="xt-label">' + esc(f.t) + "</span>";
+    b.setAttribute("aria-label", f.t);
+    b.addEventListener("click", function () { if (go) go(f.d); });
+    grid.appendChild(b);
+  });
 }
 
 function quickPractice(sloId, title) {

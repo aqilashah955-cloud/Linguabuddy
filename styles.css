@@ -703,3 +703,16 @@ mark { border-radius: 4px; padding: 0 2px; }
 .mark-groups-mini { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
 .mark-groups-mini .chip { background: #f1efff; border-radius: 20px; padding: 3px 10px; font-size: 0.82em; }
 .btn-ghost.active { background: #7c5cd6; color: #fff; border-color: #7c5cd6; }
+
+/* Explore grid — big tappable feature tiles on the student dashboard */
+.explore-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 10px; }
+.explore-tile {
+  background: var(--card); border: 2px solid var(--border); border-radius: var(--radius);
+  padding: 14px 6px 10px; cursor: pointer; font-family: inherit; box-shadow: var(--shadow);
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  transition: transform .12s ease, border-color .12s ease;
+}
+.explore-tile:hover { border-color: var(--marigold); transform: translateY(-2px); }
+.explore-tile:active { transform: translateY(0); }
+.xt-emoji { font-size: 1.7rem; line-height: 1; }
+.xt-label { font-size: .8rem; font-weight: 600; color: var(--ink); text-align: center; }
