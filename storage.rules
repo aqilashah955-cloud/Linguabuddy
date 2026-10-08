@@ -3,13 +3,11 @@
 //
 // Data model:
 //   writing/{uid}/{docId}.jpg   "My Work" photos of handwritten work
+//   profile-photos/{uid}.jpg   student profile photos
 //
-// Privacy: each student writes only their own folder. Reads are limited
-// to the owning student and the admin. Class teachers do NOT read via
-// Storage paths — they open the photo through the unguessable download
-// URL stored on the Firestore writingUploads/{id} doc, which they may
-// read only when their uid is in that doc's teacherIds (see
-// firestore.rules). No student can ever open another student's photo.
+// Privacy: each student writes only their own files. Profile photos are
+// readable by any signed-in user (teachers see them in the class roster);
+// "My Work" photos stay private to the owning student and the admin.
 
 rules_version = '2';
 service firebase.storage {
@@ -17,7 +15,7 @@ service firebase.storage {
 
     function signedIn() { return request.auth != null; }
     function isAdmin() {
-      return signedIn() && request.auth.token.email == "REPLACE_WITH_OWNER_EMAIL";
+      return signedIn() && request.auth.token.email == "nizarsyed74@gmail.com";
     }
 
     match /writing/{uid}/{file} {
@@ -26,6 +24,14 @@ service firebase.storage {
         && request.resource.size < 5 * 1024 * 1024
         && request.resource.contentType.matches('image/.*');
       allow delete: if signedIn() && request.auth.uid == uid;
+    }
+
+    match /profile-photos/{uid}.jpg {
+      allow read: if signedIn();
+      allow write: if signedIn() && request.auth.uid == uid
+        && request.resource.size < 2 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+      allow delete: if signedIn() && (request.auth.uid == uid || isAdmin());
     }
   }
 }

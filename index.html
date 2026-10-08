@@ -496,6 +496,14 @@
   <div id="profileModal" class="modal hidden" style="position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:999;">
     <div style="background:#fff;border-radius:14px;padding:24px;max-width:360px;width:92%;box-shadow:0 8px 32px rgba(0,0,0,.2);">
       <h3 style="margin:0 0 12px;">⚙️ Edit profile</h3>
+      <div style="text-align:center;margin-bottom:14px;">
+        <img id="profPhotoPreview" alt="Profile photo" style="width:96px;height:96px;border-radius:50%;object-fit:cover;background:#eee;display:none;border:3px solid #e8dcc0;" />
+        <div id="profPhotoPlaceholder" style="width:96px;height:96px;border-radius:50%;background:#e8e0d0;display:inline-flex;align-items:center;justify-content:center;font-size:42px;border:3px solid #e8dcc0;">👤</div>
+        <br>
+        <button id="profPhotoBtn" type="button" class="btn-ghost btn-sm" style="margin-top:8px;">📷 Change photo</button>
+        <input id="profPhotoInput" type="file" accept="image/*" style="display:none;" />
+        <p id="profPhotoNote" class="fine" style="font-size:12px;color:#888;margin:4px 0 0;"></p>
+      </div>
       <label style="display:block;margin-bottom:10px;">Your name:<br>
         <input id="profName" type="text" maxlength="40" style="width:100%;padding:10px;margin-top:4px;font-size:15px;border:1px solid #ccc;border-radius:8px;" />
       </label>
