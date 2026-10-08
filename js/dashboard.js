@@ -173,6 +173,7 @@ export function renderDashboard() {
    the bottom nav so tiles and nav always agree. */
 var EXPLORE_FEATURES = [
   { e: "🏫", t: "Aga Khan Schools", d: "ak" },
+  { e: "👩‍🏫", t: "Teachers", d: "teachers" },
   { e: "📚", t: "Learn", d: "learn" },
   { e: "📝", t: "Practice", d: "practice" },
   { e: "🎯", t: "Assess", d: "assess" },
