@@ -16,6 +16,7 @@ import {
 } from "./engine.js";
 import { SCHEMES, schemeById, termOf, lessonOf } from "./scheme.js";
 import { openMarksClass } from "./marks.js";
+import { renderTeacherInbox } from "./messages.js";
 import { runAttempt, showResult, summarizeResults } from "./assess.js";
 import { awardXP, xpForAttempt, checkBadges } from "./gamify.js";
 
@@ -170,7 +171,7 @@ function renderGate() {
 }
 
 function drawTabs() {
-  const tabs = [["classes", "🏫 Classes"], ["assign", "📝 Assignments"], ["inbox", "📥 Inbox"], ["analytics", "📊 Analytics"]];
+  const tabs = [["classes", "🏫 Classes"], ["assign", "📝 Assignments"], ["inbox", "📥 Inbox"], ["messages", "💬 Messages"], ["analytics", "📊 Analytics"]];
   $("tchrTabs").innerHTML = tabs.map(function (t) {
     return '<button class="tabbtn' + (tab === t[0] ? " active" : "") + '" data-tab="' + t[0] + '">' + t[1] + "</button>";
   }).join("");
@@ -181,6 +182,7 @@ function drawTabs() {
   if (tab === "classes") drawClasses(body);
   else if (tab === "assign") drawAssignments(body);
   else if (tab === "inbox") drawInbox(body);
+  else if (tab === "messages") renderTeacherInbox(body);
   else drawAnalytics(body);
 }
 

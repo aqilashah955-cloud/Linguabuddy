@@ -12,6 +12,9 @@
 //   writingUploads/{id}          My Work photo uploads: {studentId, title, type,
 //                                photoUrl (Storage URL only — never bytes),
 //                                text, feedbackCount, teacherIds[], createdAt}
+//   threads/{tid}                student ↔ teacher chat: {teacherId, studentId,
+//                                names, photos, updatedAt, lastText, unread*}
+//   threads/{tid}/messages/{mid} {from, text, createdAt}
 //
 // Curated content (SLOs, stories, words) ships as bundled JS data modules
 // and is NEVER read from Firestore — zero read costs, works offline.
@@ -23,6 +26,10 @@ service cloud.firestore {
     function signedIn() { return request.auth != null; }
     function isAdmin() {
       return signedIn() && request.auth.token.email == "nizarsyed74@gmail.com";
+    }
+    function isThreadParty(tid) {
+      let t = get(/databases/$(database)/documents/threads/$(tid)).data;
+      return t != null && (t.teacherId == request.auth.uid || t.studentId == request.auth.uid);
     }
 
     // ---- user profiles: owners only (admin: full read).
@@ -111,6 +118,31 @@ service cloud.firestore {
         isAdmin());
       allow create: if signedIn()
         && request.resource.data.studentId == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // ---- threads: one student ↔ teacher conversation per pair.
+    // Only the two participants (and the admin) can read. The student
+    // creates the thread; either party may update (last message, unread).
+    match /threads/{tid} {
+      allow read: if signedIn() && (
+        resource.data.teacherId == request.auth.uid ||
+        resource.data.studentId == request.auth.uid || isAdmin());
+      allow create: if signedIn()
+        && request.resource.data.studentId == request.auth.uid
+        && request.resource.data.teacherId != request.auth.uid;
+      allow update: if signedIn() && (
+        resource.data.teacherId == request.auth.uid ||
+        resource.data.studentId == request.auth.uid || isAdmin());
+      allow delete: if false;
+    }
+    match /threads/{tid}/messages/{mid} {
+      allow read: if signedIn() && (isThreadParty(tid) || isAdmin());
+      allow create: if signedIn() && isThreadParty(tid)
+        && request.resource.data.from == request.auth.uid
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 2000;
       allow update, delete: if false;
     }
   }
