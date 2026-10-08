@@ -590,10 +590,14 @@ export function renderSchoolBox() {
   const mapped = isLessonMapped(st.scheme, st.lesson);
   const termName = st.term ? st.term.name : "";
   const e = st.entry || {};
+  const firstMapped = mapped ? null : mappedLessons(st.scheme)[0];
   box.innerHTML = '<div class="card school-card"><h3>🏫 Aga Khan Schools</h3>' +
     '<p class="school-line">' + esc(st.scheme.grade) + " · " + esc(termName) + " · " + lessonLabel(st) + "</p>" +
     (e.code ? '<p class="fine">SLO ' + esc(e.code) + (e.week ? " · " + esc(e.week) : "") + "</p>" : "") +
-    (mapped ? "" : '<p class="fine">📋 This lesson\'s SLOs are being added from the scheme of work — check back soon.</p>') +
+    (mapped ? "" : '<p class="fine">📋 This lesson\'s SLOs are being added from the scheme of work — check back soon.</p>' +
+      (firstMapped ? '<button class="btn-primary btn-sm" id="schJump">→ Jump to Lesson ' + firstMapped.n +
+        (firstMapped.title && !/^Lesson \d+$/.test(firstMapped.title) ? ": " + esc(firstMapped.title) : "") +
+        " (has practice &amp; test)</button>" : "")) +
     '<div class="row-flex"><button class="btn-ghost" id="schPrev">‹</button>' +
     '<button class="btn-primary" id="schPractice"' + (mapped ? "" : " disabled") + ">📝 Daily Practice</button>" +
     '<button class="btn-secondary" id="schTest"' + (mapped ? "" : " disabled") + ">🎯 Daily Test</button>" +
@@ -605,6 +609,13 @@ export function renderSchoolBox() {
   if (mapped) {
     $("schPractice").addEventListener("click", function () { startDaily("practice"); });
     $("schTest").addEventListener("click", function () { startDaily("test"); });
+  }
+  const jump = $("schJump");
+  if (jump && firstMapped) {
+    jump.addEventListener("click", function () {
+      S.profile.schemeLesson = clampLesson(st.scheme, firstMapped.n);
+      save(); renderSchoolBox();
+    });
   }
   $("schChange").addEventListener("click", function () {
     S.profile.schemeId = ""; S.profile.schemeLesson = 0; save(); renderSchoolBox();

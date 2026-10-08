@@ -727,3 +727,6 @@ mark { border-radius: 4px; padding: 0 2px; }
 .tch-try { background: #fdf6e3; border-left: 3px solid var(--marigold); padding: 8px 12px; border-radius: 0 8px 8px 0; }
 .row-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
 .btn-sm { padding: 8px 14px; font-size: .9rem; }
+
+/* Disabled buttons must look disabled (school box gates unmapped lessons) */
+button:disabled { opacity: .45; cursor: not-allowed; }
