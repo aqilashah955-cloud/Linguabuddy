@@ -34,7 +34,28 @@ export function renderAuth() {
   const online = isConfigured();
   $("authOfflineNote").classList.toggle("hidden", online);
   $("authOnlineNote").classList.toggle("hidden", !online);
-  $("localContinueBtn").classList.toggle("hidden", online);
+  // Offline (no Firebase configured): login/signup buttons can't work —
+  // hide them so students aren't trapped, and make name-only entry obvious.
+  document.querySelectorAll("#screen-auth .auth-tabs").forEach(function (el) {
+    el.classList.toggle("hidden", !online);
+  });
+  $("loginForm").classList.toggle("hidden", !online);
+  $("signupForm").classList.add("hidden");
+  const btn = $("localContinueBtn");
+  btn.classList.toggle("hidden", online);
+  btn.classList.toggle("btn-primary", !online);
+  btn.classList.toggle("btn-ghost", online);
+  const wrap = $("localContinueWrap");
+  if (wrap) {
+    let h = $("localContinueHead");
+    if (!online && !h) {
+      h = document.createElement("h3");
+      h.id = "localContinueHead";
+      h.textContent = "👋 Start learning";
+      wrap.insertBefore(h, wrap.firstChild);
+    }
+    if (h) h.classList.toggle("hidden", online);
+  }
   // goal chips
   $("suGoals").innerHTML = GOAL_OPTS.map(function (g) {
     return '<button type="button" class="chipbtn" data-goal="' + g + '">' + g + "</button>";
