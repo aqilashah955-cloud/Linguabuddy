@@ -129,7 +129,7 @@ export async function resolveStudent(loginId) {
   const map = await fsGetDoc("loginIds", id);
   if (!map || !map.uid) return null;
   const u = await fsGetDoc("users", map.uid);
-  return { uid: map.uid, name: (u && u.name) || id, loginId: id };
+  return { uid: map.uid, name: (u && u.name) || id, loginId: id, photoURL: (u && u.photoURL) || "" };
 }
 
 function subKey(sub) { return sub.studentId || sub.student || "?"; }
@@ -318,7 +318,11 @@ function rosterHTML(cls, ev) {
       m[s.id] = calculateSLOMastery(s.id, ((ev[key] || {})[s.id]) || []);
     });
     const mastered = SLOS.filter(function (s) { return m[s.id].status === "mastered"; }).length;
-    return '<div class="roster-row"><div><strong>' + esc(r.name) + "</strong>" +
+    return '<div class="roster-row"><div style="display:flex;align-items:center;gap:10px;">' +
+      (r.photoURL
+        ? '<img src="' + esc(r.photoURL) + '" alt="" style="width:40px;height:40px;border-radius:50%;object-fit:cover;flex:none;" />'
+        : '<span style="width:40px;height:40px;border-radius:50%;background:#e8e0d0;display:inline-flex;align-items:center;justify-content:center;font-size:20px;flex:none;">👤</span>') +
+      '<div><strong>' + esc(r.name) + "</strong>" +
       (r.loginId ? ' <span class="fine">ID: ' + esc(r.loginId) + "</span>" : "") +
       '<br><span class="fine">' + mastered + "/" + SLOS.length + " SLOs mastered</span></div>" +
       '<button class="btn-ghost btn-sm" data-report="' + esc(key) + '">Report</button></div>';

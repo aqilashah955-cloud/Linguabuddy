@@ -194,3 +194,15 @@ export async function uploadWorkPhoto(uid, docId, blob) {
     return await stMod.getDownloadURL(ref);
   } catch (e) { return null; }
 }
+
+// Upload a student's profile photo to Firebase Storage.
+export async function uploadProfilePhoto(uid, blob) {
+  if (!FB.ready || !uid || !blob) return null;
+  try {
+    const stMod = await import("firebase/storage");
+    const storage = stMod.getStorage();
+    const ref = stMod.ref(storage, "profile-photos/" + uid + ".jpg");
+    await stMod.uploadBytes(ref, blob, { contentType: "image/jpeg" });
+    return await stMod.getDownloadURL(ref);
+  } catch (e) { return null; }
+}

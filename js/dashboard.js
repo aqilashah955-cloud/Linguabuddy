@@ -10,6 +10,9 @@ import { openSetup } from "./learn.js";
 import { reportHTML, renderStudentAssignments } from "./teacher.js";
 import { todayContent } from "./engage.js";
 import { mascotSVG } from "./mascot.js";
+import { isConfigured, fb, uploadProfilePhoto, saveUserDoc } from "./firebase.js";
+
+function online() { return isConfigured() && fb().user; }
 import { renderSchoolBox } from "./scheme.js";
 import { tutorsForWeakSlos } from "./tutors.js";
 
@@ -63,7 +66,10 @@ export function renderDashboard() {
   touchStreak();
   wireProfileModal();
   const name = S.profile.name || "Learner";
-  $("dashHello").textContent = "Welcome back, " + name + "! 👋";
+  const photo = S.profile.photoURL;
+  $("dashHello").innerHTML = (photo
+    ? '<img src="' + esc(photo) + '" alt="" style="width:44px;height:44px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:10px;border:2px solid #e8dcc0;" />'
+    : "") + "Welcome back, " + esc(name) + "! 👋";
   $("dashStreak").textContent = "🔥 " + (S.profile.streak || 0) + "-day streak";
   // Lingoo the owl greets the learner
   $("lingooHello").innerHTML = mascotSVG("wave") +
@@ -290,14 +296,50 @@ export function renderProgress() {
   }
 }
 
-/* ================= edit profile (name + student ID) ================= */
+/* ================= edit profile (name + student ID + photo) ================= */
+
+let pendingPhotoBlob = null;
+
+function showProfPhoto(url) {
+  const img = document.getElementById("profPhotoPreview");
+  const ph = document.getElementById("profPhotoPlaceholder");
+  if (url) { img.src = url; img.style.display = "inline-block"; ph.style.display = "none"; }
+  else { img.style.display = "none"; ph.style.display = "inline-flex"; }
+}
 
 function openProfileModal() {
   const m = document.getElementById("profileModal");
   if (!m) return;
   document.getElementById("profName").value = (S.profile && S.profile.name) || "";
   document.getElementById("profId").value = (S.profile && S.profile.studentId) || "";
+  pendingPhotoBlob = null;
+  showProfPhoto(S.profile && S.profile.photoURL);
+  const note = document.getElementById("profPhotoNote");
+  if (note) note.textContent = online() ? "" : "Sign in to upload a photo (offline right now).";
   m.classList.remove("hidden");
+}
+
+// Square-crop + shrink a photo to a 256px JPEG blob.
+function photoToSquareBlob(file) {
+  return new Promise(function (resolve, reject) {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = function () {
+      URL.revokeObjectURL(url);
+      try {
+        const side = Math.min(img.naturalWidth || img.width, img.naturalHeight || img.height);
+        const sx = ((img.naturalWidth || img.width) - side) / 2;
+        const sy = ((img.naturalHeight || img.height) - side) / 2;
+        const c = document.createElement("canvas");
+        c.width = 256; c.height = 256;
+        c.getContext("2d").drawImage(img, sx, sy, side, side, 0, 0, 256, 256);
+        if (c.toBlob) c.toBlob(function (b) { b ? resolve(b) : reject(new Error("bad image")); }, "image/jpeg", 0.85);
+        else reject(new Error("bad image"));
+      } catch (e) { reject(e); }
+    };
+    img.onerror = function () { URL.revokeObjectURL(url); reject(new Error("Could not read that image.")); };
+    img.src = url;
+  });
 }
 
 function closeProfileModal() {
@@ -319,14 +361,59 @@ export function wireProfileModal() {
   const saveBtn = document.getElementById("profSave");
   if (saveBtn && !saveBtn.dataset.wired) {
     saveBtn.dataset.wired = "1";
-    saveBtn.addEventListener("click", function () {
+    saveBtn.addEventListener("click", async function () {
       const n = document.getElementById("profName").value.trim();
       if (!n) { document.getElementById("profName").focus(); return; }
-      S.profile.name = n;
-      S.profile.studentId = document.getElementById("profId").value.trim();
-      save();
-      closeProfileModal();
-      renderDashboard();
+      saveBtn.disabled = true;
+      try {
+        if (pendingPhotoBlob && online()) {
+          const note = document.getElementById("profPhotoNote");
+          if (note) note.textContent = "Uploading photo…";
+          const url = await uploadProfilePhoto(fb().user.uid, pendingPhotoBlob);
+          if (url) {
+            S.profile.photoURL = url;
+            await saveUserDoc(fb().user.uid, { photoURL: url });
+          } else if (note) {
+            note.textContent = "Photo upload failed — saved everything else.";
+          }
+          pendingPhotoBlob = null;
+        }
+        S.profile.name = n;
+        S.profile.studentId = document.getElementById("profId").value.trim();
+        save();
+        closeProfileModal();
+        renderDashboard();
+      } finally {
+        saveBtn.disabled = false;
+      }
+    });
+  }
+  const photoBtn = document.getElementById("profPhotoBtn");
+  const photoInput = document.getElementById("profPhotoInput");
+  if (photoBtn && photoInput && !photoBtn.dataset.wired) {
+    photoBtn.dataset.wired = "1";
+    photoBtn.addEventListener("click", function () {
+      if (!online()) {
+        const note = document.getElementById("profPhotoNote");
+        if (note) note.textContent = "Sign in to upload a photo (offline right now).";
+        return;
+      }
+      photoInput.click();
+    });
+    photoInput.addEventListener("change", async function () {
+      const f = photoInput.files && photoInput.files[0];
+      photoInput.value = "";
+      if (!f) return;
+      const note = document.getElementById("profPhotoNote");
+      try {
+        if (f.size > 20 * 1024 * 1024) { if (note) note.textContent = "That photo is too big — try a smaller one."; return; }
+        const blob = await photoToSquareBlob(f);
+        pendingPhotoBlob = blob;
+        showProfPhoto(URL.createObjectURL(blob));
+        if (note) note.textContent = "Nice! Tap Save to keep it.";
+      } catch (e) {
+        if (note) note.textContent = "Could not read that image — try another.";
+      }
     });
   }
   const modal = document.getElementById("profileModal");
