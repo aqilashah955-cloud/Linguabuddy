@@ -10,5 +10,5 @@ window.FB_CONFIG = {
   appId: "1:29097613062:web:760a73d624c92b1a177087"
 };
 // Owner's email — the admin role. Full read access in firestore.rules.
-window.OWNER_EMAIL = "REPLACE_WITH_OWNER_EMAIL";
+window.OWNER_EMAIL = "aqilashah955@gmail.com";
 window.APP_NAME = "LinguaBuddy";
