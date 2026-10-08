@@ -318,4 +318,320 @@ determiners: {
   tip: "Countable or not? Countable → many/few; uncountable → much/little. That one test solves most errors.",
   applyPrompt: "Write 5 sentences about your classroom using: each, a few, much, both, every."
 },
+"modals": {
+  warmup: { q: "Which is more polite: 'Give me your pen' or 'Can you give me your pen'? Why?", a: "'Can you give me your pen' — 'can' is a modal verb that turns a demand into a polite request." },
+  keyPoints: [
+    "can = ability: 'She can swim.' could = past ability: 'She could swim at five.'",
+    "may = permission: 'May I come in?' must = strong obligation: 'You must wear a seatbelt.'",
+    "must not = prohibition (not allowed): 'You must not run in the corridor.'",
+    "will = polite request: 'Will you open the window?' might/may = possibility: 'It might rain.' shall = offer: 'Shall I help you?'"
+  ],
+  examples: [
+    { en: "He can solve this puzzle.", note: "can — shows ability." },
+    { en: "You must not run in the corridor.", note: "must not — prohibition, it is not allowed." },
+    { en: "It might rain today.", note: "might — possibility, not certainty." }
+  ],
+  tip: "After a modal verb, always use the base verb: 'She can swim' — never 'She can swims' or 'She can to swim'.",
+  applyPrompt: "Write 6 sentences: 2 showing ability (can), 2 asking permission (may), 1 obligation (must), and 1 prohibition (must not)."
+},
+"nouns": {
+  warmup: { q: "Is 'water' countable? Can you say 'two waters'?", a: "No — water is uncountable. We say 'two glasses of water', not 'two waters'." },
+  keyPoints: [
+    "Collective nouns name a group: a flock of birds, a team of players, a herd of cows.",
+    "Countable nouns take many/few and a/an: 'many books'. Uncountable nouns take much/little: 'much water', 'little sugar'.",
+    "Abstract nouns name ideas, not things: honesty, courage, kindness. Make them from adjectives: honest → honesty.",
+    "Irregular plurals don't add -s: child → children, ox → oxen. 'Sheep' stays 'sheep'. Some plurals change meaning: arm (body part) → arms (weapons)."
+  ],
+  examples: [
+    { en: "A flock of birds flew across the sky.", note: "flock — collective noun for birds." },
+    { en: "How much water is left in the bottle?", note: "much — water is uncountable, so never 'many water'." },
+    { en: "Honesty is the best policy.", note: "honesty — abstract noun made from the adjective 'honest'." }
+  ],
+  tip: "If you can count it with numbers (one book, two books), it's countable. If not (water, rice, furniture), use much/little.",
+  applyPrompt: "Write the plurals of: child, ox, sheep, tooth, foot. Then write 3 sentences: one with a collective noun, one with an abstract noun, one with an uncountable noun."
+},
+"questions": {
+  warmup: { q: "What is wrong with 'Where you live?'", a: "The word order — English questions need a helping verb: 'Where do you live?'" },
+  keyPoints: [
+    "Wh-words ask for different things: who (person), where (place), when (time), why (reason), how (way), which (choice), whose (owner).",
+    "Present questions use do/does: 'Does she like apples?' — 'does' with he/she/it, 'do' with I/you/we/they.",
+    "Past questions use did: 'Did they play yesterday?' — the main verb stays in base form.",
+    "Word order: Wh-word + helping verb + subject + verb → 'When does the school open?'"
+  ],
+  examples: [
+    { en: "Where did you go after school?", note: "where (place) + did (past) + you + go." },
+    { en: "Whose bag is this?", note: "whose — asks about the owner of the bag." },
+    { en: "Which of these two shirts do you like?", note: "which — choosing between options." }
+  ],
+  tip: "After do/does/did, the main verb never takes -s or -ed: 'Did she go?' — never 'Did she went?'",
+  applyPrompt: "Write 5 questions to interview a friend — use who, where, when, why, and which, one wh-word per question."
+},
+"sentence-types": {
+  warmup: { q: "'Close the door.' Is that a statement or an order?", a: "An order — an imperative sentence. It tells someone to do something." },
+  keyPoints: [
+    "Declarative states a fact: 'She reads every night.' Interrogative asks: 'Did you call me?'",
+    "Imperative gives an order or request: 'Please sit down.' Exclamatory shows strong feeling: 'What a lovely garden!'",
+    "Simple = one clause: 'The baby slept.' Compound = two clauses joined by and/but/or: 'The baby slept, and the mother cooked.'",
+    "Complex = main clause + dependent clause: 'Although I was tired, I finished the race.' To make a negative, add do/does not: 'He likes tea' → 'He does not like tea.'"
+  ],
+  examples: [
+    { en: "What a beautiful rainbow!", note: "Exclamatory — strong feeling, ends with !." },
+    { en: "The baby slept, and the mother cooked.", note: "Compound — two independent clauses joined by 'and'." },
+    { en: "Can she swim?", note: "Interrogative — the helping verb 'can' moves to the front." }
+  ],
+  tip: "Count the clauses: one = simple; two joined by and/but/or = compound; one main + one starting with although/because/when = complex.",
+  applyPrompt: "Write 4 sentences: one imperative, one exclamatory, one compound, and one complex. Label each one."
+},
+"verbals": {
+  warmup: { q: "In 'He bought a pen', what receives the action?", a: "'A pen' — the verb 'bought' needs an object. That makes it a transitive verb." },
+  keyPoints: [
+    "Transitive verbs need an object: 'He bought a pen.' Intransitive verbs don't: 'The baby slept.'",
+    "A gerund is verb-ing used as a noun: 'Swimming is good exercise.'",
+    "An infinitive is 'to' + base verb: 'She decided to leave.'",
+    "Some verbs take gerunds (enjoy playing), some take infinitives (want to go, promised to come, decided to leave)."
+  ],
+  examples: [
+    { en: "They enjoy playing cricket.", note: "playing — gerund after 'enjoy'." },
+    { en: "She wants to study abroad.", note: "to study — infinitive after 'wants'." },
+    { en: "Waking early is a good habit.", note: "waking — gerund doing a noun's job as the subject." }
+  ],
+  tip: "If the -ing word is doing a noun's job (subject or object), it's a gerund. If it follows 'to', it's an infinitive.",
+  applyPrompt: "Write 3 sentences with a gerund (use enjoy, like, or start) and 3 with an infinitive (use want, decide, or promise)."
+},
+"pronouns": {
+  warmup: { q: "Which is correct: 'Her is my friend' or 'She is my friend'?", a: "'She is my friend' — use the subject pronoun (she) before the verb, not the object pronoun (her)." },
+  keyPoints: [
+    "Subject pronouns do the action: I, she, he, they. Object pronouns receive it: me, her, him, them — 'The teacher praised us.'",
+    "Possessive pronouns stand alone: mine, yours, hers — 'This pen is mine.'",
+    "Reciprocal pronouns show mutual action: 'They helped each other.' Indefinite pronouns are vague: somebody, anybody, nobody.",
+    "Demonstratives point: this/that (one), these/those (many). 'Its' (no apostrophe) shows possession; 'it's' means 'it is'."
+  ],
+  examples: [
+    { en: "The dog wagged its tail happily.", note: "its — possession, no apostrophe." },
+    { en: "Which of these two books do you prefer?", note: "which — choosing between two; these — plural demonstrative." },
+    { en: "Say 'He and I went to the market', not 'Me and him went'.", note: "Use subject pronouns as subjects." }
+  ],
+  tip: "Before the verb → subject pronoun (she, they, I). After the verb or preposition → object pronoun (her, them, me).",
+  applyPrompt: "Rewrite correctly: 1) 'Him gave me a pen.' 2) 'The bag is my.' 3) 'Its raining outside.' Then write 2 sentences using 'each other'."
+},
+"adverbs": {
+  warmup: { q: "She sings 'beautiful' or 'beautifully'?", a: "'Beautifully' — adverbs describe verbs, and most add -ly to the adjective." },
+  keyPoints: [
+    "Adverbs of manner tell how: slowly, beautifully, carefully — usually adjective + -ly.",
+    "Adverbs of frequency tell how often: always, regularly, never — 'She regularly visits her grandmother.'",
+    "Adverb clauses tell when or why: 'when I arrive' in 'I will call you when I arrive'.",
+    "'Too' means 'more than enough': 'too hot to play'. 'Very' just adds strength: 'very hot'."
+  ],
+  examples: [
+    { en: "The tortoise walks slowly.", note: "slowly — adverb of manner describing 'walks'." },
+    { en: "Carefully, he crossed the busy road.", note: "carefully — describes how he crossed." },
+    { en: "He left in a hurry because he was late.", note: "in a hurry — an adverb phrase of manner." }
+  ],
+  tip: "Adjective describes a noun (a beautiful song). Adverb describes a verb (she sings beautifully) — don't mix them.",
+  applyPrompt: "Describe your morning routine in 5 sentences, using at least 4 adverbs of manner or frequency."
+},
+"adjectives": {
+  warmup: { q: "In 'a red car', which word describes the car?", a: "'Red' — an adjective. It comes before the noun it describes." },
+  keyPoints: [
+    "Adjectives describe nouns: a tall building, the tired child. They usually come before the noun.",
+    "Form adjectives with suffixes: danger → dangerous, care → careful, beauty → beautiful.",
+    "Some adjectives come in phrases after the noun: 'the girl in red'.",
+    "Use 'good' (adjective) with nouns and sense verbs: 'The food smells good' — not 'well'."
+  ],
+  examples: [
+    { en: "She wore a beautiful dress to the party.", note: "beautiful — adjective before the noun 'dress'." },
+    { en: "The story was very exciting.", note: "exciting — describes the story itself." },
+    { en: "The girl in red won the first prize.", note: "in red — an adjective phrase after the noun." }
+  ],
+  tip: "If it answers 'what kind?' about a noun, it's an adjective. If it describes a verb, you need an adverb instead.",
+  applyPrompt: "Describe your best friend in 5 sentences, using at least 5 different adjectives — include one formed with a suffix like -ful or -ous."
+},
+"syllables": {
+  warmup: { q: "Clap the beats in 'beautiful'. How many?", a: "Three: beau-ti-ful. Each beat is a syllable." },
+  keyPoints: [
+    "A syllable is one beat of a word: bas-ket (2), ed-u-ca-tion (4).",
+    "Silent letters are written but not heard: the k in knife, the w in write, the p in psychology.",
+    "Prefixes go before the root and change meaning: un- and im- mean 'not' — 'impossible' means 'not possible'.",
+    "Suffixes go after the root: -ful means 'full of' (hopeful). Find the root first: 'care' in 'carelessness'."
+  ],
+  examples: [
+    { en: "beautiful = beau-ti-ful (3 syllables).", note: "Clap or tap each vowel beat to count." },
+    { en: "knife — the k is silent.", note: "Say 'nife': you hear no k." },
+    { en: "unhappy = un + happy.", note: "un- means 'not'; the root word is 'happy'." }
+  ],
+  tip: "Put your hand under your chin — each time your chin drops as you say a word is one syllable.",
+  applyPrompt: "Divide into syllables: computer, banana, tomorrow. Then circle the silent letter in: know, half, wrong."
+},
+"sentence-patterns": {
+    "warmup": {
+      "q": "In “She gave me a pen”, who got the pen — and what was given?",
+      "a": "“Me” got the pen (the receiver), and “a pen” was the thing given. English names these the indirect object and the direct object."
+    },
+    "keyPoints": [
+      "SVOO = Subject + Verb + Indirect Object + Direct Object: “She gave me a pen.” The indirect object (me) is the receiver; the direct object (a pen) is the thing given.",
+      "SVOC = Subject + Verb + Object + Complement: “We painted the wall blue.” The complement (blue) describes the object (the wall).",
+      "Test for a complement: it renames or describes the object — “They elected him president” (president = what he became).",
+      "Word order matters: the indirect object comes before the direct object — “She sent me a letter”, not “She sent a letter me”."
+    ],
+    "examples": [
+      { "en": "He told her a story.", "note": "SVOO — her = indirect object, a story = direct object." },
+      { "en": "The teacher called Ali a star.", "note": "SVOC — “a star” is the complement describing Ali." },
+      { "en": "She made tea.", "note": "Simple SVO — “tea” is the direct object; no receiver, so no SVOO." }
+    ],
+    "tip": "Ask “to whom?” for the indirect object and “what?” for the direct object — the answers reveal the pattern.",
+    "applyPrompt": "Label each sentence SVO, SVOO, or SVOC: 1) “I bought my mother flowers.” 2) “They named the baby Zara.” 3) “We watched a film.” Then write one SVOO and one SVOC sentence of your own."
+  },
+  "formal-letters": {
+    "warmup": {
+      "q": "Which greeting fits a letter to your principal: “Hi!” or “Dear Sir,”?",
+      "a": "“Dear Sir,” — formal letters use respectful greetings, never casual ones like “Hi!”."
+    },
+    "keyPoints": [
+      "Layout order: sender's address → date → greeting → body → closing. The date goes just below your own address.",
+      "Greeting and closing match: “Dear Sir,” pairs with “Yours faithfully,”; a named person (“Dear Mr. Ahmed,”) pairs with “Yours sincerely,”. Unknown name → “Dear Sir/Madam,”.",
+      "First paragraph states your purpose at once: “I am writing to apply for…” or “I am writing to complain about…”.",
+      "Keep a formal tone: no short forms (write “do not”, not “don't”), be polite and clear, and give a formal email a clear subject line."
+    ],
+    "examples": [
+      { "en": "Dear Sir, I am writing to complain about the faulty kettle I bought on Monday.", "note": "Formal complaint — respectful greeting, purpose stated at once." },
+      { "en": "Subject: Request for three days' leave", "note": "A clear subject line tells the reader the topic before they open the email." },
+      { "en": "Yours faithfully, Amina Khan", "note": "Correct closing when you began with “Dear Sir,” (no name used)." }
+    ],
+    "tip": "Read your letter back pretending you are the principal — if any line sounds rude or casual, rewrite it.",
+    "applyPrompt": "Write a short formal letter (80–100 words) to your principal requesting leave for two days. Include the address, date, greeting, two body paragraphs, and a correct closing."
+  },
+  "past-tense": {
+    "warmup": {
+      "q": "Which is correct: “They goed to the park” or “They went to the park”?",
+      "a": "“They went to the park” — “go” is irregular, so its past form is “went”, never “goed”."
+    },
+    "keyPoints": [
+      "Regular verbs add -ed: walk → walked, play → played, watch → watched.",
+      "Irregular verbs change form — learn them by heart: go → went, eat → ate, buy → bought, teach → taught, sing → sang, do → did.",
+      "Negatives use “did not (didn't)” + base verb: “He didn't come yesterday” (not “didn't came”).",
+      "Time words like “yesterday”, “last night”, and “this morning” signal the simple past."
+    ],
+    "examples": [
+      { "en": "They played football yesterday.", "note": "Regular verb — play + -ed." },
+      { "en": "She went to school late this morning.", "note": "Irregular verb — go → went." },
+      { "en": "We watched a film yesterday.", "note": "Past simple with a finished-time word." }
+    ],
+    "tip": "If the verb doesn't take -ed naturally, it's probably irregular — check your irregular verb list.",
+    "applyPrompt": "Write 5 sentences about what you did last Sunday. Use at least 3 irregular verbs (went, ate, saw, bought, did, sang) and one negative with “didn't”."
+  },
+  "skimming": {
+    "warmup": {
+      "q": "You have 2 minutes before a test to revise a 5-page chapter. Do you read every word?",
+      "a": "No — you skim: read the title, headings, and first sentences to grab the main ideas fast."
+    },
+    "keyPoints": [
+      "Skimming means reading quickly for the general idea — not every word. It answers: “What does this text mainly discuss?”",
+      "Start with the title, then the first sentences of paragraphs — topic sentences often carry the main idea.",
+      "To find the writer's purpose fast, skim the introduction and the conclusion.",
+      "Skimming is for overviews: choosing a book, revising notes, or deciding if a text is useful — not for deep study."
+    ],
+    "examples": [
+      { "en": "Read the title first.", "note": "Good skimming advice — the title previews the topic." },
+      { "en": "The first sentence of each paragraph usually holds its main point.", "note": "Topic sentences guide a quick skim." },
+      { "en": "Reading every word slowly and carefully.", "note": "That is careful reading — the opposite of skimming." }
+    ],
+    "tip": "Let your eyes move fast and only stop at names, dates, and repeated key words.",
+    "applyPrompt": "Take any page from your English textbook. Skim it in 60 seconds, then write one sentence: what is this page mainly about? Check by reading it fully — were you right?"
+  },
+  "poetry": {
+    "warmup": {
+      "q": "Do “light” and “night” rhyme? What about “light” and “late”?",
+      "a": "“Light” and “night” rhyme (same ending sound); “light” and “late” do not."
+    },
+    "keyPoints": [
+      "Rhyme is matching end sounds (light/night); rhythm is the beat of the poem — repetition like “Run, run, run!” builds it.",
+      "A stanza is a group of lines, like a paragraph in prose. A haiku is a tiny poem of exactly 3 lines.",
+      "Simile compares with “like” or “as” (“brave as a lion”); metaphor says one thing IS another (“He is a rock”); personification gives human qualities to non-humans (“The moon smiled at me”).",
+      "Imagery uses words that appeal to the senses — sight, sound, smell, taste, touch — to paint pictures in the reader's mind."
+    ],
+    "examples": [
+      { "en": "The wind whispered softly.", "note": "Personification — wind cannot really whisper." },
+      { "en": "The classroom was a zoo.", "note": "Metaphor — the classroom IS called a zoo (no “like”/“as”)." },
+      { "en": "Brave as a lion.", "note": "Simile — comparison using “as”." }
+    ],
+    "tip": "Spot the trick: “like/as” → simile; “is” comparison → metaphor; human action on a thing → personification.",
+    "applyPrompt": "Write a 4-line poem about rain. Include one simile, one example of personification, and one pair of rhyming lines. Underline each device and label it."
+  },
+  "connotation": {
+    "warmup": {
+      "q": "Which sounds kinder: calling someone “slim” or “skinny”?",
+      "a": "“Slim” — both mean thin, but “slim” feels positive while “skinny” feels negative."
+    },
+    "keyPoints": [
+      "Connotation is the feeling a word suggests beyond its dictionary meaning. “Childlike” feels sweet; “childish” feels rude — same idea, different feeling.",
+      "Writers choose words for their connotation: “a bold plan” excites you, “a crazy scheme” makes you suspicious.",
+      "Watch intensity too: “cold” and “freezing” both mean low temperature, but “freezing” is stronger.",
+      "Strong verbs carry connotation: “glared” suggests anger where “glanced” is neutral."
+    ],
+    "examples": [
+      { "en": "She is confident about her work.", "note": "Positive connotation — “arrogant” would say the same thing negatively." },
+      { "en": "He is economical with money.", "note": "Positive; “stingy” would make the same habit sound bad." },
+      { "en": "Words carry feelings too.", "note": "True — every word choice shades the reader's emotion." }
+    ],
+    "tip": "When two words mean the same, ask: “Would I be happy to be called this?” — the answer reveals the connotation.",
+    "applyPrompt": "Rewrite these with a POSITIVE connotation: 1) “He is stubborn.” 2) “She is bossy.” 3) “It was a cheap hotel.” Then rewrite them with a NEGATIVE connotation."
+  },
+  "figurative": {
+    "warmup": {
+      "q": "If “it's raining cats and dogs”, should you look out for falling animals?",
+      "a": "No! It means it is raining very heavily — the words don't mean exactly what they say."
+    },
+    "keyPoints": [
+      "Literal meaning is the dictionary meaning (“cold” = low temperature). Figurative meaning is imaginative (“a cold person” = unfriendly).",
+      "Figurative language does not mean exactly what the words say: “break the ice” literally means smash frozen water, but figuratively it means start a friendly conversation.",
+      "An author's word choice shapes tone and meaning — “Time is money” suggests time is valuable.",
+      "A dictionary gives literal meanings; the surrounding text gives the contextual (figurative) meaning."
+    ],
+    "examples": [
+      { "en": "She has a heart of gold.", "note": "Figurative — she is kind, not made of metal." },
+      { "en": "She is a bright student.", "note": "Figurative “bright” — clever, not giving off light." },
+      { "en": "Break the ice at the party.", "note": "Figurative — start talking; literally it would mean smashing frozen water." }
+    ],
+    "tip": "If the literal meaning sounds silly or impossible, the writer means it figuratively.",
+    "applyPrompt": "Mark each LITERAL or FIGURATIVE and explain: 1) “He kicked the bucket.” 2) “She kicked the ball.” 3) “My head is spinning.” 4) “The spinning top fell.”"
+  },
+  "descriptive-writing": {
+    "warmup": {
+      "q": "Which is more descriptive: “The garden was nice” or “The garden burst with red roses and the sweet smell of jasmine”?",
+      "a": "The second — precise details and senses (sight, smell) make the reader see and feel the garden."
+    },
+    "keyPoints": [
+      "Move from general to specific: start with the whole scene, then zoom into details.",
+      "Use the five senses and precise adjectives — “enormous” paints more than “big”; “whispered” more than “said”.",
+      "Show, don't just tell: include feelings and atmosphere, not only facts. Describing a person? Cover appearance, habits, and traits.",
+      "Plan first: brainstorm and mind-map ideas, write a rough (first) draft, then polish."
+    ],
+    "examples": [
+      { "en": "The garden burst with red roses and the sweet smell of jasmine.", "note": "Vivid — precise adjectives plus senses of sight and smell." },
+      { "en": "Don't just tell, show.", "note": "Good writing advice — let details create the feeling." },
+      { "en": "Her enormous dog snored softly on the rug.", "note": "“Enormous” is precise; sound (“snored”) adds life." }
+    ],
+    "tip": "After writing, circle every “nice”, “good”, “big” — replace each with a precise word.",
+    "applyPrompt": "Describe your best friend in 8–10 sentences (appearance, habits, traits). Use at least 3 senses and 5 precise adjectives. Start general, end with one small specific detail."
+  },
+  "paraphrasing": {
+    "warmup": {
+      "q": "Is copying a sentence word-for-word the same as paraphrasing it?",
+      "a": "No — copying is not paraphrasing. Paraphrasing keeps the meaning but changes the words."
+    },
+    "keyPoints": [
+      "Paraphrasing = restating in your own words. Keep the original meaning, change the wording — it proves you understand the text.",
+      "It is not translation into another language, and it is not copying, even with small changes.",
+      "Swap in synonyms and reshape the sentence: “She speaks quickly” → “She talks fast.” / “It is raining heavily” → “It is pouring down.”",
+      "Poem stanzas can be paraphrased too: restate each stanza's message in simple, correct prose."
+    ],
+    "examples": [
+      { "en": "“The boy was very tired” → “The exhausted lad needed rest.”", "note": "Best paraphrase — meaning kept, words fully changed." },
+      { "en": "“It is raining heavily” → “It is pouring down.”", "note": "Same meaning, fresh wording." },
+      { "en": "Use your own words.", "note": "The golden rule of paraphrasing." }
+    ],
+    "tip": "Read, cover the text, then say it aloud as if explaining to a friend — write down what you said.",
+    "applyPrompt": "Paraphrase these in your own words: 1) “The old man walked slowly to the market.” 2) “She was delighted with her exam results.” 3) Any 4-line stanza from a poem in your textbook."
+  }
+
 };
