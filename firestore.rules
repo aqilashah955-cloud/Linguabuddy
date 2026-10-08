@@ -22,7 +22,7 @@ service cloud.firestore {
 
     function signedIn() { return request.auth != null; }
     function isAdmin() {
-      return signedIn() && request.auth.token.email == "REPLACE_WITH_OWNER_EMAIL";
+      return signedIn() && request.auth.token.email == "nizarsyed74@gmail.com";
     }
 
     // ---- user profiles: owners only (admin: full read).
