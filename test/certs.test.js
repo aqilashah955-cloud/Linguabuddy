@@ -37,7 +37,7 @@ ok(CERT_TYPES.filter(function (c) { return c.for === "student"; }).length === 8,
 ok(CERT_TYPES.filter(function (c) { return c.for === "teacher"; }).length === 1, "1 teacher cert");
 ok(CERT_TYPES.filter(function (c) { return c.for === "parent"; }).length === 1, "1 parent cert");
 ok(!!certById("course-complete"), "course completion cert exists");
-ok(SLOS.length === 32, "32 SLOs in the course");
+ok(SLOS.length === 37, "37 SLOs in the course");
 
 /* ---- badge -> cert mapping (pure) ---- */
 let ids = earnedCertIds({ badges: ["first-lesson"] });

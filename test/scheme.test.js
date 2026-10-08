@@ -159,5 +159,72 @@ ok(dailyItems(prof68, "test", allSeen).length === 0, "test with all questions se
 ok(dailyItems(prof68, "test", []).length > 0, "test fallback without exclusions -> questions available");
 ok(dailyItems(prof68, "practice", []).length === 10, "practice on L68 -> 10 questions");
 
+// ---------- new schemes: Grades 4, 5, 6 (Aga Khan) and 9, 10 (BISEP) ----------
+var g4 = schemeById("ak-g4-english");
+ok(g4 && g4.board === "Aga Khan" && g4.grade === "Grade 4", "g4 scheme found");
+ok(mappedLessons(g4).length === 4, "g4 has 4 mapped lessons");
+ok(termOf(g4, 66).name === "Second Term" && termOf(g4, 1).name === "First Term", "g4 terms");
+ok(lessonSlos(g4, 66).indexOf("pronouns") >= 0, "g4 L66 maps pronouns");
+ok(lessonSlos(g4, 69).indexOf("modals") >= 0 && lessonSlos(g4, 69).indexOf("past-tense") >= 0, "g4 L69 maps modals + past-tense");
+ok(lessonTasks(g4, 66).length === 2, "g4 L66 has oral tasks");
+ok(monthOfLesson(g4, 66) === "Second Term", "g4 lessons group under Second Term");
+
+var g5 = schemeById("ak-g5-english");
+ok(g5 && g5.board === "Aga Khan" && g5.grade === "Grade 5", "g5 scheme found");
+ok(mappedLessons(g5).length === 4, "g5 has 4 mapped lessons");
+ok(lessonSlos(g5, 66).indexOf("adverbs") >= 0, "g5 L66 maps adverbs");
+ok(lessonSlos(g5, 67).indexOf("questions") >= 0, "g5 L67 maps questions bank");
+ok(lessonSlos(g5, 68).indexOf("articles") >= 0, "g5 L68 maps articles");
+
+var g6 = schemeById("ak-g6-english");
+ok(g6 && g6.board === "Aga Khan" && g6.grade === "Grade 6", "g6 scheme found");
+ok(mappedLessons(g6).length === 42, "g6 has 42 mapped lessons");
+ok(lessonSlos(g6, 68).indexOf("modals") >= 0, "g6 L68 maps modals");
+ok(lessonSlos(g6, 90).indexOf("verbals") >= 0, "g6 L90 maps verbals");
+ok(lessonSlos(g6, 87).indexOf("sentence-types") >= 0, "g6 L87 maps sentence-types");
+ok(lessonTasks(g6, 66).length > 0 && lessonSlos(g6, 66).length === 0, "g6 L66 oral-only");
+ok(monthOfLesson(g6, 67) === "Second Term", "g6 DLP week folds into Second Term month");
+
+var g9 = schemeById("bisep-g9-english");
+ok(g9 && g9.board === "BISEP" && g9.grade === "Grade 9", "g9 scheme found");
+ok(mappedLessons(g9).length === 15, "g9 has 15 mapped lessons");
+ok(termOf(g9, 1).name === "First Term" && termOf(g9, 7).name === "Second Term", "g9 terms split 1-6/7-15");
+ok(lessonSlos(g9, 1).indexOf("nouns") >= 0, "g9 L1 maps nouns");
+ok(lessonSlos(g9, 4).indexOf("poetry") >= 0, "g9 L4 (poem) maps poetry");
+ok(lessonSlos(g9, 13).indexOf("formal-letters") >= 0, "g9 L13 maps formal-letters");
+ok(monthOfLesson(g9, 1) === "April 2024", "g9 L1 month = April 2024");
+ok(monthLessons(g9, "May 2024").length >= 2, "g9 May 2024 has 2+ lessons for monthly test");
+
+var g10 = schemeById("bisep-g10-english");
+ok(g10 && g10.board === "BISEP" && g10.grade === "Grade 10", "g10 scheme found");
+ok(mappedLessons(g10).length === 15, "g10 has 15 mapped lessons");
+ok(termOf(g10, 8).name === "First Term" && termOf(g10, 9).name === "Second Term", "g10 terms split 1-8/9-15");
+ok(lessonSlos(g10, 12).indexOf("conditionals") >= 0, "g10 L12 maps conditionals");
+ok(lessonSlos(g10, 13).indexOf("voice") >= 0, "g10 L13 maps voice");
+ok(monthLessons(g10, "August 2024").length >= 2, "g10 August 2024 has 2+ lessons for monthly test");
+
+// new banks exist with 10 questions each
+["modals", "nouns", "questions", "sentence-types", "verbals"].forEach(function (id) {
+  var b = SLOS.find(function (s) { return s.id === id; });
+  ok(b && b.questions.length === 10, "new bank " + id + " present with 10 questions");
+});
+
+// every scheme lesson bank reference resolves to a real bank
+var bankIds = {};
+SLOS.forEach(function (s) { bankIds[s.id] = 1; });
+var dangling = [];
+SCHEMES.forEach(function (s) {
+  Object.keys(s.lessons).forEach(function (n) {
+    (s.lessons[n].slos || []).forEach(function (id) {
+      if (!bankIds[id]) dangling.push(s.id + ":L" + n + "->" + id);
+    });
+  });
+});
+ok(dangling.length === 0, "no dangling bank references (" + dangling.slice(0, 3).join(",") + ")");
+
+// daily practice builds for a new-scheme lesson
+ok(dailyItems({ schemeId: "ak-g6-english", schemeLesson: 70 }, "practice", []).length === 10, "g6 L70 practice -> 10 questions");
+ok(dailyItems({ schemeId: "bisep-g9-english", schemeLesson: 1 }, "practice", []).length === 10, "g9 L1 practice -> 10 questions");
+
 console.log("\n" + pass + " passed, " + fail + " failed");
 process.exit(fail ? 1 : 0);
