@@ -11,9 +11,9 @@
 //    "Scan photo" — never at app start, so the app stays offline-first.
 //  - If the CDN is unreachable (offline), we fall back to typed text.
 // Privacy: photos live in localStorage (budget-capped, oldest-first
-// eviction). Online, the photo goes to Firebase Storage and the Firestore
-// doc holds ONLY the download URL — never raw photo bytes. Students can
-// never see each other's work (owner-only reads + teacherIds).
+// eviction). Online, a compressed copy syncs inside the Firestore doc —
+// no Firebase Storage needed. Students can never see each other's work
+// (owner-only reads + teacherIds).
 
 import { S, save, touchStreak } from "./store.js";
 import { fb, isConfigured, saveWorkUpload } from "./firebase.js";
@@ -92,7 +92,8 @@ export function fitPhotoBudget(items, budget) {
 }
 
 /* Firestore doc shape for writingUploads/{id}.
-   The photo itself NEVER goes here — only the Storage download URL. */
+   The photo travels as a compressed data URL (photoData) — no Storage.
+   Full-size bytes stay on the student's device only. */
 export function buildUploadDoc(o) {
   return {
     studentId: o.uid,
