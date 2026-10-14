@@ -615,9 +615,8 @@ function drawSloDetail(sloId, rows, cls, csubs) {
 }
 
 /* ---------------- student: my assignments ---------------- */
-export async function renderStudentAssignments() {
-  const box = $("assignBox");
-  if (!box) return;
+/** Open (not yet submitted) assignments for the current student. */
+export async function listOpenAssignments() {
   let mine = [];
   if (online()) {
     // scan classes (small data) and match roster by uid in code
@@ -641,7 +640,13 @@ export async function renderStudentAssignments() {
     });
   }
   const doneIds = new Set(S.attempts.filter(function (a) { return a.assignmentId; }).map(function (a) { return a.assignmentId; }));
-  const open = mine.filter(function (a) { return !doneIds.has(a.id); });
+  return mine.filter(function (a) { return !doneIds.has(a.id); });
+}
+
+export async function renderStudentAssignments() {
+  const box = $("assignBox");
+  if (!box) return;
+  const open = await listOpenAssignments();
   if (!open.length) { box.innerHTML = ""; box.classList.add("hidden"); return; }
   box.classList.remove("hidden");
   box.innerHTML = '<h3 class="sec-title">📝 My Assignments</h3>' + open.map(function (a) {

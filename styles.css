@@ -776,3 +776,28 @@ button:disabled { opacity: .45; cursor: not-allowed; }
   /* teacher inbox rows stack */
   .inbox-row { flex-direction: column; align-items: flex-start; gap: 6px; }
 }
+
+/* ---------- ☀️ My Day ---------- */
+.myday-row {
+  width: 100%; display: flex; align-items: center; gap: 12px; text-align: left;
+  background: var(--card); border: 2px solid var(--border); border-radius: var(--radius);
+  padding: 14px 16px; margin-bottom: 10px; cursor: pointer; font-family: inherit;
+  box-shadow: var(--shadow); font-size: 1rem; color: var(--text);
+}
+.myday-row:hover { border-color: var(--marigold); }
+.myday-row.done { opacity: .75; }
+.myday-row.done .tr-text strong { text-decoration: line-through; }
+.myday-check { font-size: 1.3rem; flex: none; }
+.myday-progress { margin: 12px 0 16px; }
+.myday-progress-top { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: .95rem; }
+.myday-help { margin-top: 20px; border: 2px dashed var(--marigold); }
+.myday-walk { text-align: center; padding: 32px 16px; }
+.myday-walk-icon { font-size: 4rem; margin-bottom: 12px; }
+.myday-walk h3 { font-size: 1.4rem; margin: 8px 0; }
+.myday-walk .btn-primary { margin: 16px 0 8px; }
+.myday-walk .btn-ghost { display: block; margin: 0 auto; }
+#mydayCard .slo-bar-track { height: 8px; }
+@media (max-width: 560px) {
+  .myday-row { padding: 16px 14px; }
+  .myday-walk { padding: 24px 8px; }
+}
