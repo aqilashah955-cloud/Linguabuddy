@@ -116,7 +116,7 @@ export function initAuthUI() {
         name: name, loginId: loginId, email: email, password: pw,
         ageGroup: $("suAge").value, level: $("suLevel").value,
         goals: selectedGoals(),
-        role: document.querySelector('input[name="suRole"]:checked').value
+        role: "student" // teachers are provisioned by the admin, never self-selected
       });
     } catch (e) { err.textContent = authError(e); }
     $("signupBtn").disabled = false;

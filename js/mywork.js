@@ -16,7 +16,7 @@
 // never see each other's work (owner-only reads + teacherIds).
 
 import { S, save, touchStreak } from "./store.js";
-import { fb, isConfigured, saveWorkUpload, uploadWorkPhoto } from "./firebase.js";
+import { fb, isConfigured, saveWorkUpload } from "./firebase.js";
 import { esc, uid, fmtDate } from "./utils.js";
 import { showScreen as show } from "./ui.js";
 import { analyzeWriting } from "./writing.js";
@@ -33,6 +33,8 @@ export const MW_MAX_ITEMS = 15;                       // gallery cap: oldest-fir
 export const MW_PHOTO_MAX = 1280;                     // longest side of stored photo (px)
 export const MW_THUMB_MAX = 480;                      // longest side of thumbnail (px)
 export const MW_JPEG_Q = 0.6;
+export const MW_CLOUD_MAX = 900;                      // longest side of the cloud copy (px)
+export const MW_CLOUD_Q = 0.55;                       // quality of the cloud copy (keeps docs small)
 export const MW_BUDGET = Math.floor(3.5 * 1024 * 1024); // localStorage photo budget (bytes)
 
 export const MW_TYPES = [
@@ -97,6 +99,7 @@ export function buildUploadDoc(o) {
     title: String(o.title || "Untitled").slice(0, 120),
     type: o.type || "other",
     photoUrl: o.photoUrl || "",
+    photoData: o.photoData || "",
     text: String(o.text || ""),
     feedbackCount: o.feedbackCount || 0,
     teacherIds: o.teacherIds || [],
@@ -152,8 +155,10 @@ async function handleFile(file) {
     var img = await fileToImage(file);
     var full = drawScaled(img, MW_PHOTO_MAX);
     var thumb = drawScaled(img, MW_THUMB_MAX);
+    var cloud = drawScaled(img, MW_CLOUD_MAX);
     cur.photoDataUrl = full.toDataURL("image/jpeg", MW_JPEG_Q);
     cur.thumbDataUrl = thumb.toDataURL("image/jpeg", MW_JPEG_Q);
+    cur.cloudDataUrl = cloud.toDataURL("image/jpeg", MW_CLOUD_Q);
     cur.blob = await canvasBlob(full);
     cur.title = cur.title || $("mwTitle").value.trim();
     renderPhotoStep();
@@ -209,31 +214,22 @@ function persistItem(item) {
   return fit.stripped;
 }
 
-/* Best-effort cloud sync: photo → Firebase Storage, metadata → Firestore.
-   The Firestore doc carries only the download URL, never photo bytes.
-   The local item remembers its photoUrl so revising text later never
-   blanks a previously uploaded photo. */
+/* Best-effort cloud sync: the photo travels as a compressed data URL inside
+   the Firestore doc (no Firebase Storage needed). The local item is the
+   source of truth; oversized photos simply stay local-only. */
 function syncOnline(item) {
   if (!isConfigured()) return;
   var f = fb();
   if (!f.ready || !f.user || !S.profile.uid) return;
   (async function () {
     try {
-      var url = item.photoUrl || "";
-      if (cur && cur.blob) {
-        url = await uploadWorkPhoto(S.profile.uid, item.id, cur.blob) || url;
-      }
+      var photoData = item.cloudDataUrl || (cur && cur.cloudDataUrl) || "";
+      if (photoData.length > 750000) photoData = ""; // keep the doc small
       await saveWorkUpload(S.profile.uid, item.id, {
-        title: item.title, type: item.type, photoUrl: url,
+        title: item.title, type: item.type, photoData: photoData,
         text: item.text, feedbackCount: (item.feedback || []).length,
         createdAt: item.createdAt
       });
-      if (url && url !== item.photoUrl) {
-        item.photoUrl = url;
-        var list = myworkList();
-        var ix = list.findIndex(function (x) { return x.id === item.id; });
-        if (ix >= 0) { list[ix] = item; save(); }
-      }
     } catch (e) { /* local copy is the source of truth */ }
   })();
 }
@@ -279,7 +275,7 @@ function renderHub() {
 function renderSetup() {
   cur = {
     id: uid("mw"), type: "story", title: "",
-    photoDataUrl: "", thumbDataUrl: "", photoUrl: "", blob: null,
+    photoDataUrl: "", thumbDataUrl: "", cloudDataUrl: "", photoUrl: "", blob: null,
     text: "", feedback: [], createdAt: Date.now()
   };
   var body = $("myworkBody");

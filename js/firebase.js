@@ -74,7 +74,7 @@ export async function signUp(opts) {
   await fsMod.setDoc(idRef, { email: opts.email.trim().toLowerCase(), uid: uid, createdAt: now });
   await fsMod.setDoc(fsMod.doc(FB.db, "users", uid), {
     name: opts.name.trim(), loginId: loginId, email: opts.email.trim().toLowerCase(),
-    role: opts.role === "teacher" ? "teacher" : "student",
+    role: "student", // teachers are provisioned by the admin, never self-selected
     ageGroup: opts.ageGroup || "", level: opts.level || "Beginner",
     goals: opts.goals || [], streak: 0, xp: 0, badges: [], createdAt: now
   });
