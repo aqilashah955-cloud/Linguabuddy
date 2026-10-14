@@ -26,6 +26,16 @@ let go = null;
 export function setAskGo(fn) { go = fn; }
 
 const hist = []; // {q, html} — replayed when the screen re-renders
+const HIST_MAX = 30;
+var pendingQ = null; // a question queued by "Ask AI Teacher" from a review screen
+
+/* A review screen (or anywhere) can send the student here with a
+   question already asked — e.g. "why was my answer wrong?". */
+export function askAboutQuestion(q) {
+  pendingQ = String(q || "");
+  if (go) go("ask");
+  else renderAsk();
+}
 
 /* Score how well a knowledge entry matches the question tokens. */
 function scoreEntry(tokens, text) {
@@ -54,6 +64,7 @@ export function answerFromKB(question) {
 
   // 1) vocabulary: direct word match
   for (const w of WORDS) {
+    if (!w || !w.word) continue;
     if (qlow.indexOf(w.word.toLowerCase()) >= 0 && tokens.indexOf(w.word.toLowerCase()) >= 0) {
       return { kind: "vocab", word: w };
     }
@@ -104,16 +115,17 @@ export function answerFromKB(question) {
    from LinguaBuddy's own curated lessons and word lists). */
 function teacherHTML(kb) {
   if (kb.kind === "vocab") {
-    const w = kb.word;
+    const w = kb.word || {};
+    const syns = (w.syn || []).join(", ");
     return '<div class="tch-block">' +
-      '<div class="tch-head">📖 <strong>' + esc(w.word) + '</strong> <span class="fine">(' + esc(w.pos) + ')</span></div>' +
-      '<p><strong>Meaning:</strong> ' + esc(w.def) + '</p>' +
-      '<p><strong>Similar words:</strong> ' + esc(w.syn.join(", ")) + '</p>' +
-      '<p><strong>Example:</strong> <em>“' + esc(w.example) + '”</em></p>' +
-      '<p class="tch-try">✏️ <strong>Your turn:</strong> Use “' + esc(w.word) + '” in your own sentence — say it aloud, then write it down.</p>' +
+      '<div class="tch-head">📖 <strong>' + esc(w.word || "") + '</strong> <span class="fine">(' + esc(w.pos || "") + ')</span></div>' +
+      '<p><strong>Meaning:</strong> ' + esc(w.def || "") + '</p>' +
+      (syns ? '<p><strong>Similar words:</strong> ' + esc(syns) + '</p>' : "") +
+      (w.example ? '<p><strong>Example:</strong> <em>\u201c' + esc(w.example) + '\u201d</em></p>' : "") +
+      '<p class="tch-try">✏️ <strong>Your turn:</strong> Use \u201c' + esc(w.word || "it") + '\u201d in your own sentence — say it aloud, then write it down.</p>' +
       '</div>';
   }
-  const slo = kb.slo, les = kb.les, sid = kb.sloId;
+  const slo = kb.slo || {}, les = kb.les || {}, sid = kb.sloId;
   let h = '<div class="tch-block">' +
     '<div class="tch-head">📚 <strong>' + esc(slo.title) + '</strong></div>';
   if (les.warmup) {
@@ -226,9 +238,17 @@ export function renderAsk() {
     addMsg(log, "you", "🧑 <strong>You:</strong> " + esc(q));
     const res = askTeacher(q);
     hist.push({ q: q, html: res.html });
+    if (hist.length > HIST_MAX) hist.splice(0, hist.length - HIST_MAX);
     addMsg(log, "partner", "🤖 <strong>AI Teacher:</strong> " + res.html);
   }
   $("askSend").addEventListener("click", send);
   $("askInput").addEventListener("keydown", function (e) { if (e.key === "Enter") send(); });
+  // a question queued by "Ask AI Teacher" from a review screen asks itself
+  if (pendingQ) {
+    const pq = pendingQ;
+    pendingQ = null;
+    $("askInput").value = pq;
+    send();
+  }
   show("screen-ask");
 }

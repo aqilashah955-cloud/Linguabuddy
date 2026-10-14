@@ -184,6 +184,47 @@ export function explainItem(item, res) {
   return partial + body + (tip ? " Remember: " + tip : "");
 }
 
+/* Tokens for matching a question to the most relevant lesson rule. */
+function ruleTokens(s) {
+  return (String(s || "").toLowerCase().match(/[a-z']+/g) || [])
+    .filter(function (w) { return w.length > 3; });
+}
+
+/* The lesson key-point most relevant to a question (token overlap),
+   falling back to the first key point. Null when the lesson has none. */
+export function keyRuleFor(sloId, questionText) {
+  var les = sloId && LESSONS[sloId];
+  if (!les || !les.keyPoints || !les.keyPoints.length) return null;
+  var toks = ruleTokens(questionText);
+  if (!toks.length) return les.keyPoints[0];
+  var best = null, bestScore = 0;
+  les.keyPoints.forEach(function (k) {
+    var low = String(k).toLowerCase(), s = 0;
+    toks.forEach(function (t) { if (low.indexOf(t) >= 0) s++; });
+    if (s > bestScore) { bestScore = s; best = k; }
+  });
+  return best || les.keyPoints[0];
+}
+
+/* First worked example of the lesson, if any. */
+export function exampleFor(sloId) {
+  var les = sloId && LESSONS[sloId];
+  return (les && les.examples && les.examples[0]) || null;
+}
+
+/* Rich wrong-answer explanation: summary + the exact rule that applies
+   + a worked example + routing info. Correct answers stay light. */
+export function explainRich(item, res) {
+  var wrong = res.score !== 1;
+  return {
+    summary: explainItem(item, res),
+    rule: wrong ? keyRuleFor(item.sloId, item.q) : null,
+    example: wrong ? exampleFor(item.sloId) : null,
+    sloId: item.sloId || null,
+    sloTitle: item.sloTitle || ""
+  };
+}
+
 /* ---------------- SLO mastery ----------------
    Mastered / Developing / Needs Practice from MULTIPLE evidence
    points. Never mastered from a single question or a single attempt. */
