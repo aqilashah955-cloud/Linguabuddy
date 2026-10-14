@@ -3,13 +3,17 @@
 // Used by practice, assessments, placement tests, story quizzes and
 // remediation. Pure grading lives in engine.js; this is the UI layer.
 
-import { gradeItem, explainItem } from "./engine.js";
+import { gradeItem, explainItem, explainRich } from "./engine.js";
 import { esc, fmtTime, fmtDate } from "./utils.js";
 import { S, isLocked } from "./store.js";
 import { lessonFor } from "./engine.js";
 import { showScreen } from "./ui.js";
+import { askAboutQuestion } from "./ask.js";
 
 function $(id) { return document.getElementById(id); }
+
+let go = null;
+export function setAssessGo(fn) { go = fn; }
 
 let ATT = null;
 
@@ -310,12 +314,40 @@ export function showResult(spec) {
       extra = '<div class="rev-line rev-given">Key ideas matched: ' + r.res.extra.keysHit + " of " + r.res.extra.keysTotal + "</div>" +
         '<div class="rev-model"><strong>Model answer:</strong> ' + esc(r.res.extra.model) + "</div>";
     }
+    // Richer wrong-answer explanations: the rule that applies, a worked
+    // example, and one-tap routes to the AI Teacher or the full lesson.
+    let note;
+    if (r.res.score === 1) {
+      note = '<div class="rev-line rev-correct">' + esc(explainItem(r.item, r.res)) + "</div>";
+    } else {
+      const rich = explainRich(r.item, r.res);
+      note = '<div class="rev-line rev-wrong-note">' + esc(rich.summary) + "</div>" +
+        (rich.rule ? '<div class="rev-line rev-rule">📏 <strong>The rule:</strong> ' + esc(rich.rule) + "</div>" : "") +
+        (rich.example ? '<div class="rev-line rev-ex">✏️ <strong>Example:</strong> <em>"' + esc(rich.example.en) +
+          '"</em>' + (rich.example.note ? " — " + esc(rich.example.note) : "") + "</div>" : "") +
+        '<div class="row-btns rev-actions">' +
+        '<button class="btn-ghost btn-sm" data-askai="' + i + '">🤖 Ask AI Teacher</button>' +
+        (rich.sloId ? '<button class="btn-ghost btn-sm" data-openlesson="' + esc(rich.sloId) + '">📖 Open lesson</button>' : "") +
+        "</div>";
+    }
     return '<div class="review-card ' + cls + '">' +
       '<div class="rev-q">Q' + (i + 1) + ". " + esc(r.item.q) + " <em>(" + esc(r.item.sloTitle) + ")</em></div>" +
       '<div class="rev-line rev-given">Your answer: ' + esc(String(r.res.given)).slice(0, 300) + "</div>" +
-      '<div class="rev-line ' + (r.res.score === 1 ? "rev-correct" : "rev-wrong-note") + '">' + esc(explainItem(r.item, r.res)) + "</div>" +
-      extra + "</div>";
+      note + extra + "</div>";
   }).join("");
+  $("rReview").querySelectorAll("[data-askai]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      const r = (spec.results || [])[parseInt(b.getAttribute("data-askai"), 10)];
+      if (!r) return;
+      askAboutQuestion("Explain this to me: \"" + r.item.q + "\" The correct answer is \"" +
+        r.res.correct + "\". Why?");
+    });
+  });
+  $("rReview").querySelectorAll("[data-openlesson]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      if (go) go("lesson", b.getAttribute("data-openlesson"));
+    });
+  });
 
   const ab = $("rActions");
   ab.innerHTML = "";

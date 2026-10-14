@@ -801,3 +801,9 @@ button:disabled { opacity: .45; cursor: not-allowed; }
   .myday-row { padding: 16px 14px; }
   .myday-walk { padding: 24px 8px; }
 }
+
+/* ---------- richer wrong-answer explanations ---------- */
+.rev-rule { background: #f4f8ff; border-left: 3px solid #4a90d9; padding: 8px 10px; border-radius: 0 8px 8px 0; margin: 6px 0; }
+.rev-ex { background: #fffdf5; border-left: 3px solid var(--marigold); padding: 8px 10px; border-radius: 0 8px 8px 0; margin: 6px 0; }
+.rev-actions { margin-top: 8px; }
+.rev-actions .btn-ghost { margin-right: 6px; }

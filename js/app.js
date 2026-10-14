@@ -12,7 +12,7 @@ import { renderDashboard, renderProgress, setGo as setDashGo } from "./dashboard
 import { renderLearn, openLesson, openSetup, launchSetup, setGo as setLearnGo, startRemediation } from "./learn.js";
 import { renderLibrary, openStory, startStoryQuiz, setGo as setReadGo } from "./reading.js";
 import { renderVocab, initVocab, setGo as setVocabGo } from "./vocab.js";
-import { submitAttempt, quitAttempt } from "./assess.js";
+import { submitAttempt, quitAttempt, setAssessGo } from "./assess.js";
 import { renderTeacher, openClass, renderStudentAssignments, setTeacherGo, isTeacher, isAdmin } from "./teacher.js";
 import { renderAdmin, setAdminGo } from "./admin.js";
 import { renderGrammar, setGrammarGo } from "./grammar.js";
@@ -216,7 +216,7 @@ async function boot() {
   // wire go() into modules
   [setDashGo, setLearnGo, setReadGo, setVocabGo,
    setTeacherGo, setAdminGo, setGrammarGo, setWritingGo, setConvoGo, setAskGo, setGamesGo, setMyworkGo,
-   setKidsGo, setWorksheetsGo, setCertsGo, setCreativeGo, setMydayGo,
+   setKidsGo, setWorksheetsGo, setCertsGo, setCreativeGo, setMydayGo, setAssessGo,
    setTestprepGo, setProGo, setMoreTestsGo, setBuddiesGo, setBillingGo, setAkGo, setMarksGo, setTutGo, setMsgGo]
     .forEach(function (fn) { fn(go); });
   warmVoices();
