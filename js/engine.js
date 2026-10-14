@@ -225,6 +225,22 @@ export function explainRich(item, res) {
   };
 }
 
+/* Trend of an SLO's evidence: "up" | "down" | "flat" | null.
+   Needs 3+ evidence points; compares the older half against the newer
+   half. Swings under 7 points count as flat (noise, not a trend). */
+export function sloTrend(evidence) {
+  var ev = (evidence || []).slice(-6);
+  if (ev.length < 3) return null;
+  var half = Math.floor(ev.length / 2);
+  function avg(a) {
+    return a.reduce(function (s, e) { return s + (e.pct || 0); }, 0) / a.length;
+  }
+  var diff = avg(ev.slice(half)) - avg(ev.slice(0, half));
+  if (diff >= 7) return "up";
+  if (diff <= -7) return "down";
+  return "flat";
+}
+
 /* ---------------- SLO mastery ----------------
    Mastered / Developing / Needs Practice from MULTIPLE evidence
    points. Never mastered from a single question or a single attempt. */

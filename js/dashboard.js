@@ -3,7 +3,7 @@
 // progress bars, streak, and counts.
 
 import { S, save, touchStreak } from "./store.js";
-import { SLOS, STORIES, WORDS, calculateSLOMastery, masteryLabel, weakestSlo, buildItems, buildProgressReport } from "./engine.js";
+import { SLOS, STORIES, WORDS, calculateSLOMastery, masteryLabel, weakestSlo, buildItems, buildProgressReport, sloTrend } from "./engine.js";
 import { esc, dayOfYear } from "./utils.js";
 import { runAttempt, showResult } from "./assess.js";
 import { openSetup } from "./learn.js";
@@ -266,8 +266,13 @@ export function renderProgress() {
       : x.status === "developing" ? '<span class="pill mid">Developing</span>'
       : x.status === "needs" ? '<span class="pill low">Needs Practice</span>'
       : '<span class="pill">Not started</span>';
+    const trend = sloTrend((S.masteryEv || {})[s.id]);
+    const arrow = trend === "up" ? ' <span class="trend up" title="Improving">↗️</span>'
+      : trend === "down" ? ' <span class="trend down" title="Needs attention">↘️</span>'
+      : trend === "flat" ? ' <span class="trend flat" title="Steady">➡️</span>' : "";
     return '<div class="mast-row"><div><strong>' + esc(s.title) + "</strong><br>" +
-      '<span class="fine">' + (x.count ? x.count + " evidence · " + x.avg + "%" : "no attempts yet") + "</span></div>" + pill + "</div>";
+      '<span class="fine">' + (x.count ? x.count + " evidence · " + x.avg + "%" : "no attempts yet") + "</span></div>" +
+      "<div>" + pill + arrow + "</div></div>";
   }).join("");
 
   $("pgList").innerHTML = mine.length ? mine.slice().reverse().map(function (a) {
