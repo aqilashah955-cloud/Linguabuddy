@@ -392,8 +392,10 @@ async function loadInboxSubs() {
     // on each submission lets the rules authorize the read)
     const classes = await loadClasses();
     const out = [];
+    const nameOf = {};
     for (const c of classes) {
       const uids = (c.students || []).map(function (r) { return r.uid; }).filter(Boolean);
+      (c.students || []).forEach(function (r) { if (r.uid) nameOf[r.uid] = r.name || r.uid; });
       for (let i = 0; i < uids.length; i += 10) {
         const chunk = uids.slice(i, i + 10);
         if (!chunk.length) continue;
@@ -401,6 +403,22 @@ async function loadInboxSubs() {
         subs.forEach(function (s) { out.push(Object.assign({ _className: c.name }, s)); });
       }
     }
+    // My Work photo uploads from my students (photo travels in the doc)
+    try {
+      const myUid = fb().user.uid;
+      const uploads = await fsList("writingUploads", "teacherIds", "array-contains", myUid);
+      uploads.forEach(function (w) {
+        const ph = w.photoData || w.photoUrl || "";
+        out.push({
+          studentId: w.studentId, _className: "Class",
+          _type: "mywork", _mwId: w.id,
+          title: w.title || "Untitled", date: w.createdAt || 0,
+          _photo: ph, _thumb: ph,
+          _text: w.text || "", _feedback: [],
+          _rosterName: nameOf[w.studentId] || ""
+        });
+      });
+    } catch (e) { /* writingUploads unavailable — submissions still show */ }
     return out.sort(function (a, b) { return (b.date || 0) - (a.date || 0); });
   }
   // offline: this device's attempts (all types) + My Work uploads

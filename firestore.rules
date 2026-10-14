@@ -10,7 +10,7 @@
 //   vocabulary/{uid}/words/{w}   saved words per student
 //   readingProgress/{uid}/{rid}  story completion per student
 //   writingUploads/{id}          My Work photo uploads: {studentId, title, type,
-//                                photoUrl (Storage URL only — never bytes),
+//                                photoData (compressed data URL, <800KB),
 //                                text, feedbackCount, teacherIds[], createdAt}
 //   threads/{tid}                student ↔ teacher chat: {teacherId, studentId,
 //                                names, photos, updatedAt, lastText, unread*}
@@ -33,12 +33,12 @@ service cloud.firestore {
     }
 
     // ---- user profiles: owners only (admin: full read).
-    // Role is set at signup (student/teacher); afterwards only the admin
-    // may change it, so a student can never promote themselves.
+    // New signups are always students; only the admin may grant the
+    // teacher (or admin) role afterwards, so nobody can self-promote.
     match /users/{uid} {
       allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
       allow create: if signedIn() && request.auth.uid == uid
-        && request.resource.data.role in ["student", "teacher"];
+        && request.resource.data.role == "student";
       allow update: if signedIn() && request.auth.uid == uid
         && (isAdmin() || request.resource.data.role == resource.data.role);
       allow delete: if false;
@@ -109,15 +109,18 @@ service cloud.firestore {
     // ---- writingUploads: "My Work" photo uploads of handwritten work.
     // Students write own + read own; a class teacher reads uploads whose
     // teacherIds include them (attached at upload time, same pattern as
-    // submissions); admin reads all. The Firestore doc holds ONLY the
-    // Firebase Storage download URL — photo bytes live in Storage.
+    // submissions); admin reads all. The photo travels as a compressed
+    // data URL inside the doc (photoData) — no Firebase Storage needed.
+    // Docs are create-only; photoData is capped to keep docs small.
     match /writingUploads/{id} {
       allow read: if signedIn() && (
         resource.data.studentId == request.auth.uid ||
         request.auth.uid in resource.data.get("teacherIds", []) ||
         isAdmin());
       allow create: if signedIn()
-        && request.resource.data.studentId == request.auth.uid;
+        && request.resource.data.studentId == request.auth.uid
+        && (!("photoData" in request.resource.data)
+            || request.resource.data.photoData.size() < 800000);
       allow update, delete: if false;
     }
 
@@ -133,7 +136,10 @@ service cloud.firestore {
         && request.resource.data.teacherId != request.auth.uid;
       allow update: if signedIn() && (
         resource.data.teacherId == request.auth.uid ||
-        resource.data.studentId == request.auth.uid || isAdmin());
+        resource.data.studentId == request.auth.uid || isAdmin())
+        // participants may never be swapped after creation
+        && request.resource.data.teacherId == resource.data.teacherId
+        && request.resource.data.studentId == resource.data.studentId;
       allow delete: if false;
     }
     match /threads/{tid}/messages/{mid} {

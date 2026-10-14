@@ -757,3 +757,22 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .mchip.mno { border-color: var(--bad); background: var(--bad-bg); }
 .ord-pool { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
 #ordMine li { margin-bottom: 4px; }
+
+/* ---------- Priority 1: phone-first pass (students are mobile-first) ---------- */
+@media (max-width: 560px) {
+  /* prevent iOS auto-zoom on form fields */
+  input, select, textarea { font-size: 16px; }
+  .screen-head h2 { font-size: 1.3rem; }
+  .screen-head { margin-bottom: 12px; }
+  /* grids collapse to fewer columns */
+  .story-grid, .res-grid { grid-template-columns: 1fr; }
+  .explore-grid { grid-template-columns: repeat(3, 1fr); }
+  .match-wrap { flex-direction: column; }
+  /* wide tables (mark sheets, analytics) scroll instead of breaking layout */
+  .an-table { display: block; overflow-x: auto; white-space: nowrap; }
+  /* quiz + story actions breathe */
+  .opt-label { padding: 14px 12px; font-size: 1rem; }
+  .story-text { font-size: 1.08rem; line-height: 1.75; }
+  /* teacher inbox rows stack */
+  .inbox-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+}

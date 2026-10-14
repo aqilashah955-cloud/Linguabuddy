@@ -3,7 +3,7 @@
 
 import {
   targetSize, sanitizeOcrText, evictOldest, fitPhotoBudget,
-  buildUploadDoc, MW_MAX_ITEMS, MW_PHOTO_MAX, MW_TYPES
+  buildUploadDoc, MW_MAX_ITEMS, MW_PHOTO_MAX, MW_CLOUD_MAX, MW_CLOUD_Q, MW_TYPES
 } from "../js/mywork.js";
 import { analyzeWriting } from "../js/writing.js";
 
@@ -50,6 +50,14 @@ ok("doc has NO thumbDataUrl", !("thumbDataUrl" in doc));
 ok("doc has NO blob", !("blob" in doc));
 var longDoc = buildUploadDoc({ uid: "u", title: "x".repeat(200) });
 ok("title truncated to 120", longDoc.title.length === 120);
+ok("photoData defaults to empty", longDoc.photoData === "");
+var cloudDoc = buildUploadDoc({ uid: "u", photoData: "data:image/jpeg;base64,/9j/" });
+ok("photoData passes through to the doc", cloudDoc.photoData === "data:image/jpeg;base64,/9j/");
+
+/* ---- cloud copy sizing: small enough for a Firestore doc ---- */
+eq("cloud copy 4000x3000 -> 900x675", targetSize(4000, 3000, MW_CLOUD_MAX), { w: 900, h: 675 });
+ok("cloud copy smaller than local photo", MW_CLOUD_MAX < MW_PHOTO_MAX);
+ok("cloud quality moderate", MW_CLOUD_Q >= 0.4 && MW_CLOUD_Q <= 0.7);
 
 /* ---- evictOldest: oldest-first eviction ---- */
 var many = [];
