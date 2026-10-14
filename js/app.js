@@ -25,6 +25,7 @@ import { renderMywork, setMyworkGo } from "./mywork.js";
 import { showKidsHome, setKidsGo } from "./kids.js";
 import { showWorksheets, setWorksheetsGo } from "./worksheets.js";
 import { renderDaily, renderSayIt, renderParents } from "./engage.js";
+import { renderMyday, setMydayGo } from "./myday.js";
 import { showCerts, setCertsGo } from "./certs.js";
 import { showTestprep, setTestprepGo } from "./testprep.js";
 import { showPro, setProGo } from "./pro.js";
@@ -77,6 +78,7 @@ export function go(dest, arg) {
     case "kids": showKidsHome(); break;
     case "worksheets": showWorksheets(); break;
     case "daily": renderDaily(); showScreen("screen-daily", "daily"); break;
+    case "myday": renderMyday(); break;
     case "sayit": renderSayIt(); showScreen("screen-sayit", "sayit"); break;
     case "parents": renderParents(); showScreen("screen-parents", "parents"); break;
     case "certs": showCerts(); break;
@@ -214,7 +216,7 @@ async function boot() {
   // wire go() into modules
   [setDashGo, setLearnGo, setReadGo, setVocabGo,
    setTeacherGo, setAdminGo, setGrammarGo, setWritingGo, setConvoGo, setAskGo, setGamesGo, setMyworkGo,
-   setKidsGo, setWorksheetsGo, setCertsGo, setCreativeGo,
+   setKidsGo, setWorksheetsGo, setCertsGo, setCreativeGo, setMydayGo,
    setTestprepGo, setProGo, setMoreTestsGo, setBuddiesGo, setBillingGo, setAkGo, setMarksGo, setTutGo, setMsgGo]
     .forEach(function (fn) { fn(go); });
   warmVoices();

@@ -13,6 +13,7 @@ const NAVMAP = {
   "screen-profile": "profile",
   "screen-games": "games",
   "screen-mywork": "mywork",
+  "screen-myday": "home",
   "screen-kids": "kids",
   "screen-worksheets": "worksheets",
   "screen-daily": "daily",
