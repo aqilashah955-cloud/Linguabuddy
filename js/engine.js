@@ -5,15 +5,17 @@
 import { SLOS } from "../data/slos.js";
 import { STORIES as CORE_STORIES } from "../data/stories.js";
 import { LIBRARY } from "../data/library.js";
+import { LIBRARY2 } from "../data/library2.js";
 import { LESSONS } from "../data/lessons.js";
 import { STORYMETA as CORE_STORYMETA } from "../data/storymeta.js";
 import { LIBRARYMETA } from "../data/librarymeta.js";
+import { LIBRARYMETA2 } from "../data/librarymeta2.js";
 import { WORDS } from "../data/words.js";
 import { shuffle, sample, norm, mulberry32, hashStr, clamp } from "./utils.js";
 
-// Digital library: core stories + multi-genre library merged into one catalog.
-const STORIES = CORE_STORIES.concat(LIBRARY);
-const STORYMETA = Object.assign({}, CORE_STORYMETA, LIBRARYMETA);
+// Digital library: core stories + multi-genre library + expansion merged into one catalog.
+const STORIES = CORE_STORIES.concat(LIBRARY, LIBRARY2);
+const STORYMETA = Object.assign({}, CORE_STORYMETA, LIBRARYMETA, LIBRARYMETA2);
 
 export function sloById(id) { return SLOS.find(function (s) { return s.id === id; }); }
 export function storyById(id) { return STORIES.find(function (s) { return s.id === id; }); }
