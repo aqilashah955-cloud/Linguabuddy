@@ -358,5 +358,22 @@ export function showResult(spec) {
     b.addEventListener("click", a.fn);
     ab.appendChild(b);
   });
+  // Printable report: name, ID, date and title appear only on paper.
+  let ph = $("rPrintHead");
+  if (!ph) {
+    ph = document.createElement("div");
+    ph.id = "rPrintHead";
+    ph.className = "print-only";
+    $("screen-result").prepend(ph);
+  }
+  ph.innerHTML = "<h1>LinguaBuddy — Assessment Report</h1><p><strong>" + esc(spec.title || "Result") + "</strong> · " +
+    esc((S.profile && S.profile.name) || "Student") +
+    (S.profile && S.profile.studentId ? " · ID: " + esc(S.profile.studentId) : "") + " · " +
+    new Date().toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" }) + "</p>";
+  const pb = document.createElement("button");
+  pb.className = "btn-ghost";
+  pb.textContent = "🖨️ Print report";
+  pb.addEventListener("click", function () { window.print(); });
+  ab.appendChild(pb);
   showScreen("screen-result");
 }

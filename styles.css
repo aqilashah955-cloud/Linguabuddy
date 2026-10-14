@@ -807,3 +807,21 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .rev-ex { background: #fffdf5; border-left: 3px solid var(--marigold); padding: 8px 10px; border-radius: 0 8px 8px 0; margin: 6px 0; }
 .rev-actions { margin-top: 8px; }
 .rev-actions .btn-ghost { margin-right: 6px; }
+
+/* ---------- progress trends ---------- */
+.trend { font-size: 1.1rem; margin-left: 4px; }
+.trend.up { filter: saturate(1.4); }
+.trend.down { filter: saturate(1.4); }
+
+/* ---------- printable assessment report ---------- */
+.print-only { display: none; }
+@media print {
+  .bottom-nav, #screen-result .row-btns, #screen-result .rev-actions, #screen-result .back-btn { display: none !important; }
+  body { background: #fff; }
+  .screen { padding-top: 0; }
+  .print-only { display: block; border-bottom: 2px solid #000; margin-bottom: 12px; }
+  .print-only h1 { font-size: 1.3rem; margin: 0 0 4px; }
+  .result-card, .review-card, .slo-bar { box-shadow: none; break-inside: avoid; }
+  .rev-correct { color: #1a7a2e; }
+  .rev-wrong-note { color: #b3261e; }
+}
