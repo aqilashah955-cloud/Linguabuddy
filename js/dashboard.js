@@ -15,6 +15,7 @@ import { isConfigured, fb, uploadProfilePhoto, saveUserDoc } from "./firebase.js
 function online() { return isConfigured() && fb().user; }
 import { renderSchoolBox } from "./scheme.js";
 import { tutorsForWeakSlos } from "./tutors.js";
+import { renderMydayCard } from "./myday.js";
 
 function $(id) { return document.getElementById(id); }
 
@@ -88,6 +89,9 @@ export function renderDashboard() {
       '<span class="hc-sub">' + masteryLabel(weak.mastery.status) + " · " + weak.mastery.avg + "% — keep going</span>";
   }
   cl.onclick = function () { if (go) go("lesson", weak.sloId); };
+
+  // My Day hero card (guided daily plan)
+  renderMydayCard().catch(function () {});
 
   // Today's English (rotated daily)
   const doy = dayOfYear();
@@ -172,6 +176,7 @@ export function renderDashboard() {
 /* Big-tile feature grid on the student dashboard. Destinations mirror
    the bottom nav so tiles and nav always agree. */
 var EXPLORE_FEATURES = [
+  { e: "☀️", t: "My Day", d: "myday" },
   { e: "🏫", t: "Aga Khan Schools", d: "ak" },
   { e: "👩‍🏫", t: "Teachers", d: "teachers" },
   { e: "📚", t: "Learn", d: "learn" },
