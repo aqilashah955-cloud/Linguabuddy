@@ -44,20 +44,57 @@ export function warmVoices() {
   } catch (e) { /* ignore */ }
 }
 
+/* Strip emoji and decorative symbols before speaking. TTS engines handle
+   emoji badly — some read their names aloud ("smiling face"), others insert
+   long pauses — which is exactly the "unclear and confusing" delivery users
+   reported. The text on screen keeps its emoji; only the voice is cleaned.
+   Pure — exported for tests. */
+export function cleanSpeechText(text) {
+  return String(text || "")
+    // emoji + pictographs + symbols (broad Unicode ranges)
+    .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE00}-\u{FE0F}\u{1F1E6}-\u{1F1FF}]/gu, "")
+    // stray variation selectors / zero-width joiners left behind
+    .replace(/[\u200D\uFE0F]/g, "")
+    // collapse the gaps left by removed emoji
+    .replace(/[ \t]{2,}/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 /* Split text into sentence-sized chunks. Chrome silently stops a single
    utterance after ~15 seconds, so long buddy replies are queued chunk by
    chunk instead of one giant utterance. maxLen keeps slow speech (fewer
-   chars per second) safely under the cutoff too. Pure — exported for tests. */
+   chars per second) safely under the cutoff too. A single long sentence is
+   further split at natural clause pauses (commas, semicolons, colons) so the
+   voice never rambles through a 160-char breathless run. Pure — exported
+   for tests. */
 export function chunkText(text, maxLen) {
   maxLen = maxLen || 160;
   var bits = String(text || "").split(/([.!?…]+["']?\s+)/);
   var out = [], cur = "";
+  function pushCur() {
+    if (!cur) return;
+    // Long sentence? Split at clause pauses so each chunk breathes naturally.
+    if (cur.length > maxLen) {
+      var clauses = cur.split(/([,;:]\s+)/);
+      var c2 = "";
+      for (var j = 0; j < clauses.length; j += 2) {
+        var part = clauses[j] + (clauses[j + 1] || "");
+        if (c2 && c2.length + part.length > maxLen) { out.push(c2); c2 = ""; }
+        c2 += part;
+      }
+      if (c2) out.push(c2);
+    } else {
+      out.push(cur);
+    }
+    cur = "";
+  }
   for (var i = 0; i < bits.length; i += 2) {
     var piece = bits[i] + (bits[i + 1] || "");
-    if (cur && cur.length + piece.length > maxLen) { out.push(cur); cur = ""; }
+    if (cur && cur.length + piece.length > maxLen) pushCur();
     cur += piece;
   }
-  if (cur) out.push(cur);
+  pushCur();
   return out.length ? out : [String(text || "")];
 }
 
@@ -159,10 +196,13 @@ export function speak(text, opts) {
     // Recover from Chrome's stuck/paused synthesis state.
     try { if (window.speechSynthesis.paused) window.speechSynthesis.resume(); } catch (e) {}
     stopSpeak();
+    // Voice hears clean text only — emoji are for the eyes, not the ears.
+    var clean = cleanSpeechText(text);
+    if (!clean) return false;
     var rate = typeof opts.rate === "number" ? opts.rate : 0.95;
     // Slow speech = fewer chars per second, so chunks must be shorter to stay
     // under Chrome's ~15s silent utterance cutoff.
-    var chunks = chunkText(text, rate < 0.8 ? 100 : 160);
+    var chunks = chunkText(clean, rate < 0.8 ? 100 : 160);
     var voice = pickVoice(opts.voiceURI, opts.buddyId);
     var idx = 0, done = false, my = ++speakToken, watchdog = null;
     var disarm = function () { if (watchdog) { clearTimeout(watchdog); watchdog = null; } };

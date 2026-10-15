@@ -1,5 +1,5 @@
 // LinguaBuddy — TTS helper tests (plain node, no DOM).
-import { chunkText, ttsAvailable, speak, stopSpeak, listVoices, voiceDiag, isFemaleVoice } from "../js/tts.js";
+import { chunkText, cleanSpeechText, ttsAvailable, speak, stopSpeak, listVoices, voiceDiag, isFemaleVoice } from "../js/tts.js";
 
 let pass = 0, fail = 0;
 function ok(cond, name) {
@@ -111,6 +111,20 @@ ok(femList.length === 2 && femList.every(function (v) { return /samantha|zira/i.
   "voice picker lists female voices only (" + femList.map(function (v) { return v.name; }).join(", ") + ")");
 delete globalThis.window;
 delete globalThis.SpeechSynthesisUtterance;
+
+section("cleanSpeechText (voice clarity)");
+ok(cleanSpeechText("Good day. I am Mr. Bennett 🤵") === "Good day. I am Mr. Bennett", "emoji stripped for speech");
+ok(cleanSpeechText("Hello! 🌟🦉 How are you?") === "Hello! How are you?", "multiple emoji stripped");
+ok(cleanSpeechText("Plain text, no emoji.") === "Plain text, no emoji.", "plain text untouched");
+ok(cleanSpeechText("") === "", "empty stays empty");
+
+section("chunkText clause splitting (natural pauses)");
+var longSent = "Photosynthesis is how green plants make food, they take sunlight, water and carbon dioxide, and turn them into glucose and oxygen for us all to breathe easily every day.";
+var cl = chunkText(longSent, 80);
+ok(cl.length > 1, "long sentence split into clauses, got " + cl.length);
+ok(cl.every(function (x) { return x.length <= 95; }), "clause chunks bounded");
+ok(cl.join("") === longSent, "clause chunks rejoin losslessly");
+ok(cl.every(function (x) { return x.trim().length > 0; }), "no empty clause chunks");
 
 console.log("\n" + pass + " passed, " + fail + " failed");
 process.exit(fail ? 1 : 0);

@@ -6,7 +6,9 @@
 
 import {
   CHARACTERS, characterById, INTENTS, TOPICS, ERROR_PATTERNS,
-  SMALLTALK, QUICK_REPLIES, NEW_WORDS, ABUSE_WORDS, ABUSE_REPLIES, NAME_STOP
+  SMALLTALK, QUICK_REPLIES, NEW_WORDS, ABUSE_WORDS, ABUSE_REPLIES, NAME_STOP,
+  QA, QA_LEADS, QA_FOLLOWUPS, WORD_DEFS, DEPTH_FOLLOWUPS,
+  REFLECT_TEMPLATES, REFLECT_STOP
 } from "../data/buddies.js";
 import { S, save, touchStreak, recordAttempt } from "./store.js";
 import { awardXP, checkBadges, toast } from "./gamify.js";
@@ -49,12 +51,92 @@ export function detectIntent(text) {
   for (const it of INTENTS) {
     if ((it.match || []).some(function (p) { return matchHit(p, pad, low, raw); })) return { intent: it.id };
   }
+  // Q&A knowledge base — answers real questions (checked before topics so a
+  // specific question like "what is AI?" wins over the broad "technology" topic).
+  for (const q of QA) {
+    if (q.match.some(function (m) { return pad.indexOf(m) >= 0; })) return { intent: "qa", qa: q };
+  }
+  const def = detectDefine(raw);
+  if (def) return { intent: "define", word: def };
+  const math = evalMath(raw);
+  if (math) return { intent: "math", math: math };
+  if (TIME_PATTERNS.some(function (p) { return pad.indexOf(p) >= 0; })) return { intent: "time" };
   for (const tp of TOPICS) {
     if (tp.keywords.some(function (k) { return pad.indexOf(String(k).toLowerCase()) >= 0; })) {
       return { intent: "topic", topic: tp.id };
     }
   }
   return { intent: "smalltalk" };
+}
+
+/* "what does X mean?" / "meaning of X" / "define X" → the word, or null. */
+const DEFINE_RES = [
+  /what does ["']?([a-z]{2,20})["']? mean/i,
+  /what is the meaning of ["']?([a-z]{2,20})/i,
+  /meaning of ["']?([a-z]{2,20})/i,
+  /^define ["']?([a-z]{2,20})/i
+];
+export function detectDefine(text) {
+  const raw = String(text || "");
+  for (const re of DEFINE_RES) {
+    const m = raw.match(re);
+    if (m) return m[1].toLowerCase();
+  }
+  return null;
+}
+
+/* → {word, meaning} from NEW_WORDS first, then WORD_DEFS. Pure. */
+export function defineWord(word) {
+  const w = String(word || "").toLowerCase().trim();
+  if (!w) return null;
+  const hit = NEW_WORDS.find(function (nw) { return nw.word.toLowerCase() === w; });
+  if (hit) return { word: hit.word, meaning: hit.meaning };
+  if (WORD_DEFS[w]) return { word: w, meaning: WORD_DEFS[w] };
+  return null;
+}
+
+const TIME_PATTERNS = [
+  "what time is it", "what's the time", "whats the time", "tell me the time",
+  "what day is it", "what's today", "whats today", "what is the date",
+  "which day is it", "what is today"
+];
+
+/* Pure: "It's 3:45 PM on Thursday, 15 October." Takes a Date for tests. */
+export function timeAnswer(d) {
+  d = d instanceof Date ? d : new Date();
+  const t = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  const day = d.toLocaleDateString("en-US", { weekday: "long", day: "numeric", month: "long" });
+  return "It's " + t + " on " + day + ".";
+}
+
+/* Pure: quick maths. Finds the first safe arithmetic expression
+   ("12 + 8", "15*3", "100 divided by 4") and computes it. Returns
+   {expr, value} or null. Never eval()s — only digits and operators. */
+export function evalMath(text) {
+  let s = String(text || "").toLowerCase()
+    .replace(/divided by/g, "/").replace(/multiplied by/g, "*")
+    .replace(/\bplus\b/g, "+").replace(/\bminus\b/g, "-").replace(/\btimes\b/g, "*")
+    .replace(/×/g, "*").replace(/÷/g, "/").replace(/\bx\b/g, "*");
+  const m = s.match(/(-?\d+(?:\.\d+)?)\s*([+\-*/^])\s*(-?\d+(?:\.\d+)?)/);
+  if (!m) return null;
+  // Guard: don't treat dates like 14/8/2026 as maths.
+  const after = s.slice(s.indexOf(m[0]) + m[0].length);
+  if (m[2] === "/" && /^\s*\/\s*\d/.test(after)) return null;
+  const a = parseFloat(m[1]), b = parseFloat(m[3]);
+  if (!isFinite(a) || !isFinite(b)) return null;
+  let v;
+  switch (m[2]) {
+    case "+": v = a + b; break;
+    case "-": v = a - b; break;
+    case "*": v = a * b; break;
+    case "/": if (b === 0) return null; v = a / b; break;
+    case "^": v = Math.pow(a, b); break;
+    default: return null;
+  }
+  if (!isFinite(v)) return null;
+  const pretty = (Math.round(v * 100) / 100).toString();
+  const expr = m[1] + " " + (m[2] === "*" ? "×" : m[2] === "/" ? "÷" : m[2]) + " " + m[3];
+  return { expr: expr, value: pretty };
 }
 
 // → [{wrong, fix, explain}]
@@ -109,6 +191,66 @@ function topicReply(ch, tp, session, rand) {
   return pick(leads[ch.id] || leads.lingoo, session, ch.id + ":toplead", rand) + q;
 }
 
+/* Remember things the learner tells us — likes, favourites, city — so the
+   buddy can refer back later like a human friend would. Pure-ish (mutates session). */
+export function captureFacts(text, session) {
+  session.facts = session.facts || { likes: [] };
+  const f = session.facts;
+  const clean = function (s) { return String(s || "").trim().replace(/[.!?]+$/, ""); };
+  let m;
+  if (String(text).length <= 80) {
+    m = String(text).match(/\bi (?:really |so )?(like|love) ([a-z][a-z' ]{1,26})/i);
+    if (m) {
+      const v = clean(m[2]);
+      if (v && f.likes.indexOf(v) < 0 && f.likes.length < 6) f.likes.push(v);
+    }
+    m = String(text).match(/my favou?rite ([a-z ]{1,20}) is ([a-z][a-z' ]{1,26})/i);
+    if (m) f["fav:" + clean(m[1]).toLowerCase()] = clean(m[2]);
+    m = String(text).match(/\bi live in ([a-z][a-z' ]{1,26})/i);
+    if (m) f.city = cap(clean(m[1]));
+  }
+  return f;
+}
+
+/* Pick the most "interesting" word to reflect back — longest non-stopword. */
+function bestKeyword(text) {
+  const words = (String(text || "").toLowerCase().match(/[a-z]{4,}/g) || [])
+    .filter(function (w) { return !REFLECT_STOP.has(w); });
+  if (!words.length) return null;
+  words.sort(function (a, b) { return b.length - a.length; });
+  return words[0];
+}
+
+/* Human-like fallback: echo the learner's own words back with a warm
+   follow-up, instead of a flat "Tell me more!". Pure. */
+export function reflectiveReply(text, session, rand) {
+  rand = rand || Math.random;
+  const kw = bestKeyword(text);
+  if (!kw) return pick(SMALLTALK, session, "smalltalk", rand);
+  const t = pick(REFLECT_TEMPLATES, session, "reflect", rand);
+  return t.split("{kw}").join(kw);
+}
+
+/* Topic reply with depth: the first mention gets the usual lead + surface
+   question; staying on the same topic goes deeper each turn. */
+function topicReplyDeep(ch, tp, session, rand) {
+  session.topicDepth = session.topicDepth || {};
+  const depth = session.topicDepth[tp.id] || 0;
+  session.topicDepth[tp.id] = depth + 1;
+  if (depth > 0 && DEPTH_FOLLOWUPS[tp.id] && DEPTH_FOLLOWUPS[tp.id].length) {
+    const leads = {
+      lingoo: ["Going deeper! 🌟 ", "Ooh, let's dig in! ", "Nice, more {topic}! "],
+      maya: ["Okay we're going deep now 😎 ", "Love this energy! ", "More {topic} talk! "],
+      zara: ["Excellent — depth wins marks! 🎓 ", "Now we're thinking! ", "Deeper into {topic}! "],
+      pip: ["More {topic}! 🐣 ", "Yay! Tell Pip more! 🌈 "],
+      bennett: ["Splendid — let's explore further. 🤵 ", "Indeed. A deeper look at {topic}: "]
+    };
+    return pick(leads[ch.id] || leads.lingoo, session, ch.id + ":deeplead", rand) +
+      pick(DEPTH_FOLLOWUPS[tp.id], session, "dfu:" + tp.id, rand);
+  }
+  return topicReply(ch, tp, session, rand);
+}
+
 // Pip recasts only — never "wrong"/"mistake"/"incorrect". Others: one gentle tip.
 function formatCorrection(ch, e) {
   if (ch.id === "pip") return "Oh, you mean \u201C" + e.fix + "\u201D! 🌟";
@@ -121,9 +263,13 @@ const GENERIC_FOLLOWUPS = [
 ];
 
 function newSession() {
-  return { name: "", topicsMentioned: [], usedReplies: [], msgCount: 0 };
+  return { name: "", topicsMentioned: [], usedReplies: [], msgCount: 0, facts: { likes: [] }, topicDepth: {} };
 }
 export { newSession };
+
+function qaLead(ch, session, rand) {
+  return pick(QA_LEADS[ch.id] || QA_LEADS.lingoo, session, ch.id + ":qalead", rand);
+}
 
 // → { text, corrections[], newWords[], intent }
 export function craftReply(characterId, text, session, rand) {
@@ -132,9 +278,11 @@ export function craftReply(characterId, text, session, rand) {
   session = session || newSession();
   session.usedReplies = session.usedReplies || [];
   session.topicsMentioned = session.topicsMentioned || [];
+  session.facts = session.facts || { likes: [] };
   const det = detectIntent(text);
   let replyText, intentId = det.intent;
   const corrections = [];
+  const extraWords = [];
 
   if (det.intent === "abuse") {
     replyText = pick(ABUSE_REPLIES, session, "abuse", rand);
@@ -142,17 +290,44 @@ export function craftReply(characterId, text, session, rand) {
     session.name = det.name;
     replyText = pickReply(ch, "userNameTell", session, rand);
   } else {
+    captureFacts(text, session);
     const errs = findErrors(text).slice(0, 2);
     let base;
     if (det.intent === "topic" && det.topic) {
       const tp = TOPICS.find(function (t) { return t.id === det.topic; });
       if (session.topicsMentioned.indexOf(tp.id) < 0) session.topicsMentioned.push(tp.id);
-      base = topicReply(ch, tp, session, rand);
+      base = topicReplyDeep(ch, tp, session, rand);
       intentId = "topic:" + tp.id;
+    } else if (det.intent === "qa" && det.qa) {
+      // Real answers to real questions — the heart of "independent" buddies.
+      base = qaLead(ch, session, rand) + det.qa.a;
+      intentId = "qa:" + det.qa.id;
+      if (rand() < 0.6) {
+        base += " " + pick(QA_FOLLOWUPS[ch.id] || QA_FOLLOWUPS.lingoo, session, ch.id + ":qafu", rand);
+      }
+    } else if (det.intent === "define" && det.word) {
+      const def = defineWord(det.word);
+      if (def) {
+        base = qaLead(ch, session, rand) + "\u201C" + cap(def.word) + "\u201D means: " + def.meaning + ".";
+        extraWords.push({ word: def.word, meaning: def.meaning });
+        if (rand() < 0.6) base += " Try using it in a sentence — I'll check it! ✍️";
+      } else {
+        // Honest when the word isn't known — like a human, not a dead end.
+        base = "Hmm, I'm not sure about \u201C" + det.word + "\u201D yet — my word book is still growing! " +
+          "Can you use it in a sentence? I'll help you figure it out. 🌱";
+      }
+      intentId = "define";
+    } else if (det.intent === "math" && det.math) {
+      base = qaLead(ch, session, rand) + det.math.expr + " = " + det.math.value + "! 🧮" +
+        " " + pick(["Quick maths! Want a harder one?", "Easy! Test me again! 😎", "Maths wizardry! 🧙"], session, "mathfu", rand);
+      intentId = "math";
+    } else if (det.intent === "time") {
+      base = qaLead(ch, session, rand) + timeAnswer(new Date());
+      intentId = "time";
     } else {
       const it = INTENTS.find(function (i) { return i.id === det.intent; });
       base = it ? pickReply(ch, it.id, session, rand)
-                : pick(SMALLTALK, session, "smalltalk", rand);
+                : reflectiveReply(text, session, rand);
       if (!it) intentId = "smalltalk";
     }
     if (errs.length) {
@@ -162,6 +337,12 @@ export function craftReply(characterId, text, session, rand) {
     if (!/\?\s*$/.test(base) && rand() < 0.7) {
       base += " " + pick(GENERIC_FOLLOWUPS, session, "gfu", rand);
     }
+    // Occasionally weave in something the learner told us — like a friend would.
+    const likes = session.facts.likes || [];
+    if (likes.length && !/^(bye|abuse|userNameTell)/.test(intentId) && rand() < 0.18) {
+      const like = likes[Math.floor(rand() * likes.length)];
+      base += " By the way — you told me you like " + like + ". Tell me more about that!";
+    }
     replyText = base;
   }
 
@@ -169,6 +350,9 @@ export function craftReply(characterId, text, session, rand) {
                        .split("{topic}").join(topicLabel(session));
   const newWords = NEW_WORDS.filter(function (w) {
     return new RegExp("\\b" + w.word + "\\b", "i").test(replyText);
+  });
+  extraWords.forEach(function (w) {
+    if (!newWords.some(function (x) { return x.word.toLowerCase() === w.word.toLowerCase(); })) newWords.push(w);
   });
   session.msgCount = (session.msgCount || 0) + 1;
   return { text: replyText, corrections: corrections, newWords: newWords, intent: intentId };
@@ -366,8 +550,12 @@ function fillVoiceSel() {
 }
 
 function buddySpeakOpts(extra) {
+  // Each buddy speaks at its own tuned pace/pitch — Bennett is deliberately
+  // slower and lower so his long formal sentences stay clear.
+  var prof = (chat.ch && chat.ch.speech) || {};
   var o = Object.assign({
-    rate: chat.slowSpeech ? 0.7 : 0.95,
+    rate: chat.slowSpeech ? 0.7 : (typeof prof.rate === "number" ? prof.rate : 0.95),
+    pitch: typeof prof.pitch === "number" ? prof.pitch : 1,
     voiceURI: (S.settings && S.settings.buddyVoiceURI) || "",
     buddyId: chat.ch.id
   }, extra || {});

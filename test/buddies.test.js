@@ -2,11 +2,12 @@
 
 import assert from "node:assert/strict";
 import {
-  detectIntent, findErrors, craftReply, newSession, aiReply, transcriptHTML
+  detectIntent, findErrors, craftReply, newSession, aiReply, transcriptHTML,
+  detectDefine, defineWord, evalMath, timeAnswer, captureFacts, reflectiveReply
 } from "../js/buddies.js";
 import {
   CHARACTERS, INTENTS, TOPICS, ERROR_PATTERNS, SMALLTALK,
-  QUICK_REPLIES, NEW_WORDS, DATA_VERSION_BUDDIES
+  QUICK_REPLIES, NEW_WORDS, DATA_VERSION_BUDDIES, QA, WORD_DEFS, DEPTH_FOLLOWUPS
 } from "../data/buddies.js";
 
 let n = 0;
@@ -15,7 +16,15 @@ function ok(cond, msg) { n++; assert.ok(cond, msg); }
 // deterministic rand
 function rand0() { return 0; }
 
-ok(DATA_VERSION_BUDDIES === "1.0.0", "data versioned");
+ok(DATA_VERSION_BUDDIES === "2.0.0", "data versioned");
+ok(QA.length >= 40, "40+ Q&A entries");
+ok(Object.keys(WORD_DEFS).length >= 60, "60+ word definitions");
+CHARACTERS.forEach(function (c) {
+  ok(c.speech && typeof c.speech.rate === "number" && typeof c.speech.pitch === "number",
+    "character " + c.id + " has speech profile");
+});
+ok(CHARACTERS.find(function (c) { return c.id === "bennett"; }).speech.rate < 0.9,
+  "bennett speaks slower for clarity");
 ok(CHARACTERS.length === 5, "5 characters");
 ok(new Set(CHARACTERS.map(function (c) { return c.id; })).size === 5, "unique character ids");
 CHARACTERS.forEach(function (c) {
@@ -119,5 +128,84 @@ const html = transcriptHTML(ch, [
 ok(html.indexOf("Lingoo") >= 0, "transcript has buddy name");
 ok(html.indexOf("&lt;b&gt;") >= 0, "transcript escapes HTML");
 ok(html.indexOf("brilliant") >= 0, "transcript lists new words");
+
+/* ---- v2: Q&A knowledge base ---- */
+ok(detectIntent("what is photosynthesis").intent === "qa", "qa: photosynthesis");
+ok(detectIntent("what is photosynthesis").qa.id === "photosynthesis", "qa entry id");
+ok(detectIntent("who made you").intent === "qa", "qa: creator");
+ok(detectIntent("what is the capital of pakistan").intent === "qa", "qa: capital");
+ok(detectIntent("what is ai").intent === "qa", "qa beats broad technology topic");
+s = newSession();
+r = craftReply("lingoo", "what is photosynthesis", s, rand0);
+ok(r.intent === "qa:photosynthesis", "qa intent id in reply");
+ok(/plants|sunlight/i.test(r.text), "qa answer content");
+ok(r.text.indexOf("{name}") < 0, "qa reply has no raw placeholders");
+
+/* ---- v2: definitions ---- */
+ok(detectDefine("what does although mean") === "although", "define pattern 1");
+ok(detectDefine("meaning of courage") === "courage", "define pattern 2");
+ok(detectIntent("define gravity").intent === "qa", "qa wins over define for known entries");
+ok(detectIntent("what does although mean").intent === "define", "define intent");
+ok(detectIntent("what does although mean").word === "although", "define word captured");
+ok(defineWord("although").meaning.indexOf("even though") >= 0, "WORD_DEFS lookup");
+ok(defineWord("brilliant").meaning.indexOf("smart") >= 0, "NEW_WORDS lookup first");
+ok(defineWord("xyzzyplugh") === null, "unknown word -> null");
+s = newSession();
+r = craftReply("zara", "what does although mean", s, rand0);
+ok(/even though/i.test(r.text), "define answer in reply");
+ok(r.newWords.some(function (w) { return w.word === "although"; }), "defined word tracked as new word");
+ok(r.corrections.length === 0, "definition is not a correction");
+s = newSession();
+r = craftReply("lingoo", "what does xyzzyplugh mean", s, rand0);
+ok(/not sure|don't know/i.test(r.text), "unknown word -> honest reply");
+
+/* ---- v2: maths ---- */
+let mm = evalMath("12 + 8");
+ok(mm && mm.value === "20", "12 + 8 = 20");
+mm = evalMath("what is 15*3?");
+ok(mm && mm.value === "45", "15*3 = 45");
+mm = evalMath("100 divided by 4");
+ok(mm && mm.value === "25", "100 divided by 4 = 25");
+mm = evalMath("10 / 0");
+ok(mm === null, "division by zero -> null");
+ok(evalMath("hello world") === null, "no math in plain text");
+ok(evalMath("call me at 5") === null, "lone number is not maths");
+ok(detectIntent("what is 12 + 8").intent === "math", "math intent");
+s = newSession();
+r = craftReply("maya", "what is 7 x 6", s, rand0);
+ok(r.text.indexOf("42") >= 0, "math answer in reply");
+
+/* ---- v2: time ---- */
+ok(detectIntent("what time is it").intent === "time", "time intent");
+ok(detectIntent("what day is it").intent === "time", "day intent");
+const ta = timeAnswer(new Date(2026, 9, 15, 15, 45));
+ok(/3:45 PM/.test(ta) && /Thursday/.test(ta), "timeAnswer formats date: " + ta);
+
+/* ---- v2: fact memory ---- */
+s = newSession();
+captureFacts("I love cricket", s);
+ok(s.facts.likes.indexOf("cricket") >= 0, "like captured");
+captureFacts("I live in Lahore", s);
+ok(s.facts.city === "Lahore", "city captured");
+captureFacts("my favourite food is biryani", s);
+ok(s.facts["fav:food"] === "biryani", "favourite captured");
+
+/* ---- v2: reflective fallback ---- */
+s = newSession();
+const rr = reflectiveReply("I went to the bazaar yesterday", s, rand0);
+ok(/bazaar/.test(rr), "reflective reply echoes keyword: " + rr);
+ok(rr.indexOf("{kw}") < 0, "no raw placeholder in reflective reply");
+s = newSession();
+r = craftReply("maya", "blorptastic zibble", s, rand0);
+ok(r.intent === "smalltalk", "fallback intent still smalltalk");
+
+/* ---- v2: topic depth ---- */
+s = newSession();
+const r1 = craftReply("lingoo", "let's go to hunza", s, rand0);
+const r2 = craftReply("lingoo", "hunza is beautiful", s, rand0);
+ok(r1.intent === "topic:travel" && r2.intent === "topic:travel", "topic intents");
+ok(r1.text !== r2.text, "second turn on same topic goes deeper, not repeats");
+ok(DEPTH_FOLLOWUPS.travel.some(function (q) { return r2.text.indexOf(q) >= 0; }),
+  "depth follow-up used on repeat topic");
 
 console.log(n + " passed, 0 failed");
